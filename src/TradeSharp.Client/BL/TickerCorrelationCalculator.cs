@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Entity;
-using TradeSharp.Contract.Entity;
 using TradeSharp.Robot.BacktestServerProxy;
 using TradeSharp.Util;
 

@@ -10,12 +10,23 @@ namespace TradeSharp.Contract.Util.BL
     /// <summary>
     /// период времени, когда биржа не работает
     /// </summary>
-    class DayOff
+    public class DayOff
     {
         private readonly bool valid;
         private readonly string format;
         private readonly int? year;
         private readonly int month, day, hour, duration;
+
+        public DayOff(string format, int? year, int month, int day, int hour, int duration)
+        {
+            this.format = format;
+            this.year = year;
+            this.month = month;
+            this.day = day;
+            this.hour = hour;
+            this.duration = duration;
+            valid = true;
+        }
 
         public DayOff(string dayOffString)
         {
@@ -150,7 +161,9 @@ namespace TradeSharp.Contract.Util.BL
                 DateTime startWeekDay;
                 try
                 {
-                    startWeekDay = time.AddDays(-(int)time.DayOfWeek).Date;
+                    startWeekDay = time.DayOfWeek == DayOfWeek.Sunday
+                    ? time.AddDays(-6).Date
+                    : time.AddDays(-(int)time.DayOfWeek).Date;
                 }
                 catch (ArgumentOutOfRangeException)
                 {
@@ -175,16 +188,11 @@ namespace TradeSharp.Contract.Util.BL
     public class DaysOff
     {
         private static DaysOff instance;
-        private static List<DayOff> daysOff;
+        private List<DayOff> daysOff;
 
         public static DaysOff Instance
         {
-            get
-            {
-                if (instance == null)
-                    instance = new DaysOff();
-                return instance;
-            }
+            get { return instance ?? (instance = new DaysOff()); }
         }
 
         private DaysOff()
@@ -194,6 +202,16 @@ namespace TradeSharp.Contract.Util.BL
             if (days != null)
                 foreach (var day in days)
                     daysOff.Add(new DayOff(day.Value.ToString()));
+        }
+
+        private DaysOff(List<DayOff> daysOff)
+        {
+            this.daysOff = daysOff;
+        }
+
+        public static void Initialize(List<DayOff> daysOff)
+        {
+            instance = new DaysOff(daysOff);
         }
 
         public bool IsDayOff(DateTime time)

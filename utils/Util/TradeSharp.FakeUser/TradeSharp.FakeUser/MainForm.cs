@@ -74,6 +74,8 @@ namespace TradeSharp.FakeUser
         public MainForm()
         {
             InitializeComponent();
+            SetupDaysOff();
+
             workerQuote.WorkerSupportsCancellation = true;
             workerQuote.WorkerReportsProgress = true;
             workerQuote.DoWork += WorkerQuoteOnDoWork;
@@ -892,6 +894,14 @@ namespace TradeSharp.FakeUser
         {
             var dlg = new NewAccountForm(cbGroup.Items.Cast<string>().ToArray());
             dlg.ShowDialog();
-        }    
+        }
+
+        private void SetupDaysOff()
+        {
+            DaysOff.Initialize(new List<DayOff>
+            {
+                new DayOff("WD", null, 1, 5, 23, 50)
+            });
+        }
     }
 }

@@ -427,12 +427,16 @@ namespace TradeSharp.TradeLib
                 
                 // удалить ордер
                 proxyTrade.SendDeletePendingOrderRequest(ProtectedOperationContext.MakeServerSideContext(), 
-                    order, PendingOrderStatus.Отменен, null, "Активирован");
+                    order, PendingOrderStatus.Исполнен, null, "Активирован");
             }
             else
             {
-                // зафлаживание
                 Logger.ErrorFormat("Ошибка активации отлож. ордера #{0}: {1}", order.ID, reqStatus);
+                // удалить ордер
+                proxyTrade.SendDeletePendingOrderRequest(ProtectedOperationContext.MakeServerSideContext(),
+                    order, PendingOrderStatus.Отменен, null, "Отменен");
+                
+                // зафлаживание
                 var nextTime = DateTime.Now.AddMilliseconds(PendingFloodTimeoutMils);
                 if (pendingFloodTimes.ContainsKey(order.ID))
                     pendingFloodTimes[order.ID] = nextTime;

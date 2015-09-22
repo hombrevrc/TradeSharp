@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 using TradeSharp.Contract.Entity;
 using TradeSharp.Util;
@@ -225,11 +226,16 @@ namespace Entity
             var countErrorsLeft = 25;
             using (var sr = new StreamReader(filePath, Encoding.ASCII))
             {
+                var format = GetCandleFileFormat(sr);
+                if (format == CandleFileFormat.Misformatted) return new List<CandleData>();
+                
                 while (!sr.EndOfStream)
                 {
                     var line = sr.ReadLine();
                     var oldDate = date;
-                    var candle = ParseLine(line, ref date, precision, ref previousCandle);
+                    var candle = (format == CandleFileFormat.Hex || format == CandleFileFormat.Hex16) 
+                        ? ParseLine(line, ref date, precision, ref previousCandle)
+                        : ParseQuote(line, ref previousCandle);
                     if (candle == null)
                     {
                         if (!oldDate.HasValue && date.HasValue)
@@ -247,6 +253,48 @@ namespace Entity
             return candles;
         }
 
+        private static CandleFileFormat GetCandleFileFormat(StreamReader sr)
+        {
+            bool? isHexFormat = null;
+            try
+            {
+                while (!sr.EndOfStream)
+                {
+                    var line = sr.ReadLine();
+                    if (string.IsNullOrEmpty(line)) continue;
+
+                    if (!isHexFormat.HasValue)
+                    {
+                        isHexFormat = line.ToIntSafe() != null;
+                        if (isHexFormat.Value) continue;
+                    }
+
+                    var parts = line.Split(new [] {';', ' '}, StringSplitOptions.RemoveEmptyEntries);
+                    if (isHexFormat.Value)
+                    {
+                        // 0401 1.32030 7FFF801D
+                        if (parts.Length != 3) return CandleFileFormat.Misformatted;
+                        var format = parts[2].Length == 6 ? CandleFileFormat.Hex : CandleFileFormat.Hex16;
+                        DateTime? date = new DateTime(2000, 1, 1);
+                        CandleData prev = null;
+                        var candle = ParseLine(line, ref date, 4, ref prev);
+                        return candle == null ? CandleFileFormat.Misformatted : format;
+                    }
+                    // 20150101 00:00;1.21500;1.21527
+                    CandleData prevCandle = null;
+                    var quote = ParseQuote(line, ref prevCandle);
+                    return quote == null ? CandleFileFormat.Misformatted : CandleFileFormat.Quote;
+                }
+            }
+            finally
+            {
+                sr.DiscardBufferedData();
+                sr.BaseStream.Seek(0, SeekOrigin.Begin);
+                sr.BaseStream.Position = 0;
+            }
+            return CandleFileFormat.Misformatted;
+        }
+
         /// <summary>
         /// "склеить" свечи (lstDest, candles) в единый список (lstDest)
         /// </summary>
@@ -258,6 +306,17 @@ namespace Entity
             bool areUpdated;
             lstDest = MergeCandles(lstDest, candles, checkOverlap, ref start, ref end, out areUpdated);
             return areUpdated;
+        }
+
+        public static void MergeCandlesFineGrained(ref List<CandleData> lstDest, List<CandleData> candles)
+        {
+            var candleDic = lstDest.ToDictionary(l => l.timeOpen, l => l);
+            foreach (var candle in candles)
+            {
+                if (!candleDic.ContainsKey(candle.timeOpen))
+                    candleDic[candle.timeOpen] = candle;
+            }
+            lstDest = candleDic.Values.OrderBy(v => v.timeOpen).ToList();
         }
 
         public static List<CandleData> MergeCandles(
@@ -406,6 +465,26 @@ namespace Entity
             }                        
         }
 
+        public static CandleData ParseQuote(string line, ref CandleData previousCandle)
+        {
+            // 20150101 00:00;1.21500;1.21527
+            var parts = line.Split(new [] {';'}, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length != 3) return null;
+            try
+            {
+                var dateTime = DateTime.ParseExact(parts[0], "yyyyMMdd HH:mm", CultureInfo.InvariantCulture);
+                var bid = parts[1].ToFloatUniform();
+                var open = previousCandle == null ? bid : previousCandle.close;
+                previousCandle = new CandleData(open, Math.Max(open, bid), Math.Min(open, bid), bid, 
+                    dateTime, dateTime.AddMinutes(1));
+                return previousCandle;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         #endregion
     }
 
@@ -417,5 +496,19 @@ namespace Entity
         Low = 3,
         HighLowMid = 4,
         OpenCloseMid = 5
+    }
+
+    public enum CandleFileFormat
+    {
+        // 02012013
+        // 0401 1.32030 7FFF801D
+        Hex16 = 0,
+        // 02012013
+        // 0401 1.32030 7FFF80
+        Hex,
+        // 20150101 00:00;1.21500;1.21527
+        Quote,
+
+        Misformatted
     }
 }

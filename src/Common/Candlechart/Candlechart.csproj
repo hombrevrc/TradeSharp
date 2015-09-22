@@ -273,6 +273,7 @@
     <Compile Include="Indicator\ComboBoxSeriesUITypeEditor.cs" />
     <Compile Include="Indicator\CrossChartDiverUITypeEditor.cs" />
     <Compile Include="Indicator\FiboForkIndicator.cs" />
+    <Compile Include="Indicator\FileBrowseUITypeEditor.cs" />
     <Compile Include="Indicator\IChartQueryIndicator.cs" />
     <Compile Include="Indicator\IndicatorAccelerator.cs" />
     <Compile Include="Indicator\IndicatorAlert.cs" />
@@ -284,6 +285,7 @@
     <Compile Include="Indicator\IndicatorColorScheme.cs" />
     <Compile Include="Indicator\IndicatorDiver.cs" />
     <Compile Include="Indicator\IndicatorEdgeRatio.cs" />
+    <Compile Include="Indicator\IndicatorExternSeries.cs" />
     <Compile Include="Indicator\IndicatorExtremum.cs" />
     <Compile Include="Indicator\IndicatorFiboBars.cs" />
     <Compile Include="Indicator\IndicatorFiboDiver.cs" />
@@ -364,6 +366,7 @@
     <Compile Include="Series\ChannelSeries.cs" />
     <Compile Include="Series\ChartComment.Drawing.cs" />
     <Compile Include="Series\ChartComment.GraphicSymbols.cs" />
+    <Compile Include="Series\DealMarker.cs" />
     <Compile Include="Series\HistogramSeries.cs" />
     <Compile Include="Core\IChartInteractiveObject.cs" />
     <Compile Include="Core\InfoTool.cs" />

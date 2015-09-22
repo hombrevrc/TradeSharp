@@ -304,14 +304,14 @@ namespace Candlechart.Controls
             editingColumn = col;
             var editorAttribute = attrs.FirstOrDefault(a => a is EditorAttribute) as EditorAttribute;
             var editorType = editorAttribute != null
-                                 ? Type.GetType(editorAttribute.EditorTypeName)
+                                 ? ResolveAssemblyType(editorAttribute.EditorTypeName)
                                  : GetStandardEditorType(rowObject.Property.PropertyType);
             if (editorType == null)
             {
                 OpenBaseEditor(rowObject.Property, fastGrid, rowIndex, col);
                 return;
             }
-            OpenSpecialEditor();
+            OpenSpecialEditor(editorType);
         }
 
         // открытие стандартного редактора в зависимости от типа свойства
@@ -346,7 +346,7 @@ namespace Candlechart.Controls
         }
 
         // открытие специального редактора, указанного для свойства
-        private void OpenSpecialEditor()
+        private void OpenSpecialEditor(Type editorType)
         {
             if (OpenPropertyEditor != null)
             {
@@ -357,8 +357,6 @@ namespace Candlechart.Controls
             if (fastGrid == null)
                 return;
             var rowObject = (FastPropertyGridRow) fastGrid.rows[editingRowIndex].ValueObject;
-            var editorAttribute = rowObject.Property.GetCustomAttributes(true).FirstOrDefault(a => a is EditorAttribute) as EditorAttribute;
-            var editorType = editorAttribute != null ? Type.GetType(editorAttribute.EditorTypeName) : GetStandardEditorType(rowObject.Property.PropertyType);
             if (editorType == typeof (MultilineStringEditor))
                 editorType = typeof (TextUItypeWEditor);
             if (editorType == null)
@@ -440,6 +438,20 @@ namespace Candlechart.Controls
             stringProp.SetValue(rowObject, GetStringValue(newValue, rowObject.Property), null);
             fastGrid.UpdateRow(rowIndex, rowObject);
             fastGrid.InvalidateRow(rowIndex);
+        }
+
+        private Type ResolveAssemblyType(string typeName)
+        {
+            var typeNameParts = typeName.Split(new[] {',', ' '}, StringSplitOptions.RemoveEmptyEntries);
+            typeName = typeNameParts[0];
+            var type = Type.GetType(typeName);
+            if (type != null) return type;
+            foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                type = asm.GetType(typeName);
+                if (type != null) return type;
+            }
+            return null;
         }
     }
 

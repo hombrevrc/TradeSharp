@@ -104,5 +104,16 @@ namespace Candlechart.Series
         }
 
         public abstract int DataCount { get; }
+
+        public Pen MakePen(Color color)
+        {
+            var style = 
+                LineStyle == LineStyle.Solid ? DashStyle.Solid
+                : LineStyle == LineStyle.Dash ? DashStyle.Dash
+                : LineStyle == LineStyle.DashDot ? DashStyle.DashDot
+                : LineStyle == LineStyle.Dot ? DashStyle.Dot
+                : DashStyle.DashDotDot;
+            return new Pen(color, lineWidth ?? 1) { DashStyle = style };
+        }
     }
 }

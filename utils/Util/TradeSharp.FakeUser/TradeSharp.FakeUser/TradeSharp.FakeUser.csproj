@@ -104,6 +104,7 @@
     <Compile Include="BL\QuoteDownloader.cs" />
     <Compile Include="BL\SqlTradeSerializer.cs" />
     <Compile Include="BL\StrategyTrack.cs" />
+    <Compile Include="BL\TimeUtil.cs" />
     <Compile Include="BL\TradeHistoryAmender.cs" />
     <Compile Include="BL\TradeHistoryCleaner.cs" />
     <Compile Include="BL\TradeHistoryMaker.cs" />

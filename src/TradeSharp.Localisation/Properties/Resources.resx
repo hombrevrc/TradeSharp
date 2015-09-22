@@ -1672,7 +1672,7 @@
     <value>Отображать текст на кнопке</value>
   </data>
   <data name="TitleSystemButtons" xml:space="preserve">
-    <value>Систмемные кнопки</value>
+    <value>Системные кнопки</value>
   </data>
   <data name="TitleToolbarSettings" xml:space="preserve">
     <value>Настройка инструментальной панели</value>

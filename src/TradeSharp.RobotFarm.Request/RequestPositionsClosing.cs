@@ -9,7 +9,7 @@ namespace TradeSharp.RobotFarm.Request
 
         public RequestPositionsClosing()
         {
-            RequestType = JsonRequestType.RequestAccount;
+            RequestType = JsonRequestType.PositionsClosing;
         }
 
         public RequestPositionsClosing(long requestId)

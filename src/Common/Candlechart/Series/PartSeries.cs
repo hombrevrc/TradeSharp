@@ -27,16 +27,6 @@ namespace Candlechart.Series
             set { lineColor = value; }
         }
 
-        private float lineThickness = 1;
-        /// <summary>
-        /// толщина линии
-        /// </summary>
-        public float LineThickness
-        {
-            get { return lineThickness; }
-            set { lineThickness = value; }
-        }
-
         private float markerRadius;
         /// <summary>
         /// радиус окружности-маркера (0 - не рисуется)
@@ -67,7 +57,7 @@ namespace Candlechart.Series
 
         private void DrawParts(Graphics g, RectangleD worldRect, Rectangle canvasRect)
         {
-            using (var linePen = new Pen(LineColor, LineThickness))
+            using (var linePen = MakePen(lineColor))                
             {
                 using (var markerPen = new Pen(LineColor, 1))
                 {

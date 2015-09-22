@@ -328,16 +328,16 @@ namespace TradeSharp.FakeUser.BL
                             ValueDate = t.ValueDate,
                         }).ToList();
                 // + трансферы по закрытым ордерам
-                foreach (var pos in context.PosHistory)
+                foreach (var pos in listPos)
                 {
                     var transfer = new BALANCE_CHANGE
                     {
                         AccountID = accountId,
-                        Amount = (decimal) Math.Abs(pos.ResultDepo),
+                        Amount = Math.Abs(pos.ResultDepo),
                         ChangeType = (int) (pos.ResultDepo >= 0
                             ? BalanceChangeType.Profit
                             : BalanceChangeType.Loss),
-                        ValueDate = pos.TimeExit.Value,
+                        ValueDate = pos.TimeExit,
                         Position = pos.ID,
                     };
                     listTrans.Add(transfer);

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using Entity;
 using TradeSharp.Contract.Entity;
+using TradeSharp.Contract.Util.BL;
 using TradeSharp.Linq;
 using TradeSharp.Robot.BacktestServerProxy;
 using TradeSharp.Util;
@@ -47,6 +48,7 @@ namespace TradeSharp.FakeUser.BL
 
             var cursor = new BacktestTickerCursor();
             var tickers = dueDeals.Select(p => p.Symbol).Distinct().ToList();
+            startTime = TimeUtil.RoundTime(startTime, intervalMinutes);
             var track = new Strategy(startTime, (int) balances.First().SignedAmountDepo);
 
             try
@@ -56,6 +58,7 @@ namespace TradeSharp.FakeUser.BL
 
                 for (var time = startTime; time <= endTime; time = time.AddMinutes(intervalMinutes))
                 {
+                    if (DaysOff.Instance.IsDayOff(time)) continue;
                     var candles = cursor.MoveToTime(time);
                     var quotes = candles.ToDictionary(
                         c => c.Key,

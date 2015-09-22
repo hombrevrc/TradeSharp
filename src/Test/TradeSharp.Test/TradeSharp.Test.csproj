@@ -133,6 +133,7 @@
     <Compile Include="Entity\BarSettings.cs" />
     <Compile Include="Entity\BaseChartIndicator.cs" />
     <Compile Include="Entity\Candle.cs" />
+    <Compile Include="Entity\DaysOffTest.cs" />
     <Compile Include="Entity\NuCandlePackerPool.cs" />
     <Compile Include="Entity\DalSpot.cs" />
     <Compile Include="Entity\ExpressionResolver.cs" />

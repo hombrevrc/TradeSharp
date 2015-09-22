@@ -70,7 +70,6 @@ namespace TradeSharp.RobotFarm.BL.Web
             {
                 if (context.Request.QueryString.AllKeys.Contains("json"))
                 {
-                    Logger.Info("HTTP POST (JSON) request");
                     ProcessJSONPostRequest(context);
                     return;
                 }

@@ -128,9 +128,22 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="BL\RobotFarm.cs" />
+    <Compile Include="BL\Script\CaymanDivergenceScript.cs" />
+    <Compile Include="BL\Script\CaymanDivergenceSetupDlg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BL\Script\CaymanDivergenceSetupDlg.Designer.cs">
+      <DependentUpon>CaymanDivergenceSetupDlg.cs</DependentUpon>
+    </Compile>
     <Compile Include="BL\Script\ChartTickerStatTerminalScript.cs" />
     <Compile Include="BL\Script\CopyDealsInMt4Script.cs" />
     <Compile Include="BL\Script\MakeOpenPosSql.cs" />
+    <Compile Include="BL\Script\Mt4ImportDlg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BL\Script\Mt4ImportDlg.Designer.cs">
+      <DependentUpon>Mt4ImportDlg.cs</DependentUpon>
+    </Compile>
     <Compile Include="BL\Script\PriceDistributionForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -146,6 +159,7 @@
     </Compile>
     <Compile Include="BL\Script\RestoreFxDealCommentScript.cs" />
     <Compile Include="BL\Script\ScriptAlert.cs" />
+    <Compile Include="BL\Script\ScriptImportMt4CsvOrders.cs" />
     <Compile Include="BL\Script\ScriptManager.cs" />
     <Compile Include="BL\Script\ScriptPartDepoFormDialog.cs">
       <SubType>Form</SubType>
@@ -865,6 +879,12 @@
     <Compile Include="BL\NonChartWindowSettings.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="BL\Script\CaymanDivergenceSetupDlg.resx">
+      <DependentUpon>CaymanDivergenceSetupDlg.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BL\Script\Mt4ImportDlg.resx">
+      <DependentUpon>Mt4ImportDlg.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="BL\Script\PriceDistributionForm.resx">
       <DependentUpon>PriceDistributionForm.cs</DependentUpon>
     </EmbeddedResource>

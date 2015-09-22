@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Runtime.Serialization;
 using Entity;
 using TradeSharp.Contract.Entity;
 using TradeSharp.Contract.Util.BL;
@@ -290,7 +289,11 @@ namespace TradeSharp.Robot.Robot
             
             if (string.IsNullOrEmpty(ticker))
             {
-                Logger.ErrorFormat("Название текущего инструмента (ticker) для робота {0} задано не корректно", TypeName);
+                var accountId = 0;
+                if (robotContext != null && robotContext.AccountInfo != null)
+                    accountId = robotContext.AccountInfo.ID;
+                Logger.ErrorFormat("Название текущего инструмента ({0}) для робота \"{1}\" (#{2}) задано не корректно",
+                    ticker ?? "", TypeName, accountId);
                 return events;
             }         
             var tickerIndex = -1;

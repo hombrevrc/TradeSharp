@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.ServiceModel;
 using Entity;
@@ -892,24 +893,42 @@ namespace TradeSharp.Server.Contract
 
         public bool ModifyOrder(MarketOrder order, out string errorString)
         {
-            try
+            for (var triesCount = 2; triesCount > 0; triesCount--)
             {
-                using (var ctx = DatabaseContext.Instance.Make())
+                try
                 {
-                    var pos = ctx.POSITION.FirstOrDefault(p => p.ID == order.ID);
-                    if (pos != null)
-                        return ModifyOpenedPosition(order, ctx, pos, out errorString);
-                    var closed = ctx.POSITION_CLOSED.FirstOrDefault(p => p.ID == order.ID);
-                    if (closed != null)
-                        return ModifyClosedPosition(order, ctx, closed, out errorString);
+                    using (var ctx = DatabaseContext.Instance.Make())
+                    {
+                        var pos = ctx.POSITION.FirstOrDefault(p => p.ID == order.ID);
+                        if (pos != null)
+                            return ModifyOpenedPosition(order, ctx, pos, out errorString);
+                        var closed = ctx.POSITION_CLOSED.FirstOrDefault(p => p.ID == order.ID);
+                        if (closed != null)
+                            return ModifyClosedPosition(order, ctx, closed, out errorString);
+                    }
+                    Logger.InfoFormat("Order #{0}, account #{1} was modified", order.ID, order.AccountID);
                 }
-            }
-            catch (Exception ex)
-            {
-                errorString = ex.GetType().Name + ": " + ex.Message;
+                catch (DbUpdateConcurrencyException)
+                {
+                    continue;
+                }
+                catch (DbUpdateException ex)
+                {
+                    Logger.InfoFormat("Order #{0}, account #{1} was Not modified: {2}",
+                        order.ID, order.AccountID, ex.InnerException);
+                    continue;
+                }
+                catch (Exception ex)
+                {
+                    errorString = ex.GetType().Name + ": " + ex.Message;
+                    Logger.ErrorFormat("Order [{0}] was not modified: {1}",
+                        order.ToString(), ex);
+                    return false;
+                }
+                errorString = "Order " + order.ID + " was not found";
                 return false;
             }
-            errorString = "Ордер " + order.ID + " не найден";
+            errorString = "Order " + order.ID + " was not modified due to exception";
             return false;
         }
 
@@ -1010,6 +1029,9 @@ namespace TradeSharp.Server.Contract
                 };
                 ctx.POSITION.Remove(pos);
                 ctx.POSITION_CLOSED.Add(closed);
+                ctx.SaveChanges();
+                Logger.InfoFormat("Opened order {0} {1} {2} {3} was closed with result {4}",
+                    pos.ID, pos.Side > 0 ? "BUY" : "SELL", pos.Volume, pos.Symbol, order.ResultDepo);
                 return true;
             }
             pos.Comment = order.Comment;
@@ -1023,11 +1045,14 @@ namespace TradeSharp.Server.Contract
             pos.Stoploss = (decimal?) order.StopLoss;
             pos.Symbol = order.Symbol;
             pos.Takeprofit = (decimal?) order.TakeProfit;
-            pos.TimeEnter = order.TimeEnter;
+            if (order.TimeEnter != default(DateTime))
+                pos.TimeEnter = order.TimeEnter;
             pos.Volume = order.Volume;
             pos.State = (int) order.State;
             pos.MasterOrder = order.MasterOrder;
             ctx.SaveChanges();
+            Logger.InfoFormat("Opened order {0} {1} {2} {3} was modified",
+                pos.ID, pos.Side > 0 ? "BUY" : "SELL", pos.Volume, pos.Symbol);
             return true;
         }
 
@@ -1059,6 +1084,9 @@ namespace TradeSharp.Server.Contract
                 };
                 ctx.POSITION_CLOSED.Remove(pos);
                 ctx.POSITION.Add(opened);
+                ctx.SaveChanges();
+                Logger.InfoFormat("Closed order {0} {1} {2} {3} was reopened",
+                    pos.ID, pos.Side > 0 ? "BUY" : "SELL", pos.Volume, pos.Symbol);
                 return true;
             }
             pos.Comment = order.Comment;
@@ -1072,7 +1100,8 @@ namespace TradeSharp.Server.Contract
             pos.Stoploss = (decimal?)order.StopLoss;
             pos.Symbol = order.Symbol;
             pos.Takeprofit = (decimal?)order.TakeProfit;
-            pos.TimeEnter = order.TimeEnter;
+            if (order.TimeEnter != default(DateTime))
+                pos.TimeEnter = order.TimeEnter;
             pos.Volume = order.Volume;
             pos.ExitReason = (int) order.ExitReason;
             pos.PriceExit = (decimal) (order.PriceExit ?? 0);
@@ -1082,6 +1111,8 @@ namespace TradeSharp.Server.Contract
             pos.ResultPoints = (decimal)order.ResultPoints;
             pos.TimeExit = order.TimeExit ?? default(DateTime);
             pos.Swap = (decimal) (order.Swap ?? 0);
+            Logger.InfoFormat("Closed order {0} {1} {2} {3} was modified",
+                    pos.ID, pos.Side > 0 ? "BUY" : "SELL", pos.Volume, pos.Symbol);
             ctx.SaveChanges();
             return true;
         }        

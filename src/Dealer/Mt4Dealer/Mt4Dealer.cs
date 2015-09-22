@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using BrokerService.Contract.Contract;
 using BrokerService.Contract.Entity;
 using Entity;
@@ -19,13 +20,11 @@ namespace Mt4Dealer
     {
         private readonly string configFileName;
 
+        private static int requestUniqueId;
+
         private static int RequestUniqueId
         {
-            get
-            {
-                var date = DateTime.Now;
-                return (int)(date.Millisecond + date.Second * 1000 + date.Minute * 60 * 35 + date.Hour * 60 * 60 * 24);
-            }
+            get { return Interlocked.Increment(ref requestUniqueId); }
         }
 
         private readonly ErrorStorage errorStorage;
@@ -47,6 +46,12 @@ namespace Mt4Dealer
                 {BrokerService.Contract.Entity.RequestStatus.Executed, RequestStatus.OK},
                 {BrokerService.Contract.Entity.RequestStatus.Rejected, RequestStatus.DealerError}
             };
+
+        static Mt4Dealer()
+        {
+            var date = DateTime.Now;
+            requestUniqueId = (date.Millisecond + date.Second * 1000 + date.Minute * 60 * 35 + date.Hour * 60 * 60 * 24);
+        }
 
         public Mt4Dealer(DealerDescription desc, List<string> groupCodes)
         {
@@ -142,6 +147,7 @@ namespace Mt4Dealer
         private RequestStatus MakeMarketRequest(TradeTransactionRequest request, MarketOrder order)
         {
             Logger.InfoFormat("Отправка запроса в MT4 ({0}): {1}", DealerCode, request);
+            if (IsOverflooded(request, order)) return RequestStatus.ServerError;
 
             try
             {
@@ -154,6 +160,35 @@ namespace Mt4Dealer
                 Logger.Error("Ошибка отправки запроса MT4", ex);
                 return responseNative[BrokerService.Contract.Entity.RequestStatus.ErrorOnExecute];
             }
+        }
+
+        private bool IsOverflooded(TradeTransactionRequest request, MarketOrder order)
+        {
+            try
+            {
+                var isFlooded = RequestStorage.Instance.CheckOverflood();
+                if (isFlooded)
+                {
+                    var errorResponse = new BrokerService.Contract.Entity.BrokerResponse
+                    {
+                        AccountId = request.Account,
+                        Mt4OrderId = request.ClosingPositionId ?? 0,
+                        RejectReason = OrderRejectReason.UnableMassCancel,
+                        Status = OrderStatus.Rejected,
+                        RejectReasonString = "overflood",
+                        RequestId = request.Id,
+                        ValueDate = DateTime.Now
+                    };
+                    ServerInterface.NotifyClientOnOrderRejected(order, errorResponse.RejectReasonString);
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Error in CheckOverflood()", ex);
+                return true;
+            }            
+            return false;
         }
 
         public void RequestProcessed(BrokerService.Contract.Entity.BrokerResponse response)
@@ -194,6 +229,27 @@ namespace Mt4Dealer
                 Logger.DebugFormat("{0}: order {1} is rejected for reason {2}",
                     DealerCode, request.requestedOrder.ToStringShort(), response.RejectReason);
                 return;
+            }
+
+            // сравнить запрошенную и итоговые цены
+            if (request.request.RequestedPrice > 0)
+            {
+                // ReSharper disable once PossibleInvalidOperationException
+                var delta = Math.Abs(response.Price.Value - request.request.RequestedPrice);
+                var deltaRel = delta * 100 / Math.Min(response.Price.Value, request.request.RequestedPrice);
+                if (deltaRel > 5)
+                {
+                    var errorStr = string.Format("{0}: order {1} is rejected: requested price ({2}) is far beyond the resulted price ({3})",
+                        DealerCode, request.requestedOrder.ToStringShort(),
+                        request.request.RequestedPrice.ToStringUniformPriceFormat(true),
+                        response.Price.Value.ToStringUniformPriceFormat(true));
+                    Logger.Error(errorStr);
+                    response.RejectReason = OrderRejectReason.UnknownOrder;
+                    response.RejectReasonString = errorStr;
+                    ServerInterface.NotifyClientOnOrderRejected(request.requestedOrder,
+                        response.RejectReasonString);
+                    return;
+                }
             }
 
             var order = request.requestedOrder;

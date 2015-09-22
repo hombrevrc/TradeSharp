@@ -203,8 +203,7 @@ namespace TradeSharp.Client.Forms
             var newQuotes = quotes;
             if (srcQuotes != null && srcQuotes.Count > 0)
             {
-                if (!CandleData.MergeCandles(ref srcQuotes, quotes, true)) 
-                    return; // обновление не требуется
+                CandleData.MergeCandlesFineGrained(ref srcQuotes, quotes);
                 newQuotes = srcQuotes;
             }
 
