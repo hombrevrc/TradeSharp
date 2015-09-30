@@ -11,11 +11,11 @@ namespace Candlechart.Indicator
 {
     public class CheckedListBoxSeriesUITypeEditor : UITypeEditor
     {
-        private IWindowsFormsEditorService es;
-        public CheckedListBox cbx = new CheckedListBox();
-        private IChartIndicator indi;
-        private object temp;
-        private int trackingItem;
+        protected IWindowsFormsEditorService es;
+
+        protected BaseChartIndicator indi;
+
+        public CheckedListBox cbx = new CheckedListBox();       
 
         public CheckedListBoxSeriesUITypeEditor()
         {
@@ -35,21 +35,26 @@ namespace Candlechart.Indicator
 
         public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
         {
-            es = (IWindowsFormsEditorService)provider.GetService(typeof(IWindowsFormsEditorService));
+            es = (IWindowsFormsEditorService) provider.GetService(typeof (IWindowsFormsEditorService));
             if (es == null) return null;
 
-            indi = (IChartIndicator)context.Instance;
+            indi = (BaseChartIndicator) context.Instance;
 
             LoadListBoxItems();
             es.DropDownControl(cbx);
             return value;
         }
 
-        private void LoadListBoxItems()
+        public string GetListBoxValue()
+        {
+            return string.Join(Separators.SourcesDelimiter[0], cbx.CheckedItems.Cast<string>().ToArray());
+        }
+
+        protected void LoadListBoxItems()
         {
             cbx.Items.Clear();
             cbx.Items.Add(Localizer.GetString("TitleCourse"));
-            var chart = ((BaseChartIndicator)indi).owner.Owner;
+            var chart = indi.owner.Owner;
             foreach (var i in chart.indicators)
             {
                 if (i == indi) continue;
@@ -58,7 +63,6 @@ namespace Candlechart.Indicator
                     cbx.Items.Add(i.UniqueName + Separators.IndiNameDelimiter[0] + ser.Name);
                 }
             }
-            //cbx.SelectedItem = indi.SeriesSourcesDisplay;
             if (string.IsNullOrEmpty(indi.SeriesSourcesDisplay)) return;
             
             var items = indi.SeriesSourcesDisplay.Split(Separators.SourcesDelimiter, StringSplitOptions.None);
@@ -81,9 +85,9 @@ namespace Candlechart.Indicator
                 indi.SeriesSourcesDisplay = string.Empty;
                 return;
             }
-            indi.SeriesSourcesDisplay = string.Join(Separators.SourcesDelimiter[0], cbx.CheckedItems.Cast<string>().ToArray());                            
+            indi.SeriesSourcesDisplay = GetListBoxValue();                            
         }
-
+        
         private void CbxKeyDown(Object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Up)

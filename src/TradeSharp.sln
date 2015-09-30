@@ -1,9 +1,52 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeSharp.Util", "TradeSharp.Util\TradeSharp.Util.csproj", "{4B406C3D-89C3-4C9F-A677-C3114D93B8F9}"
-EndProject
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{B0F364C6-DA51-445D-B71C-9F88C4D03ECE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SQL", "SQL", "{CD6495A4-735D-4D65-B49C-BD05DFBEFC8D}"
+	ProjectSection(SolutionItems) = preProject
+		SQL\create database.sql = SQL\create database.sql
+		SQL\news.sql = SQL\news.sql
+		SQL\StoredProcedures.sql = SQL\StoredProcedures.sql
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dealer", "Dealer", "{9D444F16-502D-4CB9-AF61-D212D388A178}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugin", "Plugin", "{9530DB8B-5E33-4CE2-93BC-C608311AAEE4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SiteBridge", "SiteBridge", "{95E7EEBD-DD1C-45FF-BB65-51B95243098E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Report", "Report", "{38A30C2F-9D9A-430F-A7C7-445E7E685436}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "News", "News", "{E2DB5526-A071-4477-92C9-8ABFB6FB8EB8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0F600415-87A0-4531-A1C0-A216649BC0EC}"
+	ProjectSection(SolutionItems) = preProject
+		Local.testsettings = Local.testsettings
+		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
+		TradeSharp.vsmdi = TradeSharp.vsmdi
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{8FCBC4BA-1760-4040-8DC8-BA669D0CC006}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TradeSharp.Chat", "TradeSharp.Chat", "{0E654CE6-D5F1-4802-A9FE-42EE9868E62A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{58456565-79E0-40C6-B0A1-37776D8CBAC0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Processing", "Processing", "{4C20BF7B-2893-49EF-AFEC-C2AE8FC9B2DD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Hub", "Hub", "{629DE021-084F-4C4C-AAD9-ABDF48F24BCF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ServerUnitManager", "ServerUnitManager", "{34DFEC4B-E100-4455-99C8-F5662236ED26}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeSharp.Util", "TradeSharp.Util\TradeSharp.Util.csproj", "{4B406C3D-89C3-4C9F-A677-C3114D93B8F9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Entity", "Common\Entity\Entity.csproj", "{33517AEB-576A-429E-B651-EA87B54242E7}"
 EndProject
@@ -19,13 +62,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeSharp.TradeLib", "Trad
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeSharp.Robot", "TradeSharp.Robot\TradeSharp.Robot.csproj", "{4A03E10A-86E8-4E73-8536-0969F30B803D}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SQL", "SQL", "{CD6495A4-735D-4D65-B49C-BD05DFBEFC8D}"
-	ProjectSection(SolutionItems) = preProject
-		SQL\create database.sql = SQL\create database.sql
-		SQL\news.sql = SQL\news.sql
-		SQL\StoredProcedures.sql = SQL\StoredProcedures.sql
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeSharp.Linq", "TradeSharp.Linq\TradeSharp.Linq.csproj", "{30751404-73AF-4BCA-93E5-6D8B42547C9F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeSharp.DealerInterface", "TradeSharp.DealerInterface\TradeSharp.DealerInterface.csproj", "{5ED87716-991A-4283-80C2-DC2318512B17}"
@@ -38,25 +74,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeSharp.Server", "TradeS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeSharp.UpdateManager", "TradeSharp.UpdateManager\TradeSharp.UpdateManager.csproj", "{00E07933-B0E9-4893-8C61-C0CFF888F85D}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dealer", "Dealer", "{9D444F16-502D-4CB9-AF61-D212D388A178}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoDealer", "Dealer\DemoDealer\DemoDealer.csproj", "{7B606F9E-2F25-4845-A00C-7EA122E49BA4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FixDealer", "Dealer\FixDealer\FixDealer.csproj", "{20CC4494-EC2E-4C86-BE16-90AFA2372459}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SignalDealer", "Dealer\SignalDealer\SignalDealer.csproj", "{AB9A2E23-3F36-419B-8C84-3DFFA60FAD08}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugin", "Plugin", "{9530DB8B-5E33-4CE2-93BC-C608311AAEE4}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoPlugin", "Plugin\DemoPlugin\DemoPlugin.csproj", "{33E8A505-A50F-40E5-89A6-15E48FE416AD}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SiteBridge", "SiteBridge", "{95E7EEBD-DD1C-45FF-BB65-51B95243098E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeSharp.SiteBridge.Lib", "SiteBridge\TradeSharp.SiteBridge.Lib\TradeSharp.SiteBridge.Lib.csproj", "{98E58858-6473-49A2-BCFB-902221DE66C8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeSharp.SiteBridge.Service", "SiteBridge\TradeSharp.SiteBridge.Service\TradeSharp.SiteBridge.Service.csproj", "{4296D3D5-B53A-48B4-9FD2-73DF47059E3B}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Report", "Report", "{38A30C2F-9D9A-430F-A7C7-445E7E685436}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeSharp.Reports.Lib", "Report\TradeSharp.Reports.Lib\TradeSharp.Reports.Lib.csproj", "{6E6E0098-7F65-4F74-8E0E-3865449E4E7F}"
 EndProject
@@ -67,8 +95,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeSharp.QuoteService", "TradeSharp.QuoteService\TradeSharp.QuoteService.csproj", "{5E14D43F-6E27-48A6-9DAF-D84E833E216F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeSharp.WatchService", "TradeSharp.WatchService\TradeSharp.WatchService.csproj", "{85CEE6C0-527D-4242-9AF0-C3A869BA1209}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "News", "News", "{E2DB5526-A071-4477-92C9-8ABFB6FB8EB8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeSharp.News.NewsReceiverLib", "News\TradeSharp.News.NewsReceiverLib\TradeSharp.News.NewsReceiverLib.csproj", "{4F28491F-D554-44F0-98ED-2D7AE7E1644D}"
 EndProject
@@ -93,27 +119,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeSharp.UpdateContract",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewsRobot", "Plugin\RobotPackage\NewsRobot\NewsRobot.csproj", "{A64DD735-67AB-4EB7-8200-39A6FEEA13B1}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0F600415-87A0-4531-A1C0-A216649BC0EC}"
-	ProjectSection(SolutionItems) = preProject
-		Local.testsettings = Local.testsettings
-		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
-		TradeSharp.vsmdi = TradeSharp.vsmdi
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewsAnalysisScript", "Plugin\NewsAnalysisScript\NewsAnalysisScript.csproj", "{81FFD5F4-69B4-4F03-B697-216DAA91AE71}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeSharp.Admin.Util", "TradeSharp.Admin.Util\TradeSharp.Admin.Util.csproj", "{9F863711-BEBA-4D1E-8AF3-D0331B15086B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeSharp.QuoteHistory", "TradeSharp.QuoteHistory\TradeSharp.QuoteHistory.csproj", "{52570351-41D0-48DB-B3CD-6C7FBDBEACF9}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{8FCBC4BA-1760-4040-8DC8-BA669D0CC006}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\NuGet.Config = .nuget\NuGet.Config
-		.nuget\NuGet.exe = .nuget\NuGet.exe
-		.nuget\NuGet.targets = .nuget\NuGet.targets
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TradeSharp.Chat", "TradeSharp.Chat", "{0E654CE6-D5F1-4802-A9FE-42EE9868E62A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeSharp.Chat.Contract", "TradeSharp.Chat\Contract\TradeSharp.Chat.Contract.csproj", "{30B57708-1A64-412F-AA25-7D54D0195F6C}"
 EndProject
@@ -143,15 +153,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeSharp.Client.Tooltip",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiteSignalDealer", "Dealer\SiteSignalDealer\SiteSignalDealer.csproj", "{AD93FFD6-FC76-4E9A-BAA9-2A12D04130F1}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{58456565-79E0-40C6-B0A1-37776D8CBAC0}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeSharp.Test", "Test\TradeSharp.Test\TradeSharp.Test.csproj", "{D38F67F2-0D82-4D7D-87CB-52FA5BEDC304}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeSharp.Test.WinFormContainer", "Test\TradeSharp.Test.WinFormContainer\TradeSharp.Test.WinFormContainer.csproj", "{01B934DC-05A0-4C87-A0A6-789E03CA0A67}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeSharp.Processing.Lib", "Processing\TradeSharp.Processing.Lib\TradeSharp.Processing.Lib.csproj", "{5A93ECB0-7E97-4DE2-9931-DBE9530B9D7D}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Processing", "Processing", "{4C20BF7B-2893-49EF-AFEC-C2AE8FC9B2DD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeSharp.Processing.WebMoney", "Processing\TradeSharp.Processing.WebMoney\TradeSharp.Processing.WebMoney.csproj", "{F1B1F557-BBBF-4DE3-AABA-0589B0A195B4}"
 EndProject
@@ -161,15 +167,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeSharp.TradeSignalExecu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeSharp.Localisation", "TradeSharp.Localisation\TradeSharp.Localisation.csproj", "{E0348C81-A1C5-47FA-8D2D-DD0C7BE201A4}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Hub", "Hub", "{629DE021-084F-4C4C-AAD9-ABDF48F24BCF}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeSharp.Hub.Server", "Hub\TradeSharp.Hub.Server\TradeSharp.Hub.Server.csproj", "{96C7C9BF-0859-4AAF-B55B-3E67FBD943D5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeSharp.Hub.BL", "Hub\TradeSharp.Hub.BL\TradeSharp.Hub.BL.csproj", "{3EF24C12-E57E-42C9-9DCF-66394AC724CA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeSharp.Hub.WebSite", "Hub\TradeSharp.Hub.WebSite\TradeSharp.Hub.WebSite.csproj", "{10899E7D-E4B5-46B7-BD53-E0811C9876AA}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ServerUnitManager", "ServerUnitManager", "{34DFEC4B-E100-4455-99C8-F5662236ED26}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerUnitManager.Contract", "ServerUnitManager\ServerUnitManager.Contract\ServerUnitManager.Contract.csproj", "{C7AAFADB-6A9B-4E42-A901-FDBEA5BCEDC6}"
 EndProject
@@ -180,9 +182,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeSharp.RobotFarm.Request", "TradeSharp.RobotFarm.Request\TradeSharp.RobotFarm.Request.csproj", "{6161315E-8941-4761-852A-281F2BB1F313}"
 EndProject
 Global
-	GlobalSection(TestCaseManagementSettings) = postSolution
-		CategoryFile = TradeSharp.vsmdi
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -832,26 +831,25 @@ Global
 		{7B606F9E-2F25-4845-A00C-7EA122E49BA4} = {9D444F16-502D-4CB9-AF61-D212D388A178}
 		{20CC4494-EC2E-4C86-BE16-90AFA2372459} = {9D444F16-502D-4CB9-AF61-D212D388A178}
 		{AB9A2E23-3F36-419B-8C84-3DFFA60FAD08} = {9D444F16-502D-4CB9-AF61-D212D388A178}
-		{AD93FFD6-FC76-4E9A-BAA9-2A12D04130F1} = {9D444F16-502D-4CB9-AF61-D212D388A178}
-		{C6FF5EB9-6046-4223-9256-F7AF76FFBF5C} = {9D444F16-502D-4CB9-AF61-D212D388A178}
 		{33E8A505-A50F-40E5-89A6-15E48FE416AD} = {9530DB8B-5E33-4CE2-93BC-C608311AAEE4}
-		{A64DD735-67AB-4EB7-8200-39A6FEEA13B1} = {9530DB8B-5E33-4CE2-93BC-C608311AAEE4}
-		{81FFD5F4-69B4-4F03-B697-216DAA91AE71} = {9530DB8B-5E33-4CE2-93BC-C608311AAEE4}
 		{98E58858-6473-49A2-BCFB-902221DE66C8} = {95E7EEBD-DD1C-45FF-BB65-51B95243098E}
 		{4296D3D5-B53A-48B4-9FD2-73DF47059E3B} = {95E7EEBD-DD1C-45FF-BB65-51B95243098E}
-		{A420E4C0-14EB-4958-B09D-A9D52BAD728B} = {95E7EEBD-DD1C-45FF-BB65-51B95243098E}
 		{6E6E0098-7F65-4F74-8E0E-3865449E4E7F} = {38A30C2F-9D9A-430F-A7C7-445E7E685436}
 		{D939DEEF-7403-4B6D-89F6-E87361AA7B7D} = {38A30C2F-9D9A-430F-A7C7-445E7E685436}
 		{13274F78-25A4-479E-BE41-664E8110F564} = {38A30C2F-9D9A-430F-A7C7-445E7E685436}
 		{4F28491F-D554-44F0-98ED-2D7AE7E1644D} = {E2DB5526-A071-4477-92C9-8ABFB6FB8EB8}
 		{240BCD43-F9AF-4795-8751-A0617E306EC2} = {E2DB5526-A071-4477-92C9-8ABFB6FB8EB8}
 		{93F89E48-68EE-4945-8391-1E4979ADA113} = {E2DB5526-A071-4477-92C9-8ABFB6FB8EB8}
+		{A64DD735-67AB-4EB7-8200-39A6FEEA13B1} = {9530DB8B-5E33-4CE2-93BC-C608311AAEE4}
+		{81FFD5F4-69B4-4F03-B697-216DAA91AE71} = {9530DB8B-5E33-4CE2-93BC-C608311AAEE4}
 		{30B57708-1A64-412F-AA25-7D54D0195F6C} = {0E654CE6-D5F1-4802-A9FE-42EE9868E62A}
 		{77C611C5-39F4-4FFC-BD9A-32D70409E0BF} = {0E654CE6-D5F1-4802-A9FE-42EE9868E62A}
 		{1BBFDB47-0D61-455E-A973-EC33F241BC86} = {0E654CE6-D5F1-4802-A9FE-42EE9868E62A}
 		{05F245FC-CEDC-4288-9C13-FB7F18D9BA13} = {0E654CE6-D5F1-4802-A9FE-42EE9868E62A}
 		{DCA347E9-B6A0-4E0C-A237-51C7E034D5A7} = {0E654CE6-D5F1-4802-A9FE-42EE9868E62A}
 		{DC86DD5A-B9F2-48F7-9ECB-79B2C03D47A7} = {0E654CE6-D5F1-4802-A9FE-42EE9868E62A}
+		{A420E4C0-14EB-4958-B09D-A9D52BAD728B} = {95E7EEBD-DD1C-45FF-BB65-51B95243098E}
+		{AD93FFD6-FC76-4E9A-BAA9-2A12D04130F1} = {9D444F16-502D-4CB9-AF61-D212D388A178}
 		{D38F67F2-0D82-4D7D-87CB-52FA5BEDC304} = {58456565-79E0-40C6-B0A1-37776D8CBAC0}
 		{01B934DC-05A0-4C87-A0A6-789E03CA0A67} = {58456565-79E0-40C6-B0A1-37776D8CBAC0}
 		{5A93ECB0-7E97-4DE2-9931-DBE9530B9D7D} = {4C20BF7B-2893-49EF-AFEC-C2AE8FC9B2DD}
@@ -861,5 +859,9 @@ Global
 		{10899E7D-E4B5-46B7-BD53-E0811C9876AA} = {629DE021-084F-4C4C-AAD9-ABDF48F24BCF}
 		{C7AAFADB-6A9B-4E42-A901-FDBEA5BCEDC6} = {34DFEC4B-E100-4455-99C8-F5662236ED26}
 		{84ED2149-AEE2-4B34-82B7-0A36365B3BA5} = {34DFEC4B-E100-4455-99C8-F5662236ED26}
+		{C6FF5EB9-6046-4223-9256-F7AF76FFBF5C} = {9D444F16-502D-4CB9-AF61-D212D388A178}
+	EndGlobalSection
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = TradeSharp.vsmdi
 	EndGlobalSection
 EndGlobal

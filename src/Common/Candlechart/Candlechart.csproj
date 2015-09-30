@@ -184,6 +184,7 @@
     <Compile Include="Controls\FastPropertyGrid.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Controls\FastPropertyGridRow.cs" />
     <Compile Include="Controls\GoToForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -219,6 +220,9 @@
     </Compile>
     <Compile Include="Controls\ObjectPropertyWindow.Designer.cs">
       <DependentUpon>ObjectPropertyWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\PopupEditorHost.cs">
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Controls\PopupListBox.cs" />
     <Compile Include="Controls\PublishForecastWindow.cs">
@@ -319,6 +323,7 @@
     <Compile Include="Indicator\IndicatorZigZag.cs" />
     <Compile Include="Indicator\OptionLevelIndicator.cs" />
     <Compile Include="Indicator\IndicatorEllipse.cs" />
+    <Compile Include="Indicator\PopupCheckedListBoxSeriesUITypeEditor.cs" />
     <Compile Include="ProbabilityCore.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

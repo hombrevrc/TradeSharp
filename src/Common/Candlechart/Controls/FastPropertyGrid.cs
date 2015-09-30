@@ -9,17 +9,19 @@ using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 using Candlechart.Core;
+using Candlechart.Indicator;
 using FastGrid;
 using TradeSharp.Util;
 
 namespace Candlechart.Controls
 {
-    // TODO: make it editable in designer
     public class FastPropertyGrid : SplitContainer
     {
         public delegate void OpenPropertyEditorDel(int rowIndex, FastColumn col);
 
         private readonly TabControl tabControl = new TabControl {Dock = DockStyle.Fill};
+
+        public FastGrid.FastGrid Grid { get; set; }
 
         private readonly SplitContainer detailPanel = new SplitContainer
             {
@@ -63,7 +65,7 @@ namespace Candlechart.Controls
             }
         }
 
-        public OpenPropertyEditorDel OpenPropertyEditor;
+        public OpenPropertyEditorDel openPropertyEditor;
 
         private int editingRowIndex;
 
@@ -107,11 +109,10 @@ namespace Candlechart.Controls
                     {
                         // одинаковые по сути свойства представлены разными объектами PropertyInfo,
                         // а IEquatable.Equals сравнивает ссылки, поэтому проверку на равенство выполняем самостоятельно
-                        if (!chartObjectPropertiesDict[chartObject].Any(p => p.Name == property.Name && p.PropertyType == property.PropertyType))
-                        {
-                            add = false;
-                            break;
-                        }
+                        if (chartObjectPropertiesDict[chartObject].Any(
+                                p => p.Name == property.Name && p.PropertyType == property.PropertyType)) continue;
+                        add = false;
+                        break;
                     }
                     if (add && !selectedProperties.Any(p => p.Name == property.Name && p.PropertyType == property.PropertyType))
                         selectedProperties.Add(property);
@@ -139,6 +140,7 @@ namespace Candlechart.Controls
             {
                 tabControl.TabPages.Add(category.a, category.a);
                 var fastGrid = new FastGrid.FastGrid {Dock = DockStyle.Fill, FitWidth = true, CaptionHeight = 0};
+                Grid = fastGrid;
                 fastGrid.Columns.Add(new FastColumn(blankRow.Property(p => p.Title)));
                 fastGrid.Columns.Add(new FastColumn(blankRow.Property(p => p.StringValue)) {ColumnFont = new Font(Font, FontStyle.Bold)});
                 fastGrid.Columns.Add(new FastColumn(blankRow.Property(p => p.Property)) {Visible = false});
@@ -184,6 +186,7 @@ namespace Candlechart.Controls
 
                 // фиксируем ширину колонки с наименованием
                 fastGrid.CheckSize(true);
+                fastGrid.Visible = true;
             }
             RebuildSample();
         }
@@ -259,11 +262,9 @@ namespace Candlechart.Controls
         {
             var attribute =
                 property.GetCustomAttributes(true).FirstOrDefault(a => a is LocalizedDisplayNameAttribute) as
-                DisplayNameAttribute;
-            if (attribute == null)
-                attribute =
-                    property.GetCustomAttributes(true).FirstOrDefault(a => a is DisplayNameAttribute) as
-                    DisplayNameAttribute;
+                    DisplayNameAttribute ??
+                property.GetCustomAttributes(true).FirstOrDefault(a => a is DisplayNameAttribute) as
+                        DisplayNameAttribute;
             return attribute == null ? property.Name : attribute.DisplayName;
         }
 
@@ -314,7 +315,9 @@ namespace Candlechart.Controls
             OpenSpecialEditor(editorType);
         }
 
-        // открытие стандартного редактора в зависимости от типа свойства
+        /// <summary>
+        /// открытие стандартного редактора в зависимости от типа свойства
+        /// </summary>
         private void OpenBaseEditor(PropertyInfo property, FastGrid.FastGrid fastGrid, int rowIndex, FastColumn col)
         {
             var coords = fastGrid.GetCellCoords(col, rowIndex);
@@ -345,12 +348,14 @@ namespace Candlechart.Controls
             }
         }
 
-        // открытие специального редактора, указанного для свойства
+        /// <summary>
+        /// открытие специального редактора, указанного для свойства
+        /// </summary>
         private void OpenSpecialEditor(Type editorType)
         {
-            if (OpenPropertyEditor != null)
+            if (openPropertyEditor != null)
             {
-                OpenPropertyEditor(editingRowIndex, editingColumn);
+                openPropertyEditor(editingRowIndex, editingColumn);
                 return;
             }
             var fastGrid = tabControl.SelectedTab.Controls[0] as FastGrid.FastGrid;
@@ -365,7 +370,19 @@ namespace Candlechart.Controls
             if (constructor == null)
                 return;
             var editor = (UITypeEditor) constructor.Invoke(new object[0]);
-            // пока нет возможности вызsвfnm popup-редакторs
+
+            if (editor is CheckedListBoxSeriesUITypeEditor)
+            {
+                var popEditor = new PopupCheckedListBoxSeriesUITypeEditor();
+                var position = fastGrid.GetCellCoords(editingColumn, editingRowIndex);
+                popEditor.ShowDialogAsynch(SelectedObject, o =>
+                {
+                    UpdateObject(editingColumn, editingRowIndex, o);
+                }, new Rectangle(position.X, position.Y, editingColumn.ResultedWidth, 280), fastGrid);
+                return;
+            }
+
+            // пока нет возможности вызова popup-редакторs
             if (editor.GetEditStyle() != UITypeEditorEditStyle.Modal)
             {
                 // попробуем показать хотя бы базовый
@@ -374,7 +391,8 @@ namespace Candlechart.Controls
             }
             try
             {
-                var newValue = editor.EditValue(null, null, rowObject.Value);
+                var context = new DescriptorContext(SelectedObject ?? SelectedObjects);
+                var newValue = editor.EditValue(context, null, rowObject.Value);
                 // если старое значение равно новому, то, возможно, от редактирования отказались
                 if (newValue != rowObject.Value)
                     UpdateObject(editingColumn, editingRowIndex, newValue);
@@ -407,9 +425,7 @@ namespace Candlechart.Controls
 
         private void UpdateObject(FastColumn col, int rowIndex, object newValue)
         {
-            if (tabControl.SelectedTab == null)
-                return;
-            var fastGrid = tabControl.SelectedTab.Controls[0] as FastGrid.FastGrid;
+            var fastGrid = tabControl.SelectedTab?.Controls[0] as FastGrid.FastGrid;
             if (fastGrid == null)
                 return;
 
@@ -428,6 +444,8 @@ namespace Candlechart.Controls
             }
             catch
             {
+                Logger.ErrorFormat("Невозможно установить свойство \"{0}\"",
+                    rowObject.Property.Name);
             }
 
             // updating grid object
@@ -453,16 +471,43 @@ namespace Candlechart.Controls
             }
             return null;
         }
-    }
 
-    class FastPropertyGridRow
+        public bool OnComponentChanging()
+        {
+            return true;
+        }
+
+        public void OnComponentChanged()
+        {
+        }
+    }    
+
+    public class DescriptorContext : ITypeDescriptorContext
     {
-        public string Title { get; set; }
+        public DescriptorContext(object instance)
+        {
+            Instance = instance;
+        }
 
-        public object Value { get; set; }
+        public object GetService(Type serviceType)
+        {
+            throw new NotImplementedException();
+        }
 
-        public PropertyInfo Property { get; set; }
+        public bool OnComponentChanging()
+        {
+            throw new NotImplementedException();
+        }
 
-        public object StringValue { get; set; }
+        public void OnComponentChanged()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IContainer Container { get; }
+
+        public object Instance { get; }
+
+        public PropertyDescriptor PropertyDescriptor { get; }
     }
 }
