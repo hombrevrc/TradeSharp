@@ -253,6 +253,37 @@ namespace Entity
             return candles;
         }
 
+        public static List<CandleData> LoadFromCsvFile(string filePath)
+        {
+            var candles = new List<CandleData>();
+            if (!File.Exists(filePath)) return candles;
+            
+            // 2011.01.18 00:00,1.32790,1.32830,1.32790,1.32827,74
+            using (var sr = new StreamReader(filePath, Encoding.ASCII))
+            {
+                while (!sr.EndOfStream)
+                {
+                    var line = sr.ReadLine();
+                    if (string.IsNullOrEmpty(line)) continue;
+
+                    var parts = line.Split(new [] {','}, StringSplitOptions.RemoveEmptyEntries);
+                    if (parts.Length < 5) continue;
+                    DateTime time;
+                    if (!DateTime.TryParseExact(parts[0], "yyyy.MM.dd HH:mm", CultureInfo.InvariantCulture,
+                            DateTimeStyles.None, out time))
+                        continue;
+                    var o = parts[1].ToFloatUniformSafe();
+                    var h = parts[2].ToFloatUniformSafe();
+                    var l = parts[3].ToFloatUniformSafe();
+                    var c = parts[4].ToFloatUniformSafe();
+                    if (o == null || h == null || l == null || c == null) continue;
+                    candles.Add(new CandleData(o.Value, h.Value, l.Value, c.Value, time, time.AddMinutes(1)));
+                }
+            }
+
+            return candles;
+        }
+
         private static CandleFileFormat GetCandleFileFormat(StreamReader sr)
         {
             bool? isHexFormat = null;

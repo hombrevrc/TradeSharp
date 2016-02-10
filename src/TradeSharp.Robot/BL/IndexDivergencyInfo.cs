@@ -154,7 +154,8 @@ namespace TradeSharp.Robot.BL
                                                    maxPastExtremum,
                                                    i => (double) candles[i].close,
                                                    i => lastIndicies[i],
-                                                   WaitOneBar);
+                                                   WaitOneBar,
+                                                   Divergency.DivergenceSign.Divergence);
 
             return spans.Sum(s => s.end == candles.Count - (WaitOneBar ? 2 : 1) ? s.sign : 0);
         }
@@ -166,7 +167,8 @@ namespace TradeSharp.Robot.BL
                 (double)IndexMarginUp, 
                 (double)IndexMarginDn,
                 i => (double)candles[i].close,
-                i => lastIndicies[i]);
+                i => lastIndicies[i],
+                Divergency.DivergenceSign.Divergence);
 
             return spans.Sum(s => s.end == candles.Count - (WaitOneBar ? 2 : 1) ? s.sign : 0);
         }

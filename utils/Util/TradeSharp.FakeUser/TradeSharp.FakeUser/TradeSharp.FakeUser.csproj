@@ -97,10 +97,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BL\AccountCleaner.cs" />
     <Compile Include="BL\BalanceCorrector.cs" />
     <Compile Include="BL\ITradeSerializer.cs" />
     <Compile Include="BL\JsonTrackMaker.cs" />
     <Compile Include="BL\LimitedLogger.cs" />
+    <Compile Include="BL\LiveQuotes.cs" />
     <Compile Include="BL\QuoteDownloader.cs" />
     <Compile Include="BL\SqlTradeSerializer.cs" />
     <Compile Include="BL\StrategyTrack.cs" />
@@ -109,6 +111,12 @@
     <Compile Include="BL\TradeHistoryCleaner.cs" />
     <Compile Include="BL\TradeHistoryMaker.cs" />
     <Compile Include="BL\Transliteration.cs" />
+    <Compile Include="CloseAccountsDlg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CloseAccountsDlg.Designer.cs">
+      <DependentUpon>CloseAccountsDlg.cs</DependentUpon>
+    </Compile>
     <Compile Include="GetAccountIdsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -129,6 +137,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="CloseAccountsDlg.resx">
+      <DependentUpon>CloseAccountsDlg.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GetAccountIdsForm.resx">
       <DependentUpon>GetAccountIdsForm.cs</DependentUpon>
     </EmbeddedResource>

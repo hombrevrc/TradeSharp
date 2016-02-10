@@ -159,7 +159,7 @@ namespace TradeSharp.Client.BL.Script
                 }
                 foreach (var t in types)
                 {
-                    if (t.BaseType != typeof(TerminalScript)) continue;
+                    if (t.IsAssignableFrom(typeof(TerminalScript))) continue;
                     foreach (var atr in t.GetCustomAttributes(typeof(DisplayNameAttribute), false))
                     {
                         var dispName = ((DisplayNameAttribute)atr).DisplayName;

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Entity;
-using MTS.Live.Contract.Entity;
-using MTS.Live.Util;
+using TradeSharp.Contract.Entity;
+using TradeSharp.Util;
 
 namespace QuoteManager.Index
 {

@@ -47,12 +47,12 @@
 <table border="0" width="100%" cellpadding="0" cellspacing="0" id="content_table">
     <tr>
         <th rowspan="3" class="sized">
-            <img src="/images/shared/side_shadowleft.jpg" width="20" class="shadow" alt="" /></th>
+            <img src="~/images/shared/side_shadowleft.jpg" width="20" class="shadow" alt="" /></th>
         <th class="topleft"></th>
         <td id="tbl-border-top">&nbsp;</td>
         <th class="topright"></th>
         <th rowspan="3" class="sized">
-            <img src="/images/shared/side_shadowright.jpg" width="20" class="shadow" alt="" /></th>
+            <img src="~/images/shared/side_shadowright.jpg" width="20" class="shadow" alt="" /></th>
     </tr>
     <tr>
         <td id="tbl-border-left"></td>
@@ -117,7 +117,7 @@
                         @foreach (var item in Model)
                         {
                             <tr>
-                                <td><a href="/Management/EditAccountGroupsDetails?code=@item.Code" class="table-item" id="@item.Code">@item.Code</a></td>
+                                <td><a href="~/Management/EditAccountGroupsDetails?code=@item.Code" class="table-item" id="@item.Code">@item.Code</a></td>
                                 <td>@item.Name</td>
                                 <td>
                                     @if (item.IsReal)
@@ -135,7 +135,7 @@
                                    
                                     @Html.DropDownList("ddl-" + item.Code, item.Dealers, new { @class = "chzn-select", @style = "width:150px;" })
                                         
-                                    <a style="margin-left: 10px" href="/Management/EditDealerAccountGroups?Code=@(item.Code)">
+                                    <a style="margin-left: 10px" href="~/Management/EditDealerAccountGroups?Code=@(item.Code)">
                                         <img src="~/images/table/options.png" style="width: 15px; height: 15px" alt=""/>
                                     </a>
                                         
@@ -175,7 +175,7 @@
                                     }
                                     else
                                     {
-                                        <a href="/Management/DeleteVoidAccountGroup?accountGroupCode=@item.Code" 
+                                        <a href="~/Management/DeleteVoidAccountGroup?accountGroupCode=@item.Code" 
                                             onclick="if (!confirm('@Resource.ConfirmDellAccountGroup')) return false;">
                                             
                                             <img alt="@Resource.TitleDelete" title="@Resource.TitleDelete" src="~/images/shared/DeleteRed.png" /></a>

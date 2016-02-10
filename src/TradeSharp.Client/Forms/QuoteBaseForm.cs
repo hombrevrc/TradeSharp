@@ -240,9 +240,11 @@ namespace TradeSharp.Client.Forms
 
             if (dlg.ShowDialog() != DialogResult.OK) return;
             List<CandleData> quotes;
+            var ext = Path.GetExtension(dlg.FileName).ToLower();
             try
             {
-                quotes = CandleData.LoadFromFile(dlg.FileName, smbInf.Symbol);
+                quotes = ext == ".csv" ? CandleData.LoadFromCsvFile(dlg.FileName) 
+                    : CandleData.LoadFromFile(dlg.FileName, smbInf.Symbol);
             }
             catch (Exception ex)
             {

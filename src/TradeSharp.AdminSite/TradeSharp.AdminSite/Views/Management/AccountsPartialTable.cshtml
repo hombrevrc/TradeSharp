@@ -19,12 +19,12 @@
     <table id="content_table">
         <tr>
             <th rowspan="3" class="sized">
-                <img src="/images/shared/side_shadowleft.jpg" width="20" class="shadow" alt="" /></th>
+                <img src="~/images/shared/side_shadowleft.jpg" width="20" class="shadow" alt="" /></th>
             <th class="topleft"></th>
             <td id="tbl-border-top">&nbsp;</td>
             <th class="topright"></th>
             <th rowspan="3" class="sized">
-                <img src="/images/shared/side_shadowright.jpg" width="20" class="shadow" alt="" /></th>
+                <img src="~/images/shared/side_shadowright.jpg" width="20" class="shadow" alt="" /></th>
         </tr>
         <tr>
             <td id="tbl-border-left"></td>
@@ -160,10 +160,10 @@
                             &nbsp;
                             @if (Model.CurrentPageItems.HasPreviousPage)
                             {
-                                <a id="PagingFirst" data-item="0" href="/Management/Accounts">
+                                <a id="PagingFirst" data-item="0" href="~/Management/Accounts">
                                     <img src="~/images/table/firstPage.png" alt=""/></a>
                                 @Html.Raw("&nbsp;")
-                                <a id="PagingPrev" data-item="@(Model.CurrentPageItems.PageIndex - 1)" href="/Management/Accounts">
+                                <a id="PagingPrev" data-item="@(Model.CurrentPageItems.PageIndex - 1)" href="~/Management/Accounts">
                                     <img src="~/images/table/previousPage.png" alt=""/></a> 
                             }
                             else
@@ -177,10 +177,10 @@
                             &nbsp;
                             @if (Model.CurrentPageItems.HasNextPage)
                             { 
-                                <a id="PagingNext" data-item="@(Model.CurrentPageItems.PageIndex + 1)" href="/Management/Accounts">
+                                <a id="PagingNext" data-item="@(Model.CurrentPageItems.PageIndex + 1)" href="~/Management/Accounts">
                                     <img src="~/images/table/nextPage.png" alt=""/></a>
                                 @Html.Raw("&nbsp;")
-                                <a id="PagingLast" data-item="@(Model.CurrentPageItems.PageCount - 1)" href="/Management/Accounts">
+                                <a id="PagingLast" data-item="@(Model.CurrentPageItems.PageCount - 1)" href="~/Management/Accounts">
                                     <img src="~/images/table/lastPage.png" alt=""/></a>
                             }
                             else

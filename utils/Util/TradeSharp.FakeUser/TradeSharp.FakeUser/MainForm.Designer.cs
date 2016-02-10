@@ -44,6 +44,7 @@
             this.panelCheckLogin = new System.Windows.Forms.Panel();
             this.btnCheckLogins = new System.Windows.Forms.Button();
             this.panelUser = new System.Windows.Forms.Panel();
+            this.btnCloseAccounts = new System.Windows.Forms.Button();
             this.btnCreateAccount = new System.Windows.Forms.Button();
             this.tbNewAccountOpenTime = new System.Windows.Forms.TextBox();
             this.label15 = new System.Windows.Forms.Label();
@@ -166,7 +167,7 @@
             this.panelBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panelBottom.Location = new System.Drawing.Point(0, 375);
             this.panelBottom.Name = "panelBottom";
-            this.panelBottom.Size = new System.Drawing.Size(602, 36);
+            this.panelBottom.Size = new System.Drawing.Size(633, 36);
             this.panelBottom.TabIndex = 0;
             // 
             // lblWorkerProgress
@@ -188,7 +189,7 @@
             this.tabControl.Location = new System.Drawing.Point(0, 0);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(602, 375);
+            this.tabControl.Size = new System.Drawing.Size(633, 375);
             this.tabControl.TabIndex = 3;
             // 
             // tabPage1
@@ -198,7 +199,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(594, 349);
+            this.tabPage1.Size = new System.Drawing.Size(625, 349);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Пользователи";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -206,7 +207,7 @@
             // splitContainerUsers
             // 
             this.splitContainerUsers.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainerUsers.Location = new System.Drawing.Point(236, 3);
+            this.splitContainerUsers.Location = new System.Drawing.Point(314, 3);
             this.splitContainerUsers.Name = "splitContainerUsers";
             this.splitContainerUsers.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -218,7 +219,7 @@
             // 
             this.splitContainerUsers.Panel2.Controls.Add(this.rtbLogins);
             this.splitContainerUsers.Panel2.Controls.Add(this.panelCheckLogin);
-            this.splitContainerUsers.Size = new System.Drawing.Size(355, 343);
+            this.splitContainerUsers.Size = new System.Drawing.Size(308, 343);
             this.splitContainerUsers.SplitterDistance = 145;
             this.splitContainerUsers.TabIndex = 1;
             // 
@@ -227,7 +228,7 @@
             this.tbUserNames.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tbUserNames.Location = new System.Drawing.Point(0, 0);
             this.tbUserNames.Name = "tbUserNames";
-            this.tbUserNames.Size = new System.Drawing.Size(355, 145);
+            this.tbUserNames.Size = new System.Drawing.Size(308, 145);
             this.tbUserNames.TabIndex = 2;
             this.tbUserNames.Text = resources.GetString("tbUserNames.Text");
             // 
@@ -236,7 +237,7 @@
             this.rtbLogins.Dock = System.Windows.Forms.DockStyle.Fill;
             this.rtbLogins.Location = new System.Drawing.Point(0, 31);
             this.rtbLogins.Name = "rtbLogins";
-            this.rtbLogins.Size = new System.Drawing.Size(355, 163);
+            this.rtbLogins.Size = new System.Drawing.Size(308, 163);
             this.rtbLogins.TabIndex = 3;
             this.rtbLogins.Text = "RockNRolla\nWilliamsFractal";
             // 
@@ -246,7 +247,7 @@
             this.panelCheckLogin.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelCheckLogin.Location = new System.Drawing.Point(0, 0);
             this.panelCheckLogin.Name = "panelCheckLogin";
-            this.panelCheckLogin.Size = new System.Drawing.Size(355, 31);
+            this.panelCheckLogin.Size = new System.Drawing.Size(308, 31);
             this.panelCheckLogin.TabIndex = 0;
             // 
             // btnCheckLogins
@@ -261,6 +262,7 @@
             // 
             // panelUser
             // 
+            this.panelUser.Controls.Add(this.btnCloseAccounts);
             this.panelUser.Controls.Add(this.btnCreateAccount);
             this.panelUser.Controls.Add(this.tbNewAccountOpenTime);
             this.panelUser.Controls.Add(this.label15);
@@ -280,8 +282,19 @@
             this.panelUser.Dock = System.Windows.Forms.DockStyle.Left;
             this.panelUser.Location = new System.Drawing.Point(3, 3);
             this.panelUser.Name = "panelUser";
-            this.panelUser.Size = new System.Drawing.Size(233, 343);
+            this.panelUser.Size = new System.Drawing.Size(311, 343);
             this.panelUser.TabIndex = 0;
+            // 
+            // btnCloseAccounts
+            // 
+            this.btnCloseAccounts.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.btnCloseAccounts.Location = new System.Drawing.Point(158, 238);
+            this.btnCloseAccounts.Name = "btnCloseAccounts";
+            this.btnCloseAccounts.Size = new System.Drawing.Size(144, 23);
+            this.btnCloseAccounts.TabIndex = 17;
+            this.btnCloseAccounts.Text = "Закрыть счета...";
+            this.btnCloseAccounts.UseVisualStyleBackColor = true;
+            this.btnCloseAccounts.Click += new System.EventHandler(this.btnCloseAccounts_Click);
             // 
             // btnCreateAccount
             // 
@@ -347,7 +360,7 @@
             // 
             // btnCopyIds
             // 
-            this.btnCopyIds.Location = new System.Drawing.Point(8, 276);
+            this.btnCopyIds.Location = new System.Drawing.Point(8, 267);
             this.btnCopyIds.Name = "btnCopyIds";
             this.btnCopyIds.Size = new System.Drawing.Size(144, 23);
             this.btnCopyIds.TabIndex = 8;
@@ -357,7 +370,7 @@
             // 
             // btnCreate
             // 
-            this.btnCreate.Location = new System.Drawing.Point(8, 305);
+            this.btnCreate.Location = new System.Drawing.Point(8, 296);
             this.btnCreate.Name = "btnCreate";
             this.btnCreate.Size = new System.Drawing.Size(144, 23);
             this.btnCreate.TabIndex = 7;
@@ -434,7 +447,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(594, 349);
+            this.tabPage2.Size = new System.Drawing.Size(625, 349);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Ферма роботов";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -463,7 +476,7 @@
             this.splitContainerRobotFarm.Panel2.Controls.Add(this.btnMakeRobotFarmSettings);
             this.splitContainerRobotFarm.Panel2.Controls.Add(this.label6);
             this.splitContainerRobotFarm.Panel2.Controls.Add(this.btnLoadPortfolio);
-            this.splitContainerRobotFarm.Size = new System.Drawing.Size(588, 343);
+            this.splitContainerRobotFarm.Size = new System.Drawing.Size(619, 343);
             this.splitContainerRobotFarm.SplitterDistance = 77;
             this.splitContainerRobotFarm.TabIndex = 0;
             // 
@@ -472,7 +485,7 @@
             this.richTextBoxAccountIds.Dock = System.Windows.Forms.DockStyle.Fill;
             this.richTextBoxAccountIds.Location = new System.Drawing.Point(88, 0);
             this.richTextBoxAccountIds.Name = "richTextBoxAccountIds";
-            this.richTextBoxAccountIds.Size = new System.Drawing.Size(500, 77);
+            this.richTextBoxAccountIds.Size = new System.Drawing.Size(531, 77);
             this.richTextBoxAccountIds.TabIndex = 1;
             this.richTextBoxAccountIds.Text = resources.GetString("richTextBoxAccountIds.Text");
             // 
@@ -600,7 +613,7 @@
             this.tabQuote.Location = new System.Drawing.Point(4, 22);
             this.tabQuote.Name = "tabQuote";
             this.tabQuote.Padding = new System.Windows.Forms.Padding(3);
-            this.tabQuote.Size = new System.Drawing.Size(594, 349);
+            this.tabQuote.Size = new System.Drawing.Size(625, 349);
             this.tabQuote.TabIndex = 2;
             this.tabQuote.Text = "Котировки";
             this.tabQuote.UseVisualStyleBackColor = true;
@@ -712,7 +725,7 @@
             this.tabTradeHistory.Controls.Add(this.tbFarmSetsPath);
             this.tabTradeHistory.Location = new System.Drawing.Point(4, 22);
             this.tabTradeHistory.Name = "tabTradeHistory";
-            this.tabTradeHistory.Size = new System.Drawing.Size(594, 349);
+            this.tabTradeHistory.Size = new System.Drawing.Size(625, 349);
             this.tabTradeHistory.TabIndex = 3;
             this.tabTradeHistory.Text = "История торгов";
             this.tabTradeHistory.UseVisualStyleBackColor = true;
@@ -987,11 +1000,12 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(602, 411);
+            this.ClientSize = new System.Drawing.Size(633, 411);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.panelBottom);
             this.Name = "MainForm";
             this.Text = "Пользователи Trade#";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.panelBottom.ResumeLayout(false);
             this.panelBottom.PerformLayout();
@@ -1104,7 +1118,8 @@
         private System.Windows.Forms.Label label22;
         private System.Windows.Forms.TextBox tbFlipOrdersPercent;
         private System.Windows.Forms.Label label21;
-        private System.Windows.Forms.Button btnCreateAccount;        
+        private System.Windows.Forms.Button btnCreateAccount;
+        private System.Windows.Forms.Button btnCloseAccounts;
     }
 }
 

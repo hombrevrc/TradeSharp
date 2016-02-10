@@ -96,6 +96,7 @@ namespace TradeSharp.Client.Forms
 
             // статистика
             var blankStat = new StatisticsParam();
+            gridStat.MultiSelectEnabled = true;
             gridStat.Columns.Add(new FastColumn(blankStat.Property(p => p.Title), Localizer.GetString("TitleParameter"))
                 {
                     //SortOrder = FastColumnSort.Ascending,
@@ -157,15 +158,48 @@ namespace TradeSharp.Client.Forms
 
         private void CalculateStatistics()
         {
-            if (!robotContext.lastTestStart.HasValue) return;
+            if (!robotContext.lastTestStart.HasValue ||
+                robotContext.startModelTime == null) return;
 
-            var countDeals = robotContext.PosHistory.Count;
-            var countOpen = robotContext.PosHistory.Count(p => p.IsClosed == false);
+            var orders = robotContext.AllOrders;
+
+            var countDeals = orders.Count;
+            var countOpen = robotContext.Positions.Count;
+            var countProfitable = orders.Count(p => p.ResultDepo > 0);
+            var countLoss = orders.Count(p => p.ResultDepo < 0);
             var initialBalance = robotContext.AccountInfo.Balance;
             var finalBalance = (decimal)(robotContext.dailyEquityExposure.Count == 0 ? 0 :
                 robotContext.dailyEquityExposure[robotContext.dailyEquityExposure.Count - 1].b);
             var twr = initialBalance == 0 ? 0 : 100 * finalBalance / initialBalance;
-            
+
+            // пункты
+            var pointsTotal = orders.Sum(p => p.ResultPoints);
+
+            // гросс PL
+            var grossProfit = orders.Sum(p => p.ResultDepo > 0 ? p.ResultDepo : 0);
+            var grossLoss = orders.Sum(p => p.ResultDepo < 0 ? p.ResultDepo : 0);
+
+            // сделок таких, сделок сяких, средний убыток, наибольший убыток ...
+            var pointsPerDeal = countDeals == 0 ? 0 : pointsTotal / countDeals;
+            var profitableTradesPercent = countDeals == 0 ? 0 : 100M * countProfitable/countDeals;
+            var maxLoss = countDeals == 0 ? 0 : orders.Min(d => d.ResultDepo < 0 ? d.ResultDepo : 0);
+            var maxProfit = countDeals == 0 ? 0 : orders.Max(d => d.ResultDepo > 0 ? d.ResultDepo : 0);
+            var avgProfit = countProfitable == 0 ? 0 : grossProfit / countProfitable;
+            var avgLoss = countLoss == 0 ? 0 : grossLoss / countLoss;
+            int maxProfitCount, maxLossCount;
+            CalculateOrderSeries(out maxProfitCount, out maxLossCount, orders);
+
+            // среднее число баров? у выигрышных и проигрышных
+            double avgMinutesProfit, avgMinutesLoss;
+            CalculateAveragePeriods(orders, countProfitable, countLoss, out avgMinutesProfit, out avgMinutesLoss);
+            BarSettings barSets = null;
+            if (robotContext.robotLogEntries.Any(r => r.Robot.Graphics.Count > 0))
+                barSets = robotContext.robotLogEntries.First(r => r.Robot.Graphics.Count > 0).Robot.Graphics[0].b;
+            var barMinutes = barSets?.Intervals[0] ?? 0;
+            var barTitle = barSets == null ? "" : BarSettingsStorage.Instance.GetBarSettingsFriendlyName(barSets);
+            var avgBarsProfit = barMinutes == 0 ? 0 : avgMinutesProfit / barMinutes;
+            var avgBarsLoss = barMinutes == 0 ? 0 : avgMinutesLoss / barMinutes;
+
             // подсчет макс. и среднего плеча
             var lstLeverage = (from t in robotContext.dailyEquityExposure where t.c != 0 select t.c/t.b).ToList();
             var maxLeverage = lstLeverage.Count == 0 ? 0 : lstLeverage.Max();
@@ -175,30 +209,6 @@ namespace TradeSharp.Client.Forms
             foreach (var so in robotContext.stopoutEventTimes)            
                 sbStopouts.AppendFormat("{0:dd.MM.yyy HH:mm}  ", so);            
 
-            // подсчет макс. относительного проседания
-            var drawDown = 0f;
-            var absDrawDown = 0f;
-            if (robotContext.dailyEquityExposure.Count > 0)
-            {
-                for (var i = 0; i < robotContext.dailyEquityExposure.Count - 1; i++)
-                {
-                    var tempDrawDown = 0f;
-                    var startBalance = robotContext.dailyEquityExposure[i].b;
-                    var j = i + 1;
-                    for (; j < robotContext.dailyEquityExposure.Count; j++)
-                    {
-                        var curBal = robotContext.dailyEquityExposure[j].b;
-                        if (curBal >= startBalance) break;
-                        var curDd = startBalance - curBal;
-                        if (curDd > tempDrawDown) tempDrawDown = curDd;
-                    }
-                    if (tempDrawDown > absDrawDown) absDrawDown = tempDrawDown;
-                    if (startBalance > 0) tempDrawDown /= startBalance;
-                    if (tempDrawDown > drawDown) drawDown = tempDrawDown;
-                }
-            }
-            drawDown *= 100;
-
             // ReSharper disable UseObjectOrCollectionInitializer
             var statParams = new List<StatisticsParam>();
             // ReSharper restore UseObjectOrCollectionInitializer
@@ -207,14 +217,12 @@ namespace TradeSharp.Client.Forms
                                                (robotContext.lastTestEnd.Value - robotContext.lastTestStart.Value)
                                                    .TotalSeconds, Localizer.GetString("TitleTestDurationInSeconds"),
                                                o => ((int) o).ToString()));
-            if (robotContext.dailyEquityExposure.Count > 0)
-                statParams.Add(new StatisticsParam(Localizer.GetString("TitleInterval"),
-                                                   string.Format("{0:dd.MM.yyyy} - {1:dd.MM.yyyy}",
-                                                                 robotContext.dailyEquityExposure[0].a,
-                                                                 robotContext.dailyEquityExposure[
-                                                                     robotContext.dailyEquityExposure.Count - 1].a),
-                                                   Localizer.GetString("TitleTestInterval"),
-                                                   null));
+
+            statParams.Add(new StatisticsParam(Localizer.GetString("TitleInterval"),
+                $"{robotContext.startModelTime.Value:dd.MM.yyyy} - " + 
+                $"{robotContext.endModelTime.Value:dd.MM.yyyy}",
+                Localizer.GetString("TitleTestInterval"), null));
+
             statParams.Add(new StatisticsParam(Localizer.GetString("TitleInitialDeposit"), initialBalance,
                                                Localizer.GetString("TitleAccountBalanceOnTestBeginning"),
                                                o =>
@@ -229,33 +237,129 @@ namespace TradeSharp.Client.Forms
                                                Localizer.GetString("TitleDealsTotalOpenedAndClosed"), null));
             statParams.Add(new StatisticsParam(Localizer.GetString("TitleDealsOpened"), countOpen,
                                                Localizer.GetString("TitleDealsOpened"), null));
+            statParams.Add(new StatisticsParam(Localizer.GetString("TitleCountDealsProfit"), countProfitable,
+                                               Localizer.GetString("TitleCountDealsProfit"), null));
+            statParams.Add(new StatisticsParam(Localizer.GetString("TitleCountDealsLoss"), countLoss,
+                                               Localizer.GetString("TitleCountDealsLoss"), null));
             statParams.Add(new StatisticsParam(Localizer.GetString("TitleProfit"), twr - 100,
                                                Localizer.GetString("TitleTerminalWealthRatioInPercents"),
-                                               o => ((decimal) o).ToStringUniformMoneyFormat()));
+                                               o => ((decimal) o).ToStringUniformMoneyFormat() + " %"));
+            statParams.Add(new StatisticsParam(Localizer.GetString("TitleGrossProfit"), grossProfit,
+                                               Localizer.GetString("TitleGrossProfit"),
+                                               o => ((float)o).ToStringUniformMoneyFormat() + " USD"));
+            statParams.Add(new StatisticsParam(Localizer.GetString("TitleGrossLoss"), grossLoss,
+                                               Localizer.GetString("TitleGrossLoss"),
+                                               o => ((float)o).ToStringUniformMoneyFormat() + " USD"));
             statParams.Add(new StatisticsParam(Localizer.GetString("TitleMaximumLeverage"), maxLeverage,
                                                Localizer.GetString("TitleMaximumLeverageInTestInUnits"),
                                                o => ((float) o).ToStringUniformMoneyFormat()));
             statParams.Add(new StatisticsParam(Localizer.GetString("TitleAverageLeverage"), avgLeverage,
                                                Localizer.GetString("TitleAverageLeverageInTestInUnits"),
                                                o => ((float) o).ToStringUniformMoneyFormat()));
-            statParams.Add(new StatisticsParam(Localizer.GetString("TitleMaximumDrawdownShort"), absDrawDown,
+            statParams.Add(new StatisticsParam(Localizer.GetString("TitleMaximumDrawdownShort"), robotContext.MaxDrawDown,
                                                Localizer.GetString("TitleMaximumRelativeDrawdownInPercents"),
-                                               o => ((float) o).ToStringUniformMoneyFormat()));
+                                               o => ((decimal) o).ToStringUniform(2) + " %"));
+            statParams.Add(new StatisticsParam(Localizer.GetString("TitleMaxIntradayDrawdown"), robotContext.MaxDailyDrawDown,
+                                               Localizer.GetString("TitleMaxIntradayDrawdown"),
+                                               o => ((decimal)o).ToStringUniform(2) + " %"));
+
+            statParams.Add(new StatisticsParam(Localizer.GetString("TitleProfitInPoints"), pointsTotal,
+                                               Localizer.GetString("TitleProfitInPoints"), o => ((float)o).ToStringUniform(1)));
+            statParams.Add(new StatisticsParam(Localizer.GetString("TitlePointsPerDeal"), pointsPerDeal,
+                                               Localizer.GetString("TitlePointsPerDeal"), o => ((float)o).ToStringUniform(1)));
+
             if (finalBalance > initialBalance)
             {
-                var fv = absDrawDown == 0 ? 0 : ((float) (finalBalance - initialBalance) / absDrawDown);
+                var fv = robotContext.MaxAbsDrawDown == 0 ? 0 : 
+                    ((finalBalance - initialBalance) / Math.Abs(robotContext.MaxAbsDrawDown));
                 statParams.Add(new StatisticsParam(Localizer.GetString("TitleRestoreFactor"), fv,
                                                    Localizer.GetString("TitleRestoreFactorInUnits"),
-                                                   o => ((float) o).ToStringUniformMoneyFormat()));
+                                                   o => ((decimal) o).ToStringUniform(2)));
             }
             if (sbStopouts.Length > 0)
             {
                 statParams.Add(new StatisticsParam(Localizer.GetString("TitleStopOut"), sbStopouts.Length,
                                                    Localizer.GetString("TitleStopOutExecutedInTimes"), null));
             }
+
+            statParams.Add(new StatisticsParam(Localizer.GetString("TitleProfitableDealPercent"), profitableTradesPercent,
+                                               Localizer.GetString("TitleProfitableDealPercent"), o => ((decimal)o).ToStringUniform(1) + " %"));
+            statParams.Add(new StatisticsParam(Localizer.GetString("TitleMaxProfitPerTrade"), maxProfit,
+                                               Localizer.GetString("TitleMaxProfitPerTrade"), o => ((float)o).ToStringUniformMoneyFormat() + " USD"));
+            statParams.Add(new StatisticsParam(Localizer.GetString("TitleMaxLossPerTrade"), maxLoss,
+                                               Localizer.GetString("TitleMaxLossPerTrade"), o => ((float)o).ToStringUniformMoneyFormat() + " USD"));
+            statParams.Add(new StatisticsParam(Localizer.GetString("TitleAvgProfitPerTrade"), avgProfit,
+                                               Localizer.GetString("TitleAvgProfitPerTrade"), o => ((float)o).ToStringUniformMoneyFormat() + " USD"));
+            statParams.Add(new StatisticsParam(Localizer.GetString("TitleAvgLossPerTrade"), avgLoss,
+                                               Localizer.GetString("TitleAvgLossPerTrade"), o => ((float)o).ToStringUniformMoneyFormat() + " USD"));
+            statParams.Add(new StatisticsParam(Localizer.GetString("TitleMaxProfitSeries"), maxProfitCount,
+                                               Localizer.GetString("TitleMaxProfitSeries"), null));
+            statParams.Add(new StatisticsParam(Localizer.GetString("TitleMaxLossSeries"), maxLossCount,
+                                               Localizer.GetString("TitleMaxLossSeries"), null));
+            statParams.Add(new StatisticsParam(Localizer.GetString("TitleAvgMinutesOfProfitable"), avgMinutesProfit,
+                                               Localizer.GetString("TitleAvgMinutesOfProfitable"), o => ((double)o).ToStringUniform(1) + " m"));
+            statParams.Add(new StatisticsParam(Localizer.GetString("TitleAvgMinutesOfLoss"), avgMinutesLoss,
+                                               Localizer.GetString("TitleAvgMinutesOfLoss"), o => ((double)o).ToStringUniform(1) + " m"));
+
+            // среднее число баров? у выигрышных и проигрышных
+            if (barMinutes > 0)
+            {
+                statParams.Add(new StatisticsParam(Localizer.GetString("TitleAvgBarsOfProfitable"), avgBarsProfit,
+                                               Localizer.GetString("TitleAvgBarsOfProfitable"), 
+                                               o => ((double)o).ToStringUniform(1) + " " + barTitle));
+                statParams.Add(new StatisticsParam(Localizer.GetString("TitleAvgBarsOfLoss"), avgBarsLoss,
+                                               Localizer.GetString("TitleAvgBarsOfLoss"), 
+                                               o => ((double)o).ToStringUniform(1) + " " + barTitle));
+            }
             
+
             gridStat.DataBind(statParams);
         }
+
+        private void CalculateAveragePeriods(List<MarketOrder> orders,
+            int countProfitable, int countLoss, out double avgMinutesProfit,
+            out double avgMinutesLoss)
+        {
+            var periodEnd = robotContext.endModelTime.Value;
+            var sumMinutesProfit = orders.Sum(p =>
+            {
+                if (p.ResultDepo <= 0) return 0;
+                var closeTime = p.TimeExit ?? periodEnd;
+                return (closeTime - p.TimeEnter).TotalMinutes;
+            });
+            var sumMinutesLoss = orders.Sum(p =>
+            {
+                if (p.ResultDepo >= 0) return 0;
+                var closeTime = p.TimeExit ?? periodEnd;
+                return (closeTime - p.TimeEnter).TotalMinutes;
+            });
+            avgMinutesProfit = countProfitable == 0 ? 0 : sumMinutesProfit / countProfitable;
+            avgMinutesLoss = countLoss == 0 ? 0 : sumMinutesLoss / countLoss;
+        }
+
+        private void CalculateOrderSeries(out int maxProfit, out int maxLoss, List<MarketOrder> orders)
+        {
+            maxProfit = 0;
+            maxLoss = 0;
+            int curProfit = 0, curLoss = 0;
+
+            foreach (var order in orders)
+            {
+                if (order.ResultDepo == 0) continue;
+                if (order.ResultDepo < 0)
+                {
+                    curProfit = 0;
+                    curLoss++;
+                    if (curLoss > maxLoss) maxLoss = curLoss;
+                }
+                if (order.ResultDepo > 0)
+                {
+                    curLoss = 0;
+                    curProfit++;
+                    if (curProfit > maxProfit) maxProfit = curProfit;
+                }
+            }
+        }        
 
         private void BtnExportStatClick(object sender, EventArgs e)
         {

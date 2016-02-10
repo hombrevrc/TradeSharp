@@ -140,6 +140,7 @@
     <Compile Include="ChartIcon\SummaryPositionDropWindow.Designer.cs">
       <DependentUpon>SummaryPositionDropWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="ChartMath\CandleConsumptionFinder.cs" />
     <Compile Include="ChartMath\Geometry.Extension.cs" />
     <Compile Include="ChartMath\ZigZag.cs" />
     <Compile Include="Chart\ChartControl.ChartIcon.cs">
@@ -282,6 +283,7 @@
     <Compile Include="Indicator\IndicatorAccelerator.cs" />
     <Compile Include="Indicator\IndicatorAlert.cs" />
     <Compile Include="Indicator\IndicatorBollinger.cs" />
+    <Compile Include="Indicator\IndicatorConsumption.cs" />
     <Compile Include="Indicator\IndicatorDaysRuler.cs" />
     <Compile Include="Indicator\IChartIndicator.cs" />
     <Compile Include="Indicator\IHistoryQueryIndicator.cs" />
@@ -304,6 +306,7 @@
     <Compile Include="Indicator\IndicatorCrossChartDivergencies.cs" />
     <Compile Include="Indicator\IndicatorMACD.cs" />
     <Compile Include="Indicator\IndicatorMomentum.cs" />
+    <Compile Include="Indicator\IndicatorNarrowRange.cs" />
     <Compile Include="Indicator\IndicatorOrders.cs" />
     <Compile Include="Indicator\IndicatorOptionDom.cs" />
     <Compile Include="Indicator\IndicatorOptionDom.WebRequest.cs" />
@@ -324,6 +327,7 @@
     <Compile Include="Indicator\OptionLevelIndicator.cs" />
     <Compile Include="Indicator\IndicatorEllipse.cs" />
     <Compile Include="Indicator\PopupCheckedListBoxSeriesUITypeEditor.cs" />
+    <Compile Include="Indicator\PopupComboboxDrawPaneUITypeEditor.cs" />
     <Compile Include="ProbabilityCore.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

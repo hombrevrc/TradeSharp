@@ -71,6 +71,8 @@ namespace TradeSharp.FakeUser
 
         private readonly BackgroundWorker workerQuote = new BackgroundWorker();
 
+        private readonly TcpQuoteReceiver receiver;
+
         public MainForm()
         {
             InitializeComponent();
@@ -84,6 +86,12 @@ namespace TradeSharp.FakeUser
                 lblWorkerProgress.Text = "прогресс: " + args.ProgressPercentage;
             };
             workerQuote.RunWorkerCompleted += WorkerQuoteOnRunWorkerCompleted;
+
+            receiver = new TcpQuoteReceiver();
+            receiver.OnQuotesReceived += (names, quotes) =>
+            {
+                LiveQuotes.Instance.UpdateQuotes(names, quotes);
+            };
 
             RobotCollection.Initialize();
         }
@@ -902,6 +910,16 @@ namespace TradeSharp.FakeUser
             {
                 new DayOff("WD", null, 1, 5, 23, 50)
             });
+        }
+
+        private void btnCloseAccounts_Click(object sender, EventArgs e)
+        {
+            new CloseAccountsDlg().ShowDialog();
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            receiver.Stop();
         }
     }
 }

@@ -382,6 +382,17 @@ namespace Candlechart.Controls
                 return;
             }
 
+            if (editor is ComboBoxDrawPaneUITypeEditor)
+            {
+                var popEditor = new PopupComboboxDrawPaneUITypeEditor();
+                var position = fastGrid.GetCellCoords(editingColumn, editingRowIndex);
+                popEditor.ShowDialogAsynch(SelectedObject, o =>
+                {
+                    UpdateObject(editingColumn, editingRowIndex, o);
+                }, new Rectangle(position.X, position.Y, editingColumn.ResultedWidth, 280), fastGrid);
+                return;
+            }
+
             // пока нет возможности вызова popup-редакторs
             if (editor.GetEditStyle() != UITypeEditorEditStyle.Modal)
             {

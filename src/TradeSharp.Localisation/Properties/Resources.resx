@@ -4899,4 +4899,79 @@
   <data name="TitleQuasiSmall" xml:space="preserve">
     <value>квази</value>
   </data>
+  <data name="DivergenceSign" xml:space="preserve">
+    <value>Дивергенция / конвергенция</value>
+  </data>
+  <data name="EnumDivergenceSignConvergence" xml:space="preserve">
+    <value>Конвергенция</value>
+  </data>
+  <data name="EnumDivergenceSignDivergence" xml:space="preserve">
+    <value>Дивергенция</value>
+  </data>
+  <data name="TitleCandleToSignal" xml:space="preserve">
+    <value>Свечей в серии</value>
+  </data>
+  <data name="TitleNarrowPercent" xml:space="preserve">
+    <value>% среднего диапазона</value>
+  </data>
+  <data name="TitlePointsPerDeal" xml:space="preserve">
+    <value>Пунктов на сделку</value>
+  </data>
+  <data name="TitleAvgBarsOfLoss" xml:space="preserve">
+    <value>Сред. убыточная сделка, баров</value>
+  </data>
+  <data name="TitleAvgBarsOfProfitable" xml:space="preserve">
+    <value>Сред. прибыльная сделка, баров</value>
+  </data>
+  <data name="TitleAvgLossPerTrade" xml:space="preserve">
+    <value>Сред. убыток по сделке</value>
+  </data>
+  <data name="TitleAvgMinutesOfLoss" xml:space="preserve">
+    <value>Сред. убыточная сделка, минут</value>
+  </data>
+  <data name="TitleAvgMinutesOfProfitable" xml:space="preserve">
+    <value>Сред. прибыльная сделка, минут</value>
+  </data>
+  <data name="TitleAvgProfitPerTrade" xml:space="preserve">
+    <value>Сред. прибыль по сделке</value>
+  </data>
+  <data name="TitleCountDealsLoss" xml:space="preserve">
+    <value>Убыточных сделок</value>
+  </data>
+  <data name="TitleCountDealsProfit" xml:space="preserve">
+    <value>Прибыльных сделок</value>
+  </data>
+  <data name="TitleGrossLoss" xml:space="preserve">
+    <value>Суммарный убыток</value>
+  </data>
+  <data name="TitleGrossProfit" xml:space="preserve">
+    <value>Суммарная прибыль</value>
+  </data>
+  <data name="TitleMaxIntradayDrawdown" xml:space="preserve">
+    <value>Макс. внутридневное проседание</value>
+  </data>
+  <data name="TitleMaxLossPerTrade" xml:space="preserve">
+    <value>Макс. убыток по сделке</value>
+  </data>
+  <data name="TitleMaxLossSeries" xml:space="preserve">
+    <value>Макс. серия убыточных</value>
+  </data>
+  <data name="TitleMaxProfitPerTrade" xml:space="preserve">
+    <value>Макс. прибыль по сделке</value>
+  </data>
+  <data name="TitleMaxProfitSeries" xml:space="preserve">
+    <value>Макс. серия прибыльных</value>
+  </data>
+  <data name="TitleProfitableDealPercent" xml:space="preserve">
+    <value>% прибыльных сделок</value>
+  </data>
+  <data name="TitleIndicatorConsumption" xml:space="preserve">
+    <value>Индикатор свечного поглощения</value>
+  </data>
+  <data name="TitleIndicatorConsumptionStyle" xml:space="preserve">
+    <value>Тип поглощения</value>
+  </data>
+  <data name="TitleIndicatorConsumptionMinCount" xml:space="preserve">
+    <value>Мин. свечей</value>
+  </data>
 </root>

@@ -4899,4 +4899,79 @@
   <data name="TitleQuasiSmall" xml:space="preserve">
     <value>quasi</value>
   </data>
+  <data name="DivergenceSign" xml:space="preserve">
+    <value>Divergence / Convergency</value>
+  </data>
+  <data name="EnumDivergenceSignConvergence" xml:space="preserve">
+    <value>Convergence</value>
+  </data>
+  <data name="EnumDivergenceSignDivergence" xml:space="preserve">
+    <value>Divergence</value>
+  </data>
+  <data name="TitleCandleToSignal" xml:space="preserve">
+    <value>Candles in range</value>
+  </data>
+  <data name="TitleNarrowPercent" xml:space="preserve">
+    <value>% from average range</value>
+  </data>
+  <data name="TitlePointsPerDeal" xml:space="preserve">
+    <value>Points per trade</value>
+  </data>
+  <data name="TitleAvgBarsOfLoss" xml:space="preserve">
+    <value>Avg. bars per loss trade</value>
+  </data>
+  <data name="TitleAvgBarsOfProfitable" xml:space="preserve">
+    <value>Avg. bars per profitable trade</value>
+  </data>
+  <data name="TitleAvgLossPerTrade" xml:space="preserve">
+    <value>Average loss per trade</value>
+  </data>
+  <data name="TitleAvgMinutesOfLoss" xml:space="preserve">
+    <value>Avg. minutes per loss trade</value>
+  </data>
+  <data name="TitleAvgMinutesOfProfitable" xml:space="preserve">
+    <value>Avg. minutes per profitable trade</value>
+  </data>
+  <data name="TitleAvgProfitPerTrade" xml:space="preserve">
+    <value>Average profit per trade</value>
+  </data>
+  <data name="TitleCountDealsLoss" xml:space="preserve">
+    <value>Loss Trades</value>
+  </data>
+  <data name="TitleCountDealsProfit" xml:space="preserve">
+    <value>Profitable Trades</value>
+  </data>
+  <data name="TitleGrossLoss" xml:space="preserve">
+    <value>Total Loss</value>
+  </data>
+  <data name="TitleGrossProfit" xml:space="preserve">
+    <value>Total Profit</value>
+  </data>
+  <data name="TitleMaxIntradayDrawdown" xml:space="preserve">
+    <value>Max intraday drawdown</value>
+  </data>
+  <data name="TitleMaxLossPerTrade" xml:space="preserve">
+    <value>Max loss per trade</value>
+  </data>
+  <data name="TitleMaxLossSeries" xml:space="preserve">
+    <value>Max. series of loss</value>
+  </data>
+  <data name="TitleMaxProfitPerTrade" xml:space="preserve">
+    <value>Max profit per trade</value>
+  </data>
+  <data name="TitleMaxProfitSeries" xml:space="preserve">
+    <value>Max. series of profitable</value>
+  </data>
+  <data name="TitleProfitableDealPercent" xml:space="preserve">
+    <value>% of profitable trades</value>
+  </data>
+  <data name="TitleIndicatorConsumption" xml:space="preserve">
+    <value>Candle Consumption Indicator</value>
+  </data>
+  <data name="TitleIndicatorConsumptionStyle" xml:space="preserve">
+    <value>Consumption check type</value>
+  </data>
+  <data name="TitleIndicatorConsumptionMinCount" xml:space="preserve">
+    <value>Min candles</value>
+  </data>
 </root>

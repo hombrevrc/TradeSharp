@@ -52,6 +52,8 @@ namespace TradeSharp.Robot.BacktestServerProxy
 
         #region Информация о тесте
         public DateTime? lastTestStart, lastTestEnd;
+
+        public DateTime? startModelTime, endModelTime;
         #endregion
 
         #region Переменные состояния
@@ -77,6 +79,16 @@ namespace TradeSharp.Robot.BacktestServerProxy
             set { posHistory = value; }
         }
 
+        public List<MarketOrder> AllOrders
+        {
+            get
+            {
+                var posList = PosHistory;
+                posList.AddRange(Positions);
+                return posList.OrderBy(o => o.ID).ToList();
+            }
+        }
+
         /// <summary>
         /// список для отложенных ордеров
         /// </summary>
@@ -97,6 +109,18 @@ namespace TradeSharp.Robot.BacktestServerProxy
         /// нужна для проверки условия срабатывания ордеров
         /// </summary>
         private IStorage<string, QuoteData> previousQuotes;
+
+        private List<Cortege2<string, CandleData>> finalCandles;
+
+        private decimal dailyHwm, hwm, maxDailyDrawdown, maxDrawdown, maxAbsDrawdown;
+
+        private DateTime? prevModelTime;
+
+        public decimal MaxDailyDrawDown => maxDailyDrawdown;
+
+        public decimal MaxDrawDown => maxDrawdown;
+
+        public decimal MaxAbsDrawDown => maxAbsDrawdown;
         #endregion
 
         #region Предустановленные переменные
@@ -133,6 +157,8 @@ namespace TradeSharp.Robot.BacktestServerProxy
             nextOrderId = 1;
             lastTestStart = DateTime.Now;
             firstDateOfTest = null;
+            startModelTime = null;
+            endModelTime = null;
             // начальная инициализация
             robotLogEntries.Clear();
             previousQuotes = new UnsafeStorage<string, QuoteData>();
@@ -190,10 +216,15 @@ namespace TradeSharp.Robot.BacktestServerProxy
         
         public void FinalizeTest()
         {
-            if (testCursor != null) testCursor.Close();
+            if (testCursor != null)
+            {
+                finalCandles = testCursor.GetCurrentQuotes();
+                testCursor.Close();
+            }
             testCursor = null;
             AccountInfo.Balance = initialTestBalance;
             lastTestEnd = DateTime.Now;
+            CalcProfitForOpenOrder();
         }
 
         /// <summary>
@@ -209,7 +240,11 @@ namespace TradeSharp.Robot.BacktestServerProxy
             firstRealDateOfTest = TimeFrom;
             var candles = testCursor.GetCurrentQuotes();
             if (candles.Count == 0) return true;
+
             modelTime = candles[0].b.timeOpen;
+            startModelTime = startModelTime ?? modelTime;
+            endModelTime = modelTime;
+
             if (!firstDateOfTest.HasValue)
                 firstDateOfTest = modelTime;
             firstRealDateOfTest = firstDateOfTest.Value;
@@ -247,12 +282,54 @@ namespace TradeSharp.Robot.BacktestServerProxy
             OnQuotesReceived(names, candlesBidAsk, !historyStartoffPassed);
             
             // обновить кривые средств и экспозиции
-            if (historyStartoffPassed) UpdateDailyEquityExposure(modelTime.Date);
+            if (historyStartoffPassed)
+                UpdateDailyEquityExposure(modelTime.Date);
+
+            // дневное "проседание"
+            CalcMaxDailyDrawDown(modelTime);            
 
             previousQuotes.UpdateValues(names, quotes);
             if (!testCursor.MoveNext()) return true;
             if (timeTo < modelTime.Date) return true;
             return false;
+        }
+
+        private void CalcMaxDailyDrawDown(DateTime modelTime)
+        {
+            if (historyStartoffPassed && prevModelTime.HasValue)
+            {
+                if (prevModelTime.Value.Date != modelTime.Date)
+                    dailyHwm = AccountInfo.Equity;
+                else
+                {
+                    if (AccountInfo.Equity > dailyHwm) dailyHwm = AccountInfo.Equity;
+                    else
+                    {
+                        var drawDown = dailyHwm == 0
+                            ? 0
+                            : AccountInfo.Equity <= 0
+                                ? -100
+                                : -100 * (dailyHwm - AccountInfo.Equity) / dailyHwm;
+                        if (drawDown < maxDailyDrawdown) maxDailyDrawdown = drawDown;
+                    }
+                }
+            }
+
+            if (AccountInfo.Equity > hwm) hwm = AccountInfo.Equity;
+            else
+            {
+                var drawDown = hwm == 0
+                            ? 0
+                            : AccountInfo.Equity <= 0
+                                ? -100
+                                : -100 * (hwm - AccountInfo.Equity) / hwm;
+                var absDrawdown = AccountInfo.Equity - hwm;
+                if (absDrawdown < maxAbsDrawdown) maxAbsDrawdown = absDrawdown;
+                if (drawDown < maxDrawdown)
+                    maxDrawdown = drawDown;
+            }
+
+            prevModelTime = modelTime;
         }
 
         public Dictionary<string, DateTime> GetUserTickersAndStartTime()
@@ -660,6 +737,32 @@ namespace TradeSharp.Robot.BacktestServerProxy
             tradeManager = new TradeManager(this, this,
                 quotesStorage, GetAccountGroup);
             profitCalculator = ProfitCalculator.Instance;
+        }
+
+        private void CalcProfitForOpenOrder()
+        {
+            if (finalCandles == null || finalCandles.Count == 0) return;          
+
+            var quotes = finalCandles.ToDictionary(c => c.a, c =>
+            {
+                var symbol = c.a;
+                var bid = c.b.close;
+                var pointCost = DalSpot.Instance.GetAbsValue(symbol, 1f);
+                var ask = bid + pointCost*DefaultSpreadPoints;
+                return new QuoteData(bid, ask, new DateTime());
+            });
+
+            foreach (var order in Positions)
+            {
+                QuoteData quote;
+                if (!quotes.TryGetValue(order.Symbol, out quote))
+                    continue;
+                order.PriceExit = order.Side > 0 ? quote.bid : quote.ask;
+                order.ResultPoints = DalSpot.Instance.GetPointsValue(order.Symbol,
+                    order.Side * (order.PriceExit.Value - order.PriceEnter));
+                order.ResultBase =  order.Volume * order.Side * (order.PriceExit.Value - order.PriceEnter);
+                order.ResultDepo = DalSpot.Instance.CalculateProfitInDepoCurrency(order, quotes, AccountInfo.Currency) ?? 0;
+            }
         }
     }
 }

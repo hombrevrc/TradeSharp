@@ -105,6 +105,7 @@
     <Compile Include="Robot\AtracotesRobot.cs" />
     <Compile Include="Robot\BaseRobot.cs" />
     <Compile Include="Robot\BollingerRobot.cs" />
+    <Compile Include="Robot\CaymanRobot.cs" />
     <Compile Include="Robot\DoubleTopRobot.cs" />
     <Compile Include="Robot\DrawDownStopoutChecker.cs" />
     <Compile Include="Robot\FiboLevelRobot.cs" />
@@ -131,6 +132,7 @@
     <Compile Include="Robot\SimpleTrendRobot.cs" />
     <Compile Include="Robot\SlideChannelRobot.cs" />
     <Compile Include="Robot\StopRobot.cs" />
+    <Compile Include="Robot\TailBodyRobot.cs" />
     <Compile Include="Robot\TornPatternRobot.cs" />
     <Compile Include="Robot\UserIndexFilter.cs" />
     <Compile Include="Robot.Debug\IchimokuRobot.Debug.cs" />

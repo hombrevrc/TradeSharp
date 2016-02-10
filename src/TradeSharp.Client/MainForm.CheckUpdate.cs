@@ -70,7 +70,7 @@ namespace TradeSharp.Client
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error("Ошибка получения версий файлов на сервере", ex);
+                    Logger.Error("Ошибка получения версий файлов на сервере: " + ex.GetType().Name + ", " + ex.Message);
                     return;
                 }
 

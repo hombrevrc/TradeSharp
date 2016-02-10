@@ -42,15 +42,13 @@ namespace Candlechart.Indicator
             div.IndicatorDrawStyle = IndicatorDrawStyle;
             div.IsVisible = IsVisible;
             div.WaitOneBar = WaitOneBar;
+            div.Sign = Sign;
         }
 
         #region Данные и свойства - основные
 
         [Browsable(false)]
-        public override string Name
-        {
-            get { return Localizer.GetString("TitleDivergences"); }
-        }
+        public override string Name => Localizer.GetString("TitleDivergences");
 
         [LocalizedDisplayName("TitleCreateDrawingPanel")]
         [LocalizedCategory("TitleMain")]
@@ -90,57 +88,42 @@ namespace Candlechart.Indicator
 
         #region Настройки дивергов
 
+        [LocalizedDisplayName("DivergenceSign")]
+        [LocalizedCategory("TitleDivergences")]
+        [LocalizedDescription("DivergenceSign")]
+        public Divergency.DivergenceSign Sign { get; set; }
+
         public enum DivergenceType { Классические = 0, ОтКвазиЭкстремумов = 1 }
 
         [LocalizedDisplayName("TitleDivergenceType")]
         [LocalizedCategory("TitleDivergences")]
         [LocalizedDescription("MessageDivergenceTypeDescription")]
         public DivergenceType DiverType { get; set; }
-        
-        private int periodExtremum = 6;
+
         [LocalizedDisplayName("TitleExtremumInBarsShort")]
         [LocalizedCategory("TitleDivergences")]
         [LocalizedDescription("MessageExtremumInBarsDescription")]
-        public int PeriodExtremum
-        {
-            get { return periodExtremum; }
-            set { periodExtremum = value; }
-        }
+        public int PeriodExtremum { get; set; } = 6;
 
-        private int maxPastExtremum = 18;
         [LocalizedDisplayName("TitleCandleCountToExtremumShort")]
         [LocalizedCategory("TitleDivergences")]
         [LocalizedDescription("MessageCandleCountToExtremumDescription")]
-        public int MaxPastExtremum
-        {
-            get { return maxPastExtremum; }
-            set { maxPastExtremum = value; }
-        }
+        public int MaxPastExtremum { get; set; } = 18;
 
         [LocalizedDisplayName("TitleConfirmationBar")]
         [LocalizedCategory("TitleDivergences")]
         [LocalizedDescription("MessageConfirmationBarDescription")]
         public bool WaitOneBar { get; set; }
 
-        private double marginUpper = 1;
         [LocalizedDisplayName("TitleZoneUpperLimit")]
         [LocalizedCategory("TitleDivergences")]
         [LocalizedDescription("MessageZoneUpperLimitDescription")]
-        public double MarginUpper
-        {
-            get { return marginUpper; }
-            set { marginUpper = value; }
-        }
+        public double MarginUpper { get; set; } = 1;
 
-        private double marginLower = -1;
         [LocalizedDisplayName("TitleZoneLowerLimit")]
         [LocalizedCategory("TitleDivergences")]
         [LocalizedDescription("MessageZoneLimitDescription")]
-        public double MarginLower
-        {
-            get { return marginLower; }
-            set { marginLower = value; }
-        }
+        public double MarginLower { get; set; } = -1;
 
         #endregion
 
@@ -171,15 +154,10 @@ namespace Candlechart.Indicator
             typeof(UITypeEditor))]
         public override string SeriesSourcesDisplay { get; set; }
 
-        private bool isVisible = true;
         [LocalizedDisplayName("TitleShowOnChart")]
         [LocalizedDescription("MessageShowDivergenceOnChartDescription")]
         [LocalizedCategory("TitleMain")]
-        public bool IsVisible
-        {
-            get { return isVisible; }
-            set { isVisible = value; }
-        }
+        public bool IsVisible { get; set; } = true;
 
         #endregion
 
@@ -238,13 +216,11 @@ namespace Candlechart.Indicator
                     
                     // поглотить регион
                     regUnion.IndexEnd = regUnion.IndexEnd + 1;
-                    if (regUnion.UpperBound.HasValue)
-                    {
-                        regUnion.UpperBound = Math.Max(seriesRegion.data[j].UpperBound.Value,
-                                                        regUnion.UpperBound.Value);
-                        regUnion.LowerBound = Math.Min(seriesRegion.data[j].LowerBound.Value,
-                                                        regUnion.LowerBound.Value);
-                    }                    
+                    if (!regUnion.UpperBound.HasValue) continue;
+                    regUnion.UpperBound = Math.Max(seriesRegion.data[j].UpperBound.Value,
+                        regUnion.UpperBound.Value);
+                    regUnion.LowerBound = Math.Min(seriesRegion.data[j].LowerBound.Value,
+                        regUnion.LowerBound.Value);
                 }
                 i = j;
                 mergedRegions.Add(regUnion);
@@ -262,7 +238,8 @@ namespace Candlechart.Indicator
                                                           MaxPastExtremum, 
                                                           GetSourcePrice,
                                                           GetIndexPrice,
-                                                          WaitOneBar);
+                                                          WaitOneBar,
+                                                          Sign);
         }
 
         private List<DiverSpan> FindDivergencePointsQuasi()
@@ -271,7 +248,8 @@ namespace Candlechart.Indicator
                                                         MarginUpper,
                                                         MarginLower,
                                                         GetSourcePrice,
-                                                        GetIndexPrice);
+                                                        GetIndexPrice,
+                                                        Sign);
         }
 
         private void AddDivergenceSign(int startIndex, int endIndex, int sign)
@@ -346,7 +324,6 @@ namespace Candlechart.Indicator
 
             var color = sign > 0 ? colorArrowUp : sign < 0 ? colorArrowDown : (Color?)null;
             if (!color.HasValue) return;
-            //seriesRegion.CustomAlphaChannel = true;
             seriesRegion.data.Add(new BarRegion
                                       {
                                           IndexStart = endIndex,
@@ -401,8 +378,8 @@ namespace Candlechart.Indicator
 
         public void Remove()
         {
-            if (seriesDivArrow != null) seriesDivArrow.data.Clear();
-            if (seriesRegion != null) seriesRegion.data.Clear();
+            seriesDivArrow?.data.Clear();
+            seriesRegion?.data.Clear();
         }
 
         public void AcceptSettings()

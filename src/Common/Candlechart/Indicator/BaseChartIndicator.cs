@@ -122,7 +122,8 @@ namespace Candlechart.Indicator
         [LocalizedDisplayName("TitleSourceSeries")]
         [LocalizedDescription("MeesageSourceSeriesDescription")]
         [LocalizedCategory("TitleMain")]
-        [Editor("Candlechart.Indicator.ComboBoxSeriesUITypeEditor, System.Drawing.Design.UITypeEditor", typeof(UITypeEditor))]
+        [Editor("Candlechart.Indicator.CheckedListBoxSeriesUITypeEditor, System.Drawing.Design.UITypeEditor",
+            typeof(UITypeEditor))]
         [PropertyOrder(30)]
         public virtual string SeriesSourcesDisplay { get; set; }
 

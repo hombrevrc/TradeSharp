@@ -26,6 +26,12 @@ namespace Entity
 
     public static class Divergency
     {
+        public enum DivergenceSign
+        {
+            Divergence = 0,
+            Convergence
+        }
+
         public delegate double GetPrice(int index);
 
         /// <summary>
@@ -37,6 +43,7 @@ namespace Entity
         /// <param name="getSourcePrice"></param>
         /// <param name="getIndexPrice"></param>
         /// <param name="waitOneBar">ждать одного бара перед отрисовкой стрелки, закрывающегося ниже (для макс) или выше (для мин)</param>
+        /// <param name="divergenceSign">поиск дивергенции? или - конвергенции?</param>
         /// <returns></returns>
         public static List<DiverSpan> FindDivergencePointsClassic(
             int sourceDataCount,
@@ -44,7 +51,8 @@ namespace Entity
             int maxPastExtremum,
             GetPrice getSourcePrice,
             GetPrice getIndexPrice,
-            bool waitOneBar)
+            bool waitOneBar,
+            DivergenceSign divergenceSign)
         {
             var diverPairs = new List<DiverSpan>();
             var srcCount = sourceDataCount;
@@ -98,7 +106,9 @@ namespace Entity
                         ? 0 
                         : indexPriceI - indexPriceEx;
                     var signDelta = double.IsNaN(deltaIndex) ? 0 : Math.Sign(deltaIndex);
-                    if (signExtr == signDelta) continue;
+                    if ((divergenceSign == DivergenceSign.Divergence && signExtr == signDelta) ||
+                        (divergenceSign == DivergenceSign.Convergence && signExtr != signDelta))
+                        continue;
                     // экстремум найден
                     priceExtr = price;
                     diverPairs.Add(new DiverSpan(indexExtr, i, -signExtr));
@@ -113,7 +123,8 @@ namespace Entity
             double marginUpper,
             double marginLower,
             GetPrice getSourcePrice, 
-            GetPrice getIndexPrice)
+            GetPrice getIndexPrice,
+            DivergenceSign divergenceSign)
         {
             var divers = new List<DiverSpan>();
             var srcCount = sourceDataCount;
@@ -153,6 +164,8 @@ namespace Entity
                 // отсчет экстремума - сравнить дельту цены и дельту индекса
                 var deltaPrice = getSourcePrice(i) - peakPrice;
                 var deltaIndex = index - lastPeak;
+                if (divergenceSign == DivergenceSign.Convergence)
+                    deltaIndex = -deltaIndex;
 
                 if (extremumSign > 0)
                     if (deltaPrice > 0 && deltaIndex < 0)

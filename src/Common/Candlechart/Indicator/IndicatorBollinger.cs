@@ -19,7 +19,7 @@ namespace Candlechart.Indicator
     public class IndicatorBollinger : BaseChartIndicator, IChartIndicator
     {
         [Browsable(false)]
-        public override string Name { get { return Localizer.GetString("TitleBollingerBands"); } }
+        public override string Name => Localizer.GetString("TitleBollingerBands");
 
         [LocalizedDisplayName("TitleCreateDrawingPanel")]
         [LocalizedCategory("TitleMain")]
@@ -36,80 +36,45 @@ namespace Candlechart.Indicator
             set { period = value; }
         }
 
-        private Color clLine = Color.Green;
         [LocalizedDisplayName("TitleColor")]
         [LocalizedDescription("MessageLineColorDescription")]
         [LocalizedCategory("TitleVisuals")]
-        public Color ClLine
-        {
-            get { return clLine; }
-            set { clLine = value; }
-        }
-        
-        private DashStyle lineStyle = DashStyle.Solid;
+        public Color ClLine { get; set; } = Color.Green;
+
         [LocalizedDisplayName("TitleBandStyle")]
         [LocalizedDescription("MessageLineStyleDescription")]
         [LocalizedCategory("TitleVisuals")]
-        public DashStyle LineStyle
-        {
-            get { return lineStyle; }
-            set { lineStyle = value; }
-        }
+        public DashStyle LineStyle { get; set; } = DashStyle.Solid;
 
-        private DashStyle lineStyleMid = DashStyle.Dot;
         [LocalizedDisplayName("TitleMALineStyle")]
         [LocalizedDescription("MessageMALineStyleDescription")]
         [LocalizedCategory("TitleVisuals")]
-        public DashStyle LineStyleMid
-        {
-            get { return lineStyleMid; }
-            set { lineStyleMid = value; }
-        }
+        public DashStyle LineStyleMid { get; set; } = DashStyle.Dot;
 
-        private MovAvgType maType = MovAvgType.Простая;
         [LocalizedDisplayName("TitleMALineType")]
         [LocalizedDescription("MessageMALineTypeDescription")]
         [LocalizedCategory("TitleMain")]
-        public MovAvgType MaType
-        {
-            get { return maType; }
-            set { maType = value; }
-        }
+        public MovAvgType MaType { get; set; } = MovAvgType.Простая;
 
-        private decimal lineWidth = 1;
         [LocalizedDisplayName("TitleThickness")]
         [LocalizedDescription("MessageThicknessDescription")]
         [LocalizedCategory("TitleVisuals")]
-        public decimal LineWidth
-        {
-            get { return lineWidth; }
-            set { lineWidth = value; }
-        }
+        public decimal LineWidth { get; set; } = 1;
 
-        private CandlePriceType priceType = CandlePriceType.Close;
         [LocalizedDisplayName("TitlePrice")]
         [LocalizedDescription("MessagePriceTypeDescription")]
         [LocalizedCategory("TitleMain")]
-        public CandlePriceType PriceType
-        {
-            get { return priceType; }
-            set { priceType = value; }
-        }
+        public CandlePriceType PriceType { get; set; } = CandlePriceType.Close;
 
         [LocalizedDisplayName("TitleOffsetInBars")]
         [LocalizedDescription("MessageOffsetInBarsDescription")]
         [LocalizedCategory("TitleMain")]
         public int ShiftX { get; set; }
 
-        private float kVolatile = 2;
         [LocalizedDisplayName("TitleVolatilityMultiplier")]
         [LocalizedDescription("MessageVolatilityMultiplierDescription")]
         [LocalizedCategory("TitleMain")]
-        public float KVolatile
-        {
-            get { return kVolatile; }
-            set { kVolatile = value; }
-        }
+        public float KVolatile { get; set; } = 2;
 
         private LineSeries series = new LineSeries("BMA") { Transparent = true };
         private LineSeries seriesUp = new LineSeries("BUp") { Transparent = true };
@@ -160,17 +125,17 @@ namespace Candlechart.Indicator
             owner = chart;
             SeriesResult = new List<Series.Series> { series, seriesUp, seriesDn };
             
-            series.LineColor = clLine;
-            series.LineWidth = (float)lineWidth;
-            series.LineDashStyle = lineStyleMid;
+            series.LineColor = ClLine;
+            series.LineWidth = (float)LineWidth;
+            series.LineDashStyle = LineStyleMid;
 
-            seriesUp.LineColor = clLine;
-            seriesUp.LineWidth = (float)lineWidth;
-            seriesUp.LineDashStyle = lineStyle;
+            seriesUp.LineColor = ClLine;
+            seriesUp.LineWidth = (float)LineWidth;
+            seriesUp.LineDashStyle = LineStyle;
 
-            seriesDn.LineColor = clLine;
-            seriesDn.LineWidth = (float)lineWidth;
-            seriesDn.LineDashStyle = lineStyle;
+            seriesDn.LineColor = ClLine;
+            seriesDn.LineWidth = (float)LineWidth;
+            seriesDn.LineDashStyle = LineStyle;
 
             EntitleIndicator();
         }
@@ -186,18 +151,18 @@ namespace Candlechart.Indicator
         public void AcceptSettings()
         {
             series.LineColor = ClLine;
-            series.LineDashStyle = lineStyleMid;
-            series.LineWidth = (float)lineWidth;
+            series.LineDashStyle = LineStyleMid;
+            series.LineWidth = (float)LineWidth;
             series.ShiftX = ShiftX + 1;
 
             seriesUp.LineColor = ClLine;
-            seriesUp.LineDashStyle = lineStyle;
-            seriesUp.LineWidth = (float)lineWidth;
+            seriesUp.LineDashStyle = LineStyle;
+            seriesUp.LineWidth = (float)LineWidth;
             seriesUp.ShiftX = ShiftX + 1;
 
             seriesDn.LineColor = ClLine;
-            seriesDn.LineDashStyle = lineStyle;
-            seriesDn.LineWidth = (float)lineWidth;
+            seriesDn.LineDashStyle = LineStyle;
+            seriesDn.LineWidth = (float)LineWidth;
             seriesDn.ShiftX = ShiftX + 1;
 
             if (CreateOwnPanel)
@@ -247,7 +212,7 @@ namespace Candlechart.Indicator
                 var price = GetPrice(source, i);
 
                 // простая СС
-                if (maType == MovAvgType.Простая)
+                if (MaType == MovAvgType.Простая)
                 {
                     sum += price;
                     if (frameLen < period) frameLen++;
@@ -286,8 +251,8 @@ namespace Candlechart.Indicator
                 var ssd = queueDisper.Length == period
                               ? Math.Sqrt(queueDisper.Average())
                               : 0;
-                seriesUp.Data.Add(lastMedian + kVolatile * ssd);
-                seriesDn.Data.Add(lastMedian - kVolatile * ssd);
+                seriesUp.Data.Add(lastMedian + KVolatile * ssd);
+                seriesDn.Data.Add(lastMedian - KVolatile * ssd);
             }
         }
 
@@ -295,7 +260,7 @@ namespace Candlechart.Indicator
         {
             var price =
                 source is CandlestickSeries
-                    ? ((CandlestickSeries) source).Data.Candles[i].GetPrice(priceType)
+                    ? ((CandlestickSeries) source).Data.Candles[i].GetPrice(PriceType)
                     : ((LineSeries) source).GetPrice(i) ?? 0;
             return price;
         }

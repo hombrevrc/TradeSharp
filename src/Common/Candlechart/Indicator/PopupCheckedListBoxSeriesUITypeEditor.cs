@@ -13,7 +13,7 @@ namespace Candlechart.Indicator
             indi = (BaseChartIndicator) selectedObject;
             LoadListBoxItems();
             var popup = new PopupEditorHost(cbx,
-                0, 0, bounds.Left, bounds.Top, control => GetListBoxValue(), onUpdated);
+                0, 0, bounds.Left, bounds.Height, control => GetListBoxValue(), onUpdated);
             popup.Show(parent, new Point(bounds.Left, bounds.Top));
         }
     }

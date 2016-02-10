@@ -238,7 +238,7 @@ namespace FastGrid
                 var sb = new StringBuilder();
                 foreach (var row in selRows)
                 {
-                    sb.AppendLine(string.Join(" ", row.cells.Select(c => c.CellString).ToArray()));
+                    sb.AppendLine(string.Join("\t", row.cells.Select(c => c.CellString).ToArray()));
                 }
                 if (sb.Length > 0) Clipboard.SetText(sb.ToString());
             }

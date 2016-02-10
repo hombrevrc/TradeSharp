@@ -1,0 +1,70 @@
+INFO: 2015-10-19 11:36:52,267 [36] {1} - TcpReceiverClient:Connection establishing...
+INFO: 2015-10-19 11:36:52,278 [36] {1} - TcpReceiverClient:Connection established
+ERROR: 2015-10-19 11:37:19,558 [28] {1} - GetModuleExtendedStatusString error
+System.ServiceModel.EndpointNotFoundException: Не удалось подключиться к net.tcp://91.185.184.13:54002/ModuleController. Попытки подключения выполнялись в течение интервала времени 00:00:01.2382784. Код ошибки TCP 10061: Подключение не установлено, т.к. конечный компьютер отверг запрос на подключение 91.185.184.13:54002.  ---> System.Net.Sockets.SocketException: Подключение не установлено, т.к. конечный компьютер отверг запрос на подключение 91.185.184.13:54002
+   в System.Net.Sockets.Socket.DoConnect(EndPoint endPointSnapshot, SocketAddress socketAddress)
+   в System.Net.Sockets.Socket.Connect(EndPoint remoteEP)
+   в System.ServiceModel.Channels.SocketConnectionInitiator.Connect(Uri uri, TimeSpan timeout)
+   --- Конец трассировки внутреннего стека исключений ---
+
+Server stack trace: 
+   в System.ServiceModel.Channels.SocketConnectionInitiator.Connect(Uri uri, TimeSpan timeout)
+   в System.ServiceModel.Channels.BufferedConnectionInitiator.Connect(Uri uri, TimeSpan timeout)
+   в System.ServiceModel.Channels.ConnectionPoolHelper.EstablishConnection(TimeSpan timeout)
+   в System.ServiceModel.Channels.ClientFramingDuplexSessionChannel.OnOpen(TimeSpan timeout)
+   в System.ServiceModel.Channels.CommunicationObject.Open(TimeSpan timeout)
+   в System.ServiceModel.Channels.ServiceChannel.OnOpen(TimeSpan timeout)
+   в System.ServiceModel.Channels.CommunicationObject.Open(TimeSpan timeout)
+   в System.ServiceModel.Channels.ServiceChannel.CallOpenOnce.System.ServiceModel.Channels.ServiceChannel.ICallOnce.Call(ServiceChannel channel, TimeSpan timeout)
+   в System.ServiceModel.Channels.ServiceChannel.CallOnceManager.CallOnce(TimeSpan timeout, CallOnceManager cascade)
+   в System.ServiceModel.Channels.ServiceChannel.Call(String action, Boolean oneway, ProxyOperationRuntime operation, Object[] ins, Object[] outs, TimeSpan timeout)
+   в System.ServiceModel.Channels.ServiceChannelProxy.InvokeService(IMethodCallMessage methodCall, ProxyOperationRuntime operation)
+   в System.ServiceModel.Channels.ServiceChannelProxy.Invoke(IMessage message)
+
+Exception rethrown at [0]: 
+   в System.Runtime.Remoting.Proxies.RealProxy.HandleReturnMessage(IMessage reqMsg, IMessage retMsg)
+   в System.Runtime.Remoting.Proxies.RealProxy.PrivateInvoke(MessageData& msgData, Int32 type)
+   в TradeSharp.Contract.Contract.IModuleStatus.GetModuleExtendedStatusString()
+   в TradeSharp.Contract.Proxy.ModuleStatusProxy.GetModuleExtendedStatusString() в c:\Sources\github\TradeSharp\src\TradeSharp.Contract\Proxy\ModuleStatusProxy.cs:строка 72
+ERROR: 2015-10-19 11:37:23,439 [28] {1} - GetModuleExtendedStatusString error
+System.ServiceModel.EndpointNotFoundException: Не удалось подключиться к net.tcp://91.185.184.13:54002/ModuleController. Попытки подключения выполнялись в течение интервала времени 00:00:01.2394113. Код ошибки TCP 10061: Подключение не установлено, т.к. конечный компьютер отверг запрос на подключение 91.185.184.13:54002.  ---> System.Net.Sockets.SocketException: Подключение не установлено, т.к. конечный компьютер отверг запрос на подключение 91.185.184.13:54002
+   в System.Net.Sockets.Socket.DoConnect(EndPoint endPointSnapshot, SocketAddress socketAddress)
+   в System.Net.Sockets.Socket.Connect(EndPoint remoteEP)
+   в System.ServiceModel.Channels.SocketConnectionInitiator.Connect(Uri uri, TimeSpan timeout)
+   --- Конец трассировки внутреннего стека исключений ---
+
+Server stack trace: 
+   в System.ServiceModel.Channels.SocketConnectionInitiator.Connect(Uri uri, TimeSpan timeout)
+   в System.ServiceModel.Channels.BufferedConnectionInitiator.Connect(Uri uri, TimeSpan timeout)
+   в System.ServiceModel.Channels.ConnectionPoolHelper.EstablishConnection(TimeSpan timeout)
+   в System.ServiceModel.Channels.ClientFramingDuplexSessionChannel.OnOpen(TimeSpan timeout)
+   в System.ServiceModel.Channels.CommunicationObject.Open(TimeSpan timeout)
+   в System.ServiceModel.Channels.ServiceChannel.OnOpen(TimeSpan timeout)
+   в System.ServiceModel.Channels.CommunicationObject.Open(TimeSpan timeout)
+   в System.ServiceModel.Channels.ServiceChannel.CallOpenOnce.System.ServiceModel.Channels.ServiceChannel.ICallOnce.Call(ServiceChannel channel, TimeSpan timeout)
+   в System.ServiceModel.Channels.ServiceChannel.CallOnceManager.CallOnce(TimeSpan timeout, CallOnceManager cascade)
+   в System.ServiceModel.Channels.ServiceChannel.Call(String action, Boolean oneway, ProxyOperationRuntime operation, Object[] ins, Object[] outs, TimeSpan timeout)
+   в System.ServiceModel.Channels.ServiceChannelProxy.InvokeService(IMethodCallMessage methodCall, ProxyOperationRuntime operation)
+   в System.ServiceModel.Channels.ServiceChannelProxy.Invoke(IMessage message)
+
+Exception rethrown at [0]: 
+   в System.Runtime.Remoting.Proxies.RealProxy.HandleReturnMessage(IMessage reqMsg, IMessage retMsg)
+   в System.Runtime.Remoting.Proxies.RealProxy.PrivateInvoke(MessageData& msgData, Int32 type)
+   в TradeSharp.Contract.Contract.IModuleStatus.GetModuleExtendedStatusString()
+   в TradeSharp.Contract.Proxy.ModuleStatusProxy.GetModuleExtendedStatusString() в c:\Sources\github\TradeSharp\src\TradeSharp.Contract\Proxy\ModuleStatusProxy.cs:строка 72
+ERROR: 2015-10-19 11:37:48,977 [19] {1} - ListTradeSharpUsersAjax() error
+System.Net.WebException: Невозможно соединиться с удаленным сервером ---> System.Net.Sockets.SocketException: Попытка установить соединение была безуспешной, т.к. от другого компьютера за требуемое время не получен нужный отклик, или было разорвано уже установленное соединение из-за неверного отклика уже подключенного компьютера 10.5.237.10:8061
+   в System.Net.Sockets.Socket.DoConnect(EndPoint endPointSnapshot, SocketAddress socketAddress)
+   в System.Net.ServicePoint.ConnectSocketInternal(Boolean connectFailure, Socket s4, Socket s6, Socket& socket, IPAddress& address, ConnectSocketState state, IAsyncResult asyncResult, Exception& exception)
+   --- Конец трассировки внутреннего стека исключений ---
+   в System.Net.HttpWebRequest.GetResponse()
+   в TradeSharp.Contract.WebContract.HttpParameter.DeserializeServerResponse(String url, List`1 inputParams, String& rawData, String userName, String password) в c:\Sources\github\TradeSharp\src\TradeSharp.Contract\WebContract\HttpParameter.cs:строка 88
+   в TradeSharp.SiteAdmin.Controllers.TradeSharpServerController.ListTradeSharpUsersAjax() в c:\Sources\github\TradeSharp\src\TradeSharp.AdminSite\TradeSharp.AdminSite\Controllers\TradeSharpServerController.cs:строка 38
+ERROR: 2015-10-19 11:38:49,818 [13] {1} - ListTradeSharpUsersAjax() error
+System.Net.WebException: Невозможно соединиться с удаленным сервером ---> System.Net.Sockets.SocketException: Попытка установить соединение была безуспешной, т.к. от другого компьютера за требуемое время не получен нужный отклик, или было разорвано уже установленное соединение из-за неверного отклика уже подключенного компьютера 10.5.237.10:8061
+   в System.Net.Sockets.Socket.DoConnect(EndPoint endPointSnapshot, SocketAddress socketAddress)
+   в System.Net.ServicePoint.ConnectSocketInternal(Boolean connectFailure, Socket s4, Socket s6, Socket& socket, IPAddress& address, ConnectSocketState state, IAsyncResult asyncResult, Exception& exception)
+   --- Конец трассировки внутреннего стека исключений ---
+   в System.Net.HttpWebRequest.GetResponse()
+   в TradeSharp.Contract.WebContract.HttpParameter.DeserializeServerResponse(String url, List`1 inputParams, String& rawData, String userName, String password) в c:\Sources\github\TradeSharp\src\TradeSharp.Contract\WebContract\HttpParameter.cs:строка 88
+   в TradeSharp.SiteAdmin.Controllers.TradeSharpServerController.ListTradeSharpUsersAjax() в c:\Sources\github\TradeSharp\src\TradeSharp.AdminSite\TradeSharp.AdminSite\Controllers\TradeSharpServerController.cs:строка 38

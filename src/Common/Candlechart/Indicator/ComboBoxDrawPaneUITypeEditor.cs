@@ -11,9 +11,10 @@ namespace Candlechart.Indicator
     public class ComboBoxDrawPaneUITypeEditor : UITypeEditor
     {
         private IWindowsFormsEditorService es;
-        private IChartIndicator indi;
-        public ListBox lb = new ListBox();
 
+        protected IChartIndicator indi;
+
+        public ListBox lb = new ListBox();
         
         public ComboBoxDrawPaneUITypeEditor()
         {
@@ -26,10 +27,7 @@ namespace Candlechart.Indicator
             return UITypeEditorEditStyle.DropDown;
         }
 
-        public override bool IsDropDownResizable
-        {
-            get { return true; }
-        }
+        public override bool IsDropDownResizable => true;
 
         public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
         {
@@ -44,7 +42,7 @@ namespace Candlechart.Indicator
             return value;
         }
 
-        private void LoadItems()
+        protected void LoadItems()
         {
             lb.Items.Clear();
             var chart = ((BaseChartIndicator)indi).owner.Owner;
@@ -58,6 +56,11 @@ namespace Candlechart.Indicator
             }
             if (!string.IsNullOrEmpty(indi.DrawPaneDisplay))
                 lb.SelectedItem = lb.Items.Contains(indi.DrawPaneDisplay) ? indi.DrawPaneDisplay : Localizer.GetString("TitleCourse");
+        }
+
+        protected string GetControlValue()
+        {
+            return (string) lb.SelectedItem;
         }
 
         private void Leave(Object sender, EventArgs e)
@@ -74,7 +77,7 @@ namespace Candlechart.Indicator
         private void OnDblClick(Object sender, EventArgs e)
         {
             Leave(sender, e);
-            es.CloseDropDown();
+            es?.CloseDropDown();
         }
     }
 }

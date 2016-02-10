@@ -81,7 +81,7 @@ namespace Candlechart.Indicator
 
         #endregion
 
-        private CandlestickSeries candleSeries;
+        public CandlestickSeries candleSeries;
 
         private PartSeries seriesBound;
 
@@ -235,31 +235,37 @@ namespace Candlechart.Indicator
                 if (!chartCandleTimes.ContainsKey(key))
                     candles.Remove(key);
 
-            // дать пыстым свечам тела
+            // дать пустым свечам тела
             var pairList = candles.OrderBy(c => c.Key).ToList();
             var candleList = new List<CandleData>();
-            for (var i = 1; i < candles.Count; i++)
+            for (var i = 0; i < candles.Count; i++)
             {
-                CandleData candle;
+                CandleData candle = null;
                 if (pairList[i].Value == null)
                 {
-                    if (candleList.Count == 0)
+                    if (candleList.Count == 0 && i > 0)
                     {
                         candle = new CandleData(50, 50, 50, 50, pairList[i - 1].Key,
                             pairList[i - 1].Key.AddMinutes(timeframe));
                         candleList.Add(candle);
                     }
-                    candle = new CandleData(
-                        candleList[i - 1].close,
-                        candleList[i - 1].close,
-                        candleList[i - 1].close,
-                        candleList[i - 1].close,
-                        candleList[i - 1].timeOpen,
-                        candleList[i - 1].timeClose);
+
+                    if (candleList.Count > 0)
+                    {
+                        var lastCnd = candleList[candleList.Count - 1];
+                        candle = new CandleData(
+                            lastCnd.close,
+                            lastCnd.close,
+                            lastCnd.close,
+                            lastCnd.close,
+                            lastCnd.timeOpen,
+                            lastCnd.timeClose);
+                    }                    
                 }
                 else
                     candle = pairList[i].Value;
-                candleList.Add(candle);
+                if (candle != null)
+                    candleList.Add(candle);
             }
             candleSeries.Data.Candles.AddRange(candleList);
         }

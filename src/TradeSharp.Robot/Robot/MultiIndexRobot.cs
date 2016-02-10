@@ -536,11 +536,13 @@ namespace TradeSharp.Robot.Robot
                                  ? Divergency.FindDivergencePointsClassic(candles.Count,
                                                                           ind.PeriodExtremum, ind.MaxPastExtremum,
                                                                           index => candles[index].close,
-                                                                          index => indexDiv.lastIndicies[index], ind.WaitOneBar)
+                                                                          index => indexDiv.lastIndicies[index], ind.WaitOneBar,
+                                                                          Divergency.DivergenceSign.Divergence)
                                  : Divergency.FindDivergencePointsQuasi(candles.Count,
                                                                         (double) ind.IndexMarginUp, (double) ind.IndexMarginDn,
                                                                         index => candles[index].close,
-                                                                        index => indexDiv.lastIndicies[index]);
+                                                                        index => indexDiv.lastIndicies[index],
+                                                                        Divergency.DivergenceSign.Divergence);
                 allDivers.AddRange(divers);
             }
             // нас интересует знак последнего дивера

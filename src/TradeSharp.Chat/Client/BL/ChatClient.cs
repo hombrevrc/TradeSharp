@@ -117,6 +117,10 @@ namespace TradeSharp.Chat.Client.BL
 
         private string endPoint;
 
+        private readonly FloodSafeLogger logNoFlood = new FloodSafeLogger(1000*60);
+
+        private const int LogMsgErrorRenewingChannel = 1;
+
         public ChatClientStable(ChatClientCallback callbackObject, string endPoint)
         {
             this.callbackObject = callbackObject;
@@ -145,7 +149,10 @@ namespace TradeSharp.Chat.Client.BL
             }
             catch (Exception ex)
             {
-                Logger.Error("RenewConnection", ex);
+                logNoFlood.LogMessageFormatCheckFlood(LogEntryType.Error,
+                    LogMsgErrorRenewingChannel,
+                    1000 * 60 * 30, 
+                    "RenewConnection: " + ex.GetType().Name + ", " + ex.Message);
                 internalObject = null;
                 HasConnection = false;
                 return false;

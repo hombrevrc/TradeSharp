@@ -128,6 +128,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="BL\RobotFarm.cs" />
+    <Compile Include="BL\Script\CaymanConsumptionTrendCheckScript.cs" />
     <Compile Include="BL\Script\CaymanDivergenceScript.cs" />
     <Compile Include="BL\Script\CaymanDivergenceSetupDlg.cs">
       <SubType>Form</SubType>
@@ -135,6 +136,14 @@
     <Compile Include="BL\Script\CaymanDivergenceSetupDlg.Designer.cs">
       <DependentUpon>CaymanDivergenceSetupDlg.cs</DependentUpon>
     </Compile>
+    <Compile Include="BL\Script\CaymanExtremumSignalScript.cs" />
+    <Compile Include="BL\Script\CaymanExtremumSignalScriptDlg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BL\Script\CaymanExtremumSignalScriptDlg.Designer.cs">
+      <DependentUpon>CaymanExtremumSignalScriptDlg.cs</DependentUpon>
+    </Compile>
+    <Compile Include="BL\Script\CaymanScript.cs" />
     <Compile Include="BL\Script\ChartTickerStatTerminalScript.cs" />
     <Compile Include="BL\Script\CopyDealsInMt4Script.cs" />
     <Compile Include="BL\Script\MakeOpenPosSql.cs" />
@@ -157,6 +166,7 @@
     <Compile Include="BL\Script\PriceProbForm.Designer.cs">
       <DependentUpon>PriceProbForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="BL\Script\PriceShadowDistributionScript.cs" />
     <Compile Include="BL\Script\RestoreFxDealCommentScript.cs" />
     <Compile Include="BL\Script\ScriptAlert.cs" />
     <Compile Include="BL\Script\ScriptImportMt4CsvOrders.cs" />
@@ -881,6 +891,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="BL\Script\CaymanDivergenceSetupDlg.resx">
       <DependentUpon>CaymanDivergenceSetupDlg.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BL\Script\CaymanExtremumSignalScriptDlg.resx">
+      <DependentUpon>CaymanExtremumSignalScriptDlg.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="BL\Script\Mt4ImportDlg.resx">
       <DependentUpon>Mt4ImportDlg.cs</DependentUpon>

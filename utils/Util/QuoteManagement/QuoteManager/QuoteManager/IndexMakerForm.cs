@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using Entity;
-using MTS.Live.Contract.Entity;
-using MTS.Live.Util;
 using QuoteManager.BL;
-using QuoteManager.Index;
+using TradeSharp.Contract.Entity;
+using TradeSharp.Util;
 
 namespace QuoteManager
 {
@@ -68,7 +66,7 @@ namespace QuoteManager
             
             var names = resv.GetVariableNames();
             // проверить доступность - каждое имя должно быть тикером
-            var allNames = DalSpot.Instance.GetCurrencyNames();
+            var allNames = DalSpot.Instance.GetTickerNames();
             var errorsStr = new StringBuilder();
             foreach (var name in names)
             {
@@ -117,78 +115,78 @@ namespace QuoteManager
 
         private void BtnMakeIndexClick(object sender, EventArgs e)
         {
-            ExpressionResolver resv;
-            try
-            {
-                resv = new ExpressionResolver(tbTickerFormula.Text);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error("Ошибка разбора выражения", ex);
-                MessageBox.Show(string.Format("Ошибка разбора выражения ({0})", ex.Message));
-                return;
-            }
+            //ExpressionResolver resv;
+            //try
+            //{
+            //    resv = new ExpressionResolver(tbTickerFormula.Text);
+            //}
+            //catch (Exception ex)
+            //{
+            //    Logger.Error("Ошибка разбора выражения", ex);
+            //    MessageBox.Show(string.Format("Ошибка разбора выражения ({0})", ex.Message));
+            //    return;
+            //}
 
-            if (saveFileDialog.ShowDialog() != DialogResult.OK) return;
-            var fileName = saveFileDialog.FileName;
+            //if (saveFileDialog.ShowDialog() != DialogResult.OK) return;
+            //var fileName = saveFileDialog.FileName;
             
-            var names = resv.GetVariableNames();
-            var curs = new BacktestTickerCursor();
-            try
-            {
-                curs.SetupCursor(quoteFolder, names, dpStart.Value);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error("Ошибка установки курсора", ex);
-                return;
-            }
+            //var names = resv.GetVariableNames();
+            //var curs = new BacktestTickerCursor();
+            //try
+            //{
+            //    curs.SetupCursor(quoteFolder, names, dpStart.Value);
+            //}
+            //catch (Exception ex)
+            //{
+            //    Logger.Error("Ошибка установки курсора", ex);
+            //    return;
+            //}
 
-            StreamWriter sw;
-            try
-            {
-                sw = new StreamWriter(fileName);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error("Ошибка открытия файла на запись", ex);
-                curs.Close();
-                MessageBox.Show("Ошибка открытия файла на запись");
-                return;
-            }
-            var saver = new QuoteSaver(tbTicker.Text);
+            //StreamWriter sw;
+            //try
+            //{
+            //    sw = new StreamWriter(fileName);
+            //}
+            //catch (Exception ex)
+            //{
+            //    Logger.Error("Ошибка открытия файла на запись", ex);
+            //    curs.Close();
+            //    MessageBox.Show("Ошибка открытия файла на запись");
+            //    return;
+            //}
+            //var saver = new QuoteSaver(tbTicker.Text);
 
-            try
-            {
-                while (true)
-                {
-                    // посчитать индекс
-                    var quotes = curs.GetCurrentQuotes();
-                    if (quotes.Count == 0) continue;
-                    var date = quotes.Max(q => q.b.time);
+            //try
+            //{
+            //    while (true)
+            //    {
+            //        // посчитать индекс
+            //        var quotes = curs.GetCurrentQuotes();
+            //        if (quotes.Count == 0) continue;
+            //        var date = quotes.Max(q => q.b);
 
-                    var quoteDic = quotes.ToDictionary(q => q.a, q => (double)q.b.bid);
-                    double result;
-                    resv.Calculate(quoteDic, out result);
+            //        var quoteDic = quotes.ToDictionary(q => q.a, q => (double)q.b.bid);
+            //        double result;
+            //        resv.Calculate(quoteDic, out result);
                     
-                    // занести индекс в файл
-                    saver.SaveQuote(sw, (float)result, (float)result, date);
+            //        // занести индекс в файл
+            //        saver.SaveQuote(sw, (float)result, (float)result, date);
                     
-                    if (!curs.MoveNext()) break;
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Error("Ошибка формирования индекса", ex);                
-            }
-            finally
-            {
-                curs.Close();
-                sw.Close();
-            }
+            //        if (!curs.MoveNext()) break;
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    Logger.Error("Ошибка формирования индекса", ex);                
+            //}
+            //finally
+            //{
+            //    curs.Close();
+            //    sw.Close();
+            //}
 
-            MessageBox.Show("Формирование индекса завершено");
-            openFileDialog.FileName = saveFileDialog.FileName;
+            //MessageBox.Show("Формирование индекса завершено");
+            //openFileDialog.FileName = saveFileDialog.FileName;
         }
 
         /// <summary>

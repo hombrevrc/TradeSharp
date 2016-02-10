@@ -105,11 +105,12 @@ namespace TradeSharp.Client.Forms
 
         private void SetupStatGrid()
         {
-            dgStat.SelectEnabled = false;
+            dgStat.SelectEnabled = true;
+            dgStat.MultiSelectEnabled = true;
             dgStat.CaptionHeight = 0;
             var blank = new StatItem();
             dgStat.Columns.Add(new FastColumn(blank.Property(p => p.Name), Localizer.GetString("TitleName")));
-            dgStat.Columns.Add(new FastColumn(blank.Property(p => p.Result), Localizer.GetString("TitleValue")) { ColumnWidth = 140 });
+            dgStat.Columns.Add(new FastColumn(blank.Property(p => p.Result), Localizer.GetString("TitleValue")) { ColumnWidth = 140 });            
             dgStat.ColorAltCellBackground = Color.FromArgb(230, 230, 230);
             dgStat.MinimumTableWidth = dgStat.Columns.Count * DefaultColumnWidth;
         }
