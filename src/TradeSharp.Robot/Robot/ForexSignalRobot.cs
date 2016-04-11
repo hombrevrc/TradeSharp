@@ -735,8 +735,8 @@ namespace TradeSharp.Robot.Robot
                 return false;
             }
             // исключить последнюю точку ЗЗ?
-            var deltaLast = 100 * Math.Abs(pivots[pivots.Count - 1].b - pivots[pivots.Count - 2].b) /
-                pivots[pivots.Count - 2].b;
+            var deltaLast = 100 * Math.Abs(pivots[pivots.Count - 1].price - pivots[pivots.Count - 2].price) /
+                pivots[pivots.Count - 2].price;
             var start = pivots.Count - 1;
             if (deltaLast < zzPercent) // исключаем последнюю точку
                 start--;
@@ -746,17 +746,17 @@ namespace TradeSharp.Robot.Robot
             for (var i = start; i > 0 && i >= start - 1; i--)
             {
                 var b = pivots[i];
-                if (b.a + maxCandlesPassed < countCandles) break;
+                if (b.index + maxCandlesPassed < countCandles) break;
                 var a = pivots[i - 1];
                 // только "поддержки" для покупок и "сопротивления" для продаж
-                var isSupport = a.b < b.b;
+                var isSupport = a.price < b.price;
                 if ((!isSupport && dealSide > 0) || (isSupport && dealSide < 0)) continue;
-                var level = a.b + (a.b - b.b) * (checkedFiboLevel - 1);
+                var level = a.price + (a.price - b.price) * (checkedFiboLevel - 1);
 
                 // проверить, достигался ли уровень в пределах допустимого расстояния
                 // любой из свечек
                 var reached = false;
-                for (var j = b.a + 1; j < countCandles; j++)
+                for (var j = b.index + 1; j < countCandles; j++)
                 {
                     var delta = isSupport ? level - candleList[j].low
                                     : candleList[j].high - level;

@@ -206,57 +206,57 @@ namespace Candlechart.Indicator
             var pointB = pivots[pivots.Count - 2];
             var pointC = pivots[pivots.Count - 1];
 
-            var spanA = new ProjectionPair(pointA.a, pointA.b)
+            var spanA = new ProjectionPair(pointA.index, pointA.price)
                             {
                                 HideFarParts = false,
-                                Color = pointB.b > pointA.b ? ColorLineLower : ColorLineUpper,
+                                Color = pointB.price > pointA.price ? ColorLineLower : ColorLineUpper,
                                 ProjectionLength = ProjectionBars,
                                 LevelsProj = LevelsProj,
                                 Markers = Markers
                             };
 
-            spanA.AddPoint(pointB.a, pointB.b);
-            var spanB = new ProjectionPair(pointB.a, pointB.b)
+            spanA.AddPoint(pointB.index, pointB.price);
+            var spanB = new ProjectionPair(pointB.index, pointB.price)
                             {
                                 HideFarParts = false,
-                                Color = pointB.b < pointA.b ? ColorLineLower : ColorLineUpper,
+                                Color = pointB.price < pointA.price ? ColorLineLower : ColorLineUpper,
                                 ProjectionLength = ProjectionBars,
                                 LevelsProj = LevelsProj,                                
                                 Markers = Markers
                             };
-            spanB.AddPoint(pointC.a, pointC.b);
+            spanB.AddPoint(pointC.index, pointC.price);
             spans.data.Add(spanA);
             spans.data.Add(spanB);
             // коррекции?
             if (!CorrectionEnabled) return;
             if (correctionBcLength > 0)
             {
-                var spanC = new ProjectionPair(pointB.a, pointB.b)
+                var spanC = new ProjectionPair(pointB.index, pointB.price)
                                 {
                                     HideFarParts = false,
-                                    Color = pointB.b < pointA.b ? ColorLineLower : ColorLineUpper,
+                                    Color = pointB.price < pointA.price ? ColorLineLower : ColorLineUpper,
                                     ProjectionLength = CorrectionBcLength,
                                     LevelsCorr = LevelsCorr,
                                     IsExtension = false,
                                     IsCorrection = true,
                                     Markers = Markers
                                 };
-                spanC.AddPoint(pointC.a, pointC.b);
+                spanC.AddPoint(pointC.index, pointC.price);
                 spans.data.Add(spanC);
             }
             if (correctionAbLength > 0)
             {
-                var spanC = new ProjectionPair(pointA.a, pointA.b)
+                var spanC = new ProjectionPair(pointA.index, pointA.price)
                 {
                     HideFarParts = false,
-                    Color = pointB.b < pointA.b ? ColorLineLower : ColorLineUpper,
+                    Color = pointB.price < pointA.price ? ColorLineLower : ColorLineUpper,
                     ProjectionLength = CorrectionAbLength,
                     LevelsCorr = LevelsCorr,
                     IsExtension = false,
                     IsCorrection = true,
                     Markers = Markers
                 };
-                spanC.AddPoint(pointB.a, pointB.b);
+                spanC.AddPoint(pointB.index, pointB.price);
                 spans.data.Add(spanC);
             }
         }

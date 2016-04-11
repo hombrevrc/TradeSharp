@@ -11,14 +11,14 @@ namespace Candlechart.Series
     {
         public double ShiftX { get; set; }
 
-        private readonly SeriesData _data;
+        private readonly SeriesData data;
 
-        public override int DataCount { get { return _data.Count; } }
-        
+        public override int DataCount => data.Count;
+
         public LineSeries(string name)
             : base(name)
         {
-            _data = new SeriesData();
+            data = new SeriesData();
         }
 
         internal override string CurrentPriceString
@@ -28,7 +28,7 @@ namespace Candlechart.Series
                 if (Data.BarCount != 0)
                 {
                     var provider = new NumberFormatInfo {NumberDecimalDigits = NumberDecimalDigits};
-                    return string.Format(provider, "({0:N})", new object[] { Data[Data.LastIndex] });
+                    return string.Format(provider, "({0:N})", Data[Data.LastIndex]);
                 }
                 return string.Empty;
             }
@@ -36,10 +36,7 @@ namespace Candlechart.Series
 
         public bool Hidden { get; set; }
 
-        public SeriesData Data
-        {
-            get { return _data; }
-        }
+        public SeriesData Data => data;
 
         #region Визуальные - линия, тень
         public bool Transparent { get; set; }

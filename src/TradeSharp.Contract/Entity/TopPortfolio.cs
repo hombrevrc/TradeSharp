@@ -46,10 +46,7 @@ namespace TradeSharp.Contract.Entity
 
         public AutoTradeSettings TradeSettings { get; set; }
 
-        public bool IsCompanyPortfolio
-        {
-            get { return ManagedAccount.HasValue; }
-        }
+        public bool IsCompanyPortfolio => ManagedAccount.HasValue;
 
         #region runtime
         /// <summary>
@@ -95,7 +92,7 @@ namespace TradeSharp.Contract.Entity
 
         public override string ToString()
         {
-            return Name;
+            return $"{Name} [{Criteria}] @{ParticipantCount}, Id:{Id}";
         }
 
         public bool AreSame(TopPortfolio p)

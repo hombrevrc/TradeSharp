@@ -232,11 +232,11 @@ namespace Candlechart.Indicator
 
         private float GetPrice(Series.Series source, int i)
         {
-            var price =
-                source is CandlestickSeries
-                    ? ((CandlestickSeries)source).Data.Candles[i].GetPrice(priceType)
-                    : series.GetPrice(i) ?? 0;
-            return price;
+            if (source is CandlestickSeries)
+                return ((CandlestickSeries) source).Data.Candles[i].GetPrice(priceType);
+            if (source is IPriceQuerySeries)
+                return ((IPriceQuerySeries) source).GetPrice(i) ?? 0;
+            return 0;
         }
     
         /// <summary>

@@ -18,7 +18,7 @@ namespace TradeSharp.Util
             StartDayOff = 5,
             StartHourOff = 23,
             EndDayOff = 1,
-            EndHourOff = 5;
+            EndHourOff = 0;
 
         [Obsolete]
         public bool IsWorkingDay(DateTime date)

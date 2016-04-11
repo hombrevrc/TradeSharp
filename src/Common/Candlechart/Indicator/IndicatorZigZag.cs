@@ -17,25 +17,13 @@ namespace Candlechart.Indicator
     public class IndicatorZigZag : BaseChartIndicator, IChartIndicator
     {
         [Browsable(false)]
-        public override string Name { get { return Localizer.GetString("TitleZigzag"); } }
+        public override string Name => Localizer.GetString("TitleZigzag");
 
         public override BaseChartIndicator Copy()
         {
             var zig = new IndicatorZigZag();
             Copy(zig);
             return zig;
-        }
-
-        public override void Copy(BaseChartIndicator indi)
-        {
-            var zig = (IndicatorZigZag) indi;
-            CopyBaseSettings(zig);
-            zig.LineColor = LineColor;
-            zig.LineWidth = LineWidth;
-            zig.LineStyle = LineStyle;
-            zig.ThresholdPercent = ThresholdPercent;
-            zig.seriesZigZag = seriesZigZag;
-            zig.ZigZagSourceType = ZigZagSourceType;
         }
 
         [LocalizedDisplayName("TitleCreateDrawingPanel")]
@@ -45,86 +33,89 @@ namespace Candlechart.Indicator
 
         #region Визуальные
 
-        private Color lineColor = Color.Red;
-        [LocalizedDisplayName("TitleLineColor")]
+        [LocalizedDisplayName("TitleTrendColor")]
         [Description("Цвет линии индикатора")]
         [LocalizedCategory("TitleVisuals")]
-        public Color LineColor
-        {
-            get { return lineColor; }
-            set { lineColor = value; }
-        }
+        public Color TrendColor { get; set; } = Color.Red;
 
-        private decimal lineWidth = 1;
+        [LocalizedDisplayName("TitleCorrectionColor")]
+        [Description("Цвет линии индикатора")]
+        [LocalizedCategory("TitleVisuals")]
+        public Color CorrectionColor { get; set; } = Color.Blue;
+
         [LocalizedDisplayName("TitleThickness")]
         [Description("Толщина линии индикатора, пикселей")]
         [LocalizedCategory("TitleVisuals")]
-        public decimal LineWidth
-        {
-            get { return lineWidth; }
-            set { lineWidth = value; }
-        }
+        public decimal LineWidth { get; set; } = 1;
 
-        private DashStyle lineStyle = DashStyle.Solid;
         [LocalizedDisplayName("TitleLineStyle")]
         [Description("Стиль линии индикатора (сплошная, штирх, штрих-пунктир...)")]
         [LocalizedCategory("TitleVisuals")]
-        public DashStyle LineStyle
-        {
-            get { return lineStyle; }
-            set { lineStyle = value; }
-        }
+        public DashStyle LineStyle { get; set; } = DashStyle.Solid;
 
         #endregion
 
-        private float thresholdPercent = 1;
         [LocalizedDisplayName("TitleThresholdInPercents")]
         [Description("Пороговая величина, %, на которую должен отклониться курс для формирования нового экстремума")]
         [LocalizedCategory("TitleMain")]
-        public float ThresholdPercent
-        {
-            get { return thresholdPercent; }
-            set { thresholdPercent = value; }
-        }
+        public float ThresholdPercent { get; set; } = 1;
+
+        [LocalizedDisplayName("TitleCorrectionPercent")]
+        [Description("Пороговая величина, %, на которую должен откатиться курс для формирования коррекции")]
+        [LocalizedCategory("TitleMain")]
+        public float CorrectionPercent { get; set; } = 0.5f;
 
         [LocalizedDisplayName("TitleZigzagPrice")]
         [Description("Цены Зиг-Зага")]
         [LocalizedCategory("TitleMain")]
         public ZigZagSource ZigZagSourceType { get; set; }
         
-        private LineSeries seriesZigZag;
+        private PartSeries seriesZigZag;
 
         public IndicatorZigZag()
         {
             CreateOwnPanel = false;
         }
 
+        public override void Copy(BaseChartIndicator indi)
+        {
+            var zig = (IndicatorZigZag)indi;
+            CopyBaseSettings(zig);
+            zig.TrendColor = TrendColor;
+            zig.CorrectionColor = CorrectionColor;
+            zig.LineWidth = LineWidth;
+            zig.LineStyle = LineStyle;
+            zig.ThresholdPercent = ThresholdPercent;
+            zig.CorrectionPercent = CorrectionPercent;
+            zig.seriesZigZag = seriesZigZag;
+            zig.ZigZagSourceType = ZigZagSourceType;
+        }
+
         public void BuildSeries(ChartControl chart)
         {
             if (DrawPane != owner.StockPane)
                 DrawPane.Title = UniqueName;
-            seriesZigZag.Data.Clear();
+            seriesZigZag.parts.Clear();
             if (chart.StockSeries.Data.Count < 3) return;
             
-            seriesZigZag.LineColor = lineColor;
-            seriesZigZag.LineWidth = (float)lineWidth;
-            seriesZigZag.LineDashStyle = lineStyle;
+            seriesZigZag.LineColor = TrendColor;
+            seriesZigZag.LineWidth = (float) LineWidth;
+            //seriesZigZag.LineDashStyle = lineStyle;
 
             // индекс - индикатор
-            var pivots = ZigZag.GetPivots(chart.StockSeries.Data.Candles, ThresholdPercent, ZigZagSourceType);
+            var correctionPercent = CorrectionPercent < ThresholdPercent ? CorrectionPercent : ThresholdPercent;
+            var pivots = ZigZag.GetPivots(chart.StockSeries.Data.Candles, ThresholdPercent, correctionPercent,
+                chart.StockSeries.Data.Candles.Count - 1, ZigZagSourceType);
             if (pivots.Count == 0) return;
 
             // построить отрезки
-            var lastPivot = pivots[0];
             for (var i = 1; i < pivots.Count; i++)
             {
-                var pivot = pivots[i];
-                var step = (double)(pivot.b - lastPivot.b) / (pivot.a - lastPivot.a);
-                for (var j = lastPivot.a; j < pivot.a; j++)
-                {
-                    seriesZigZag.Data.Add((double)lastPivot.b + step * (j - lastPivot.a));
-                }
-                lastPivot = pivot;
+                var color = pivots[i - 1].nextArc == ZigZagPivot.ZigZagArc.Correction ? CorrectionColor : TrendColor;
+                seriesZigZag.parts.Add(new PartSeries.Polyline(
+                    color,
+                    new PartSeriesPoint(pivots[i - 1].index, (decimal) pivots[i - 1].price),
+                    new PartSeriesPoint(pivots[i].index, (decimal) pivots[i].price)));
             }
         }
 
@@ -132,13 +123,10 @@ namespace Candlechart.Indicator
         {
             owner = chart;
             // инициализируем индикатор
-            seriesZigZag = new LineSeries(Localizer.GetString("TitleZigzag"))
+            seriesZigZag = new PartSeries(Localizer.GetString("TitleZigzag"))
             {
-                Transparent = true,
-                LineColor = lineColor,
-                LineWidth = ((float)LineWidth),
-                ShiftX = 1,
-                DashPattern = new float[] { 3, 5 }
+                LineColor = TrendColor,
+                LineWidth = ((float)LineWidth)
             };
             SeriesResult = new List<Series.Series> { seriesZigZag };
             EntitleIndicator();
@@ -146,7 +134,7 @@ namespace Candlechart.Indicator
 
         public void Remove()
         {
-            seriesZigZag.Data.Clear();
+            seriesZigZag.parts.Clear();
         }
 
         public void AcceptSettings()

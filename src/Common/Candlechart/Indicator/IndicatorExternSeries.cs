@@ -290,11 +290,9 @@ namespace Candlechart.Indicator
             var levels = new [] {50, upperBound, lowerBound};
             foreach (var level in levels)
             {
-                seriesBound.parts.Add(new List<PartSeriesPoint>
-                {
+                seriesBound.parts.Add(new PartSeries.Polyline(                
                     new PartSeriesPoint(1, level),
-                    new PartSeriesPoint(owner.StockSeries.DataCount, level)
-                });
+                    new PartSeriesPoint(owner.StockSeries.DataCount, level)));
             }
         }
     }

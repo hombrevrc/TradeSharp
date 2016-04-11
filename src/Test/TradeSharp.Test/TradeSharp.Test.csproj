@@ -152,6 +152,7 @@
     <Compile Include="Linq\DatabaseQuoteEnquirerTest.cs" />
     <Compile Include="Localisation\NuCheckAllResourcesExist.cs" />
     <Compile Include="Localisation\NuLocalisationManager.cs" />
+    <Compile Include="ComplexMath\FourierTransformTest.cs" />
     <Compile Include="Moq\AccountShareTestDataMaker.cs" />
     <Compile Include="Moq\MockDailyQuoteStorage.cs" />
     <Compile Include="Moq\MockResourceResolver.cs" />

@@ -527,13 +527,13 @@ namespace TradeSharp.Robot.Robot
                     {
                         var index0 = i - 1;
                         var index1 = i - 2;
-                        var percent = Math.Abs(pivots[index0].b - pivots[index1].b) / pivots[index1].b * 100;
+                        var percent = Math.Abs(pivots[index0].price - pivots[index1].price) / pivots[index1].price * 100;
                         if (percent > ThresholdPercent)
                         {
                             // процентный порог пройден, вычисляем уровни
                             // теперь вычисляем уровни расширений
-                            var sign = pivots[index0].b > pivots[index1].b ? -1 : 1;
-                            var delta = Math.Abs(pivots[index0].b - pivots[index1].b);
+                            var sign = pivots[index0].price > pivots[index1].price ? -1 : 1;
+                            var delta = Math.Abs(pivots[index0].price - pivots[index1].price);
 
                             // очищаем все предыдущие уровни расширений как устаревшие
                             // extLevels.Clear();
@@ -542,9 +542,9 @@ namespace TradeSharp.Robot.Robot
                             {
                                 var lev = new ExtensionsLevel
                                 {
-                                    startIndex = countCandles > CandlesInIndexHistory ? countCandles - CandlesInIndexHistory + pivots[index0].a : pivots[index0].a,
+                                    startIndex = countCandles > CandlesInIndexHistory ? countCandles - CandlesInIndexHistory + pivots[index0].index : pivots[index0].index,
                                     length = BarsCount,
-                                    price = pivots[index0].b + delta * sign * (1 + level),
+                                    price = pivots[index0].price + delta * sign * (1 + level),
                                     delta = DalSpot.Instance.GetAbsValue(ticker, DeltaLevel),
                                     goalFrom = -sign
                                 };

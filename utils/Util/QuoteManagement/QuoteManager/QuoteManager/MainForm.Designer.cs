@@ -45,6 +45,7 @@
             this.tabDaysOff = new System.Windows.Forms.TabPage();
             this.tbFilterDaysOffResult = new System.Windows.Forms.RichTextBox();
             this.panelDaysOffTop = new System.Windows.Forms.Panel();
+            this.btnBuildSQLFilter = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.tbDaysOffFilterStartTime = new System.Windows.Forms.TextBox();
             this.btnFilterDaysOff = new System.Windows.Forms.Button();
@@ -55,7 +56,19 @@
             this.tbDaysOffDuration = new System.Windows.Forms.TextBox();
             this.tbStartHourOff = new System.Windows.Forms.TextBox();
             this.tbStartDayOff = new System.Windows.Forms.TextBox();
-            this.btnBuildSQLFilter = new System.Windows.Forms.Button();
+            this.dpMergeEndDate = new System.Windows.Forms.DateTimePicker();
+            this.tbMergeQuotePath = new System.Windows.Forms.TextBox();
+            this.btnMergeBrowseQuote = new System.Windows.Forms.Button();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.btnMergeBrowseCsv = new System.Windows.Forms.Button();
+            this.tbMergeCsvPath = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.btnMergeQuotes = new System.Windows.Forms.Button();
+            this.label8 = new System.Windows.Forms.Label();
+            this.tbMergeTimeframe = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.tbMergeDigits = new System.Windows.Forms.TextBox();
             this.tabControl.SuspendLayout();
             this.pageTotal.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerInfo)).BeginInit();
@@ -64,6 +77,7 @@
             this.splitContainerInfo.SuspendLayout();
             this.contextMenuInfo.SuspendLayout();
             this.panelInfoTop.SuspendLayout();
+            this.pageGaps.SuspendLayout();
             this.tabDaysOff.SuspendLayout();
             this.panelDaysOffTop.SuspendLayout();
             this.SuspendLayout();
@@ -211,6 +225,19 @@
             // 
             // pageGaps
             // 
+            this.pageGaps.Controls.Add(this.label9);
+            this.pageGaps.Controls.Add(this.tbMergeDigits);
+            this.pageGaps.Controls.Add(this.label8);
+            this.pageGaps.Controls.Add(this.tbMergeTimeframe);
+            this.pageGaps.Controls.Add(this.btnMergeQuotes);
+            this.pageGaps.Controls.Add(this.label7);
+            this.pageGaps.Controls.Add(this.label6);
+            this.pageGaps.Controls.Add(this.btnMergeBrowseCsv);
+            this.pageGaps.Controls.Add(this.tbMergeCsvPath);
+            this.pageGaps.Controls.Add(this.label5);
+            this.pageGaps.Controls.Add(this.btnMergeBrowseQuote);
+            this.pageGaps.Controls.Add(this.tbMergeQuotePath);
+            this.pageGaps.Controls.Add(this.dpMergeEndDate);
             this.pageGaps.Location = new System.Drawing.Point(4, 22);
             this.pageGaps.Name = "pageGaps";
             this.pageGaps.Padding = new System.Windows.Forms.Padding(3);
@@ -258,6 +285,16 @@
             this.panelDaysOffTop.Name = "panelDaysOffTop";
             this.panelDaysOffTop.Size = new System.Drawing.Size(584, 123);
             this.panelDaysOffTop.TabIndex = 0;
+            // 
+            // btnBuildSQLFilter
+            // 
+            this.btnBuildSQLFilter.Location = new System.Drawing.Point(153, 94);
+            this.btnBuildSQLFilter.Name = "btnBuildSQLFilter";
+            this.btnBuildSQLFilter.Size = new System.Drawing.Size(106, 23);
+            this.btnBuildSQLFilter.TabIndex = 11;
+            this.btnBuildSQLFilter.Text = "SQL";
+            this.btnBuildSQLFilter.UseVisualStyleBackColor = true;
+            this.btnBuildSQLFilter.Click += new System.EventHandler(this.btnBuildSQLFilter_Click);
             // 
             // label4
             // 
@@ -343,15 +380,119 @@
             this.tbStartDayOff.Size = new System.Drawing.Size(62, 20);
             this.tbStartDayOff.TabIndex = 0;
             // 
-            // btnBuildSQLFilter
+            // dpMergeEndDate
             // 
-            this.btnBuildSQLFilter.Location = new System.Drawing.Point(153, 94);
-            this.btnBuildSQLFilter.Name = "btnBuildSQLFilter";
-            this.btnBuildSQLFilter.Size = new System.Drawing.Size(106, 23);
-            this.btnBuildSQLFilter.TabIndex = 11;
-            this.btnBuildSQLFilter.Text = "SQL";
-            this.btnBuildSQLFilter.UseVisualStyleBackColor = true;
-            this.btnBuildSQLFilter.Click += new System.EventHandler(this.btnBuildSQLFilter_Click);
+            this.dpMergeEndDate.CustomFormat = "yyyy-MM-dd";
+            this.dpMergeEndDate.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.dpMergeEndDate.Location = new System.Drawing.Point(8, 116);
+            this.dpMergeEndDate.Name = "dpMergeEndDate";
+            this.dpMergeEndDate.Size = new System.Drawing.Size(124, 20);
+            this.dpMergeEndDate.TabIndex = 0;
+            // 
+            // tbMergeQuotePath
+            // 
+            this.tbMergeQuotePath.Location = new System.Drawing.Point(8, 16);
+            this.tbMergeQuotePath.Name = "tbMergeQuotePath";
+            this.tbMergeQuotePath.Size = new System.Drawing.Size(391, 20);
+            this.tbMergeQuotePath.TabIndex = 1;
+            // 
+            // btnMergeBrowseQuote
+            // 
+            this.btnMergeBrowseQuote.Location = new System.Drawing.Point(405, 15);
+            this.btnMergeBrowseQuote.Name = "btnMergeBrowseQuote";
+            this.btnMergeBrowseQuote.Size = new System.Drawing.Size(26, 21);
+            this.btnMergeBrowseQuote.TabIndex = 2;
+            this.btnMergeBrowseQuote.Text = "...";
+            this.btnMergeBrowseQuote.UseVisualStyleBackColor = true;
+            this.btnMergeBrowseQuote.Click += new System.EventHandler(this.btnMergeBrowseQuote_Click);
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(8, 3);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(156, 13);
+            this.label5.TabIndex = 3;
+            this.label5.Text = "заменить котировки в файле";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(8, 53);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(124, 13);
+            this.label6.TabIndex = 6;
+            this.label6.Text = "котировками из файла";
+            // 
+            // btnMergeBrowseCsv
+            // 
+            this.btnMergeBrowseCsv.Location = new System.Drawing.Point(405, 65);
+            this.btnMergeBrowseCsv.Name = "btnMergeBrowseCsv";
+            this.btnMergeBrowseCsv.Size = new System.Drawing.Size(26, 21);
+            this.btnMergeBrowseCsv.TabIndex = 5;
+            this.btnMergeBrowseCsv.Text = "...";
+            this.btnMergeBrowseCsv.UseVisualStyleBackColor = true;
+            this.btnMergeBrowseCsv.Click += new System.EventHandler(this.btnMergeBrowseCsv_Click);
+            // 
+            // tbMergeCsvPath
+            // 
+            this.tbMergeCsvPath.Location = new System.Drawing.Point(8, 66);
+            this.tbMergeCsvPath.Name = "tbMergeCsvPath";
+            this.tbMergeCsvPath.Size = new System.Drawing.Size(391, 20);
+            this.tbMergeCsvPath.TabIndex = 4;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(6, 101);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(47, 13);
+            this.label7.TabIndex = 7;
+            this.label7.Text = "до даты";
+            // 
+            // btnMergeQuotes
+            // 
+            this.btnMergeQuotes.Location = new System.Drawing.Point(6, 232);
+            this.btnMergeQuotes.Name = "btnMergeQuotes";
+            this.btnMergeQuotes.Size = new System.Drawing.Size(75, 23);
+            this.btnMergeQuotes.TabIndex = 8;
+            this.btnMergeQuotes.Text = "Склеить";
+            this.btnMergeQuotes.UseVisualStyleBackColor = true;
+            this.btnMergeQuotes.Click += new System.EventHandler(this.btnMergeQuotes_Click);
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(6, 156);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(66, 13);
+            this.label8.TabIndex = 10;
+            this.label8.Text = "таймфрейм";
+            // 
+            // tbMergeTimeframe
+            // 
+            this.tbMergeTimeframe.Location = new System.Drawing.Point(8, 172);
+            this.tbMergeTimeframe.Name = "tbMergeTimeframe";
+            this.tbMergeTimeframe.Size = new System.Drawing.Size(59, 20);
+            this.tbMergeTimeframe.TabIndex = 9;
+            this.tbMergeTimeframe.Text = "60";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(102, 156);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(43, 13);
+            this.label9.TabIndex = 12;
+            this.label9.Text = "знаков";
+            // 
+            // tbMergeDigits
+            // 
+            this.tbMergeDigits.Location = new System.Drawing.Point(105, 172);
+            this.tbMergeDigits.Name = "tbMergeDigits";
+            this.tbMergeDigits.Size = new System.Drawing.Size(59, 20);
+            this.tbMergeDigits.TabIndex = 11;
+            this.tbMergeDigits.Text = "4";
             // 
             // MainForm
             // 
@@ -371,6 +512,8 @@
             this.contextMenuInfo.ResumeLayout(false);
             this.panelInfoTop.ResumeLayout(false);
             this.panelInfoTop.PerformLayout();
+            this.pageGaps.ResumeLayout(false);
+            this.pageGaps.PerformLayout();
             this.tabDaysOff.ResumeLayout(false);
             this.panelDaysOffTop.ResumeLayout(false);
             this.panelDaysOffTop.PerformLayout();
@@ -407,6 +550,19 @@
         private System.Windows.Forms.TextBox tbStartHourOff;
         private System.Windows.Forms.TextBox tbStartDayOff;
         private System.Windows.Forms.Button btnBuildSQLFilter;
+        private System.Windows.Forms.Button btnMergeQuotes;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Button btnMergeBrowseCsv;
+        private System.Windows.Forms.TextBox tbMergeCsvPath;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Button btnMergeBrowseQuote;
+        private System.Windows.Forms.TextBox tbMergeQuotePath;
+        private System.Windows.Forms.DateTimePicker dpMergeEndDate;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.TextBox tbMergeDigits;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.TextBox tbMergeTimeframe;
     }
 }
 

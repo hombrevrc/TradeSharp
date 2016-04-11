@@ -146,8 +146,9 @@ namespace Entity
 
         public string GetBarSettingsFriendlyName(BarSettings sets)
         {
+            if (sets == null) return string.Empty;
             var exists = barSettingsSeries.FirstOrDefault(bs => bs == sets);
-            return !ReferenceEquals(exists, null) ? exists.Title : sets.ToString();
+            return exists == null ? sets.ToString() : exists.Title;
         }
 
         public string GetBarSettingsFriendlyName(string timeframeString)

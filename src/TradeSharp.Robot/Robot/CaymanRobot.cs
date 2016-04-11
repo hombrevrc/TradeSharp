@@ -26,7 +26,7 @@ namespace TradeSharp.Robot.Robot
 
 
         // ReSharper disable ConvertToAutoProperty
-        private int skipCandles = 2;
+        private int skipCandles = 1;
         [PropertyXMLTag("Robot.TakeRange")]
         [DisplayName("Коэффициент TakeRange, %")]
         [Category("Торговые")]
@@ -62,6 +62,20 @@ namespace TradeSharp.Robot.Robot
             get { return takeProfitPoints; }
             set { takeProfitPoints = value; }
         }
+
+        private int highLevel = 50;
+        [PropertyXMLTag("Robot.HighLevel")]
+        [DisplayName("Верхняя граница Каймана")]
+        [Category("Торговые")]
+        [Description("Верхняя граница коридора Каймана")]
+        public int HighLevel { get; set; } = 50;
+
+        private int lowLevel = 50;
+        [PropertyXMLTag("Robot.LowLevel")]
+        [DisplayName("Нижняя граница Каймана")]
+        [Category("Торговые")]
+        [Description("Нижняя граница коридора Каймана")]
+        public int LowLevel { get; set; } = 50;
         // ReSharper restore ConvertToAutoProperty
         #endregion
 
@@ -90,7 +104,9 @@ namespace TradeSharp.Robot.Robot
                 RoundType = RoundType,
                 NewsChannels = NewsChannels,
                 RoundMinVolume = RoundMinVolume,
-                RoundVolumeStep = RoundVolumeStep
+                RoundVolumeStep = RoundVolumeStep,
+                HighLevel = HighLevel,
+                LowLevel = LowLevel
             };
             CopyBaseSettings(bot);
             return bot;

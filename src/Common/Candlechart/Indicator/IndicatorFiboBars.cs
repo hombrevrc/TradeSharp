@@ -141,7 +141,7 @@ namespace Candlechart.Indicator
             if (CalculateHits) DoCalculateHits(pivots);
         }
 
-        private void MakeFiboBars(List<Cortege2<int, float>> pivots)
+        private void MakeFiboBars(List<ZigZagPivot> pivots)
         {
             if (pivots.Count < 2) return;
             var candles = owner.StockSeries.Data.Candles;
@@ -149,11 +149,11 @@ namespace Candlechart.Indicator
 
             // по каждому pivot-у поставить ключевой бар            
             foreach (var pt in pivots)
-                seriesTurnBar.barsKey.Add(new TurnBar(new List<int> { pt.a }, true, owner));
+                seriesTurnBar.barsKey.Add(new TurnBar(new List<int> { pt.index }, true, owner));
             seriesTurnBar.CountTurnBars();
         }
 
-        private void DoCalculateHits(List<Cortege2<int, float>> pivotsZz)
+        private void DoCalculateHits(List<ZigZagPivot> pivotsZz)
         {
             var candles = owner.StockSeries.Data.Candles;
             if (candles.Count == 0) return;
@@ -180,19 +180,19 @@ namespace Candlechart.Indicator
                               pivotsZz.Count, barCandleIndexes.Count(), hitCountsFibo, hitCountsEven);
         }
 
-        private int CalculatePivotsHits(List<Cortege2<int, float>> pivotsZz, 
+        private int CalculatePivotsHits(List<ZigZagPivot> pivotsZz, 
             IEnumerable<int> indexes)
         {
             var hitsCount = 0;
             foreach (var index in indexes)
             {
                 var curIndex = index;
-                if (pivotsZz.Any(p => p.a == curIndex)) hitsCount += estimateMarks[0];
+                if (pivotsZz.Any(p => p.index == curIndex)) hitsCount += estimateMarks[0];
                 for (var i = 1; i < estimateMarks.Length; i++)
                 {
                     int leftIndex = curIndex - i, rightIndex = curIndex + i;
-                    if (pivotsZz.Any(p => p.a == leftIndex)) hitsCount += estimateMarks[i];
-                    if (pivotsZz.Any(p => p.a == rightIndex)) hitsCount += estimateMarks[i];
+                    if (pivotsZz.Any(p => p.index == leftIndex)) hitsCount += estimateMarks[i];
+                    if (pivotsZz.Any(p => p.index == rightIndex)) hitsCount += estimateMarks[i];
                 }
             }
             return hitsCount;

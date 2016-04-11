@@ -218,6 +218,7 @@
     <Compile Include="LookupTypeEditor.cs" />
     <Compile Include="MailPublisher.cs" />
     <Compile Include="MathExtensions.cs" />
+    <Compile Include="ComplexMath\FourierTransform.cs" />
     <Compile Include="MessageLogQueue.cs" />
     <Compile Include="MessageQueues.cs" />
     <Compile Include="NotificationControl\NotificationBox.cs" />

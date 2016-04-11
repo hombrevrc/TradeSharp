@@ -4974,4 +4974,16 @@
   <data name="TitleIndicatorConsumptionMinCount" xml:space="preserve">
     <value>Min candles</value>
   </data>
+  <data name="TitleNarrowChainBound" xml:space="preserve">
+    <value>Period limit</value>
+  </data>
+  <data name="TitleCorrectionColor" xml:space="preserve">
+    <value>Corrections' color</value>
+  </data>
+  <data name="TitleTrendColor" xml:space="preserve">
+    <value>Trends' color</value>
+  </data>
+  <data name="TitleCorrectionPercent" xml:space="preserve">
+    <value>Correction's percent</value>
+  </data>
 </root>

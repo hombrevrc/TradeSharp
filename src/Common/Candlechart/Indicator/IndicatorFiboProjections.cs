@@ -19,8 +19,8 @@ namespace Candlechart.Indicator
     {
         struct ExtremumPair
         {
-            public Cortege2<int, float> start;
-            public Cortege2<int, float> end;
+            public ZigZagPivot start;
+            public ZigZagPivot end;
         }
 
         #region Настройки
@@ -247,8 +247,8 @@ namespace Candlechart.Indicator
                     // добавить проекцию
                     pairs.Add(new ExtremumPair
                         {
-                            start = new Cortege2<int, float>(fractals[j].a, fractals[j].c),
-                            end = new Cortege2<int, float>(fract.a, fract.c),
+                            start = new ZigZagPivot(fractals[j].a, fractals[j].c),
+                            end = new ZigZagPivot(fract.a, fract.c),
                         });
                     // запомнить крайнюю точку
                     lastExtremum = fractals[j].c;
@@ -291,16 +291,16 @@ namespace Candlechart.Indicator
                 var a = pair.start;
                 var b = pair.end;
                 // получить массив "уровней"
-                var delta = a.b - b.b;
-                var levels = fiboLevels.Select(proj => b.b + delta * proj).ToList();
+                var delta = a.price - b.price;
+                var levels = fiboLevels.Select(proj => b.price + delta * proj).ToList();
                 // пройтись по свечкам до fiboProjLength и найти самый верхний "затронутый" уровень
-                var lastCandle = b.a + fiboProjLength;
+                var lastCandle = b.index + fiboProjLength;
                 lastCandle = lastCandle > candles.Count ? candles.Count : lastCandle;
                 // 1 - проекции строятся вверх, -1 - вниз
-                var fiboDir = a.b > b.b ? 1 : -1;
+                var fiboDir = a.price > b.price ? 1 : -1;
 
                 var reachedLevel = GetFiboLevelReached(
-                    b.a + 1, lastCandle, levels, threasholdAbs, fiboDir, levelGrades);
+                    b.index + 1, lastCandle, levels, threasholdAbs, fiboDir, levelGrades);
 
                 if (reachedLevel == -1) continue; // расширение не строится
                 // проверить, не добавлен ли такой же уровень
@@ -308,10 +308,10 @@ namespace Candlechart.Indicator
                 foreach (var existedSpan in seriesProj.data)
                 {
                     if (existedSpan.points.Count == 2)
-                        if (existedSpan.points[0].a == a.a &&
-                            existedSpan.points[0].b == a.b &&
-                            existedSpan.points[1].a == b.a &&
-                            existedSpan.points[1].b == b.b)
+                        if (existedSpan.points[0].a == a.index &&
+                            existedSpan.points[0].b == a.price &&
+                            existedSpan.points[1].a == b.index &&
+                            existedSpan.points[1].b == b.price)
                         {
                             spanAdded = true;
                             break;
@@ -331,8 +331,8 @@ namespace Candlechart.Indicator
                     Owner = seriesProj,
                     HideLine = HideProjLine
                 };
-                span.points.Add(new Cortege2<int, float> { a = a.a, b = a.b });
-                span.points.Add(new Cortege2<int, float> { a = b.a, b = b.b });
+                span.points.Add(new Cortege2<int, float> { a = a.index, b = a.price });
+                span.points.Add(new Cortege2<int, float> { a = b.index, b = b.price });
                 span.CalculateProjections();
                 span.Name = string.Format("{0} {1} ({2} {3}%)", Localizer.GetString("TitleFibonacciProjectionShort"),
                                           seriesProj.data.Count + 1, Localizer.GetString("TitleZigzagShort"),

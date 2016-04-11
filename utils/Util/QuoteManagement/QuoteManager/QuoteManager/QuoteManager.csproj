@@ -73,6 +73,7 @@
   <ItemGroup>
     <Compile Include="BL\QuoteFileInfo.cs" />
     <Compile Include="BL\QuoteSaver.cs" />
+    <Compile Include="BL\SharpMt4QuoteMerger.cs" />
     <Compile Include="BL\StandardDayOff.cs" />
     <Compile Include="IndexMakerForm.cs">
       <SubType>Form</SubType>

@@ -20,7 +20,7 @@ namespace Candlechart.Indicator
         #region members
 
         [Browsable(false)]
-        public override string Name { get { return Localizer.GetString("TitleStochastic"); } }
+        public override string Name => Localizer.GetString("TitleStochastic");
 
         private int period = 20;
         [LocalizedDisplayName("TitlePeriod")]
@@ -130,17 +130,13 @@ namespace Candlechart.Indicator
 
             // границы
             if (lowerBound > 0)
-                seriesBounds.parts.Add(new List<PartSeriesPoint>
-                                       {
+                seriesBounds.parts.Add(new PartSeries.Polyline(
                                            new PartSeriesPoint(1, lowerBound),
-                                           new PartSeriesPoint(source.DataCount, lowerBound)
-                                       });
+                                           new PartSeriesPoint(source.DataCount, lowerBound)));
             if (upperBound > 0 && upperBound < 100)
-            seriesBounds.parts.Add(new List<PartSeriesPoint>
-                                       {
+            seriesBounds.parts.Add(new PartSeries.Polyline(
                                            new PartSeriesPoint(1, upperBound),
-                                           new PartSeriesPoint(source.DataCount, upperBound)
-                                       });            
+                                           new PartSeriesPoint(source.DataCount, upperBound)));            
 
             queue = new RestrictedQueue<float>(period);
             queueMA = new RestrictedQueue<float>(periodMA);

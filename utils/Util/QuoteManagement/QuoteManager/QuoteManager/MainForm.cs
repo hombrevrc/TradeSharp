@@ -10,7 +10,6 @@ using QuoteManager.BL;
 using System.Linq;
 using System.Threading;
 using Entity;
-using TradeSharp.Contract.Entity;
 using TradeSharp.Util;
 
 namespace QuoteManager
@@ -227,6 +226,45 @@ namespace QuoteManager
             }
             startOff = startWeekDay.AddDays(StandardDaysOff.startDayOff).AddHours(StandardDaysOff.startHourOff);
             endOff = startWeekDay.AddDays(StandardDaysOff.startDayOff).AddHours(StandardDaysOff.startHourOff + StandardDaysOff.durationHours);
+        }
+
+        private void btnMergeBrowseQuote_Click(object sender, EventArgs e)
+        {
+            BrowseMergeFile("quote", "Файл котировок T#", tbMergeQuotePath);
+        }
+
+        private void btnMergeBrowseCsv_Click(object sender, EventArgs e)
+        {
+            BrowseMergeFile("csv", "Файл котировок MT4 (csv)", tbMergeCsvPath);
+        }
+
+        private void BrowseMergeFile(string ext, string title, TextBox target)
+        {
+            var dlg = new OpenFileDialog
+            {
+                Title = title,
+                DefaultExt = ext,
+                Filter = $"Файлы *.{ext}|*.{ext}|Все файлы (*.*)|*.*",
+                FilterIndex = 0,
+                CheckFileExists = true
+            };
+
+            if (dlg.ShowDialog() == DialogResult.OK)
+                target.Text = dlg.FileName;
+        }
+
+        private void btnMergeQuotes_Click(object sender, EventArgs e)
+        {
+            var endDate = dpMergeEndDate.Value;
+            var pathQuote = tbMergeQuotePath.Text;
+            if (!File.Exists(pathQuote)) return;
+            var pathCsv = tbMergeCsvPath.Text;
+            if (!File.Exists(pathCsv)) return;
+
+            var timeframe = tbMergeTimeframe.Text.ToInt();
+            var digits = tbMergeDigits.Text.ToInt();
+
+            new SharpMt4QuoteMerger(pathQuote, pathCsv, endDate, timeframe, digits).Merge();
         }
     }
 }

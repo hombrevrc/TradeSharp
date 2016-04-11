@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data.Entity.Validation;
 using System.Data.Objects;
-using System.Diagnostics;
 using System.Linq;
 using Entity;
 using TradeSharp.Contract.Contract;
@@ -425,7 +424,7 @@ namespace TradeSharp.Server.Repository
                 }
                 catch (DbEntityValidationException dbEx)
                 {
-                    Logger.Error("SubscribeUserOnPortfolio - ошибка сохранения портфеля");
+                    Logger.Error($"SubscribeUserOnPortfolio - ошибка сохранения портфеля {portfolio}");
                     foreach (var validationErrors in dbEx.EntityValidationErrors)
                     {
                         foreach (var validationError in validationErrors.ValidationErrors)

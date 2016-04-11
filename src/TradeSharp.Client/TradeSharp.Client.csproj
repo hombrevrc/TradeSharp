@@ -153,6 +153,7 @@
     <Compile Include="BL\Script\Mt4ImportDlg.Designer.cs">
       <DependentUpon>Mt4ImportDlg.cs</DependentUpon>
     </Compile>
+    <Compile Include="BL\Script\NarrowRangeMarkerScript.cs" />
     <Compile Include="BL\Script\PriceDistributionForm.cs">
       <SubType>Form</SubType>
     </Compile>

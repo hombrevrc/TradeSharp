@@ -189,12 +189,15 @@ namespace Entity
         
         public static void SaveInFile(string fileName, string symbol, List<CandleData> candles)
         {
-            var curDate = new DateTime(1780, 1, 1);
             var precision = DalSpot.Instance.GetPrecision(symbol);
-            //var format = "f" + precision; // old format
-            var newFormat = "f" + (precision + 1); // new format
-            var precision10 = precision == 4 ? 10000 : precision == 2 ? 100 : (int) Math.Pow(10, precision);
+            SaveInFile(fileName, precision, candles);
+        }
 
+        public static void SaveInFile(string fileName, int precision, List<CandleData> candles)
+        {
+            var curDate = new DateTime(1780, 1, 1);
+            var precision10 = precision == 4 ? 10000 : precision == 2 ? 100 : (int)Math.Pow(10, precision);
+            var newFormat = "f" + (precision + 1); // new format
             using (var sw = new StreamWriter(fileName, false, Encoding.ASCII))
             {
                 foreach (var candle in candles)
@@ -202,16 +205,12 @@ namespace Entity
                     if (candle.timeOpen.Date != curDate)
                     {
                         curDate = candle.timeOpen.Date;
-                        sw.WriteLine(string.Format("{0:ddMMyyyy}", curDate));                        
+                        sw.WriteLine($"{curDate:ddMMyyyy}");
                     }
-                    // old format
-                    /*sw.WriteLine(string.Format("{0:HHmm} {1} {2} {3}/{4}/{5}",
-                        candle.timeOpen, candle.open.ToString(format, CultureInfo.InvariantCulture),
-                        candle.GetHlcOffsetHEX(precision10), candle.high, candle.low, candle.close));*/
                     // new format
-                    sw.WriteLine(string.Format("{0:HHmm} {1} {2}",
-                        candle.timeOpen, candle.open.ToString(newFormat, CultureInfo.InvariantCulture),
-                        candle.GetHlcOffsetHEX16(precision10), candle.high, candle.low, candle.close));
+                    sw.WriteLine("{0:HHmm} {1} {2}", 
+                        candle.timeOpen, candle.open.ToString(newFormat, CultureInfo.InvariantCulture), 
+                        candle.GetHlcOffsetHEX16(precision10));
                 }
             }
         }

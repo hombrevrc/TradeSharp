@@ -89,21 +89,14 @@ namespace Candlechart.Indicator
             if (count == 0 || Period == 0 || count <= (2 * Period)) return;
 
             // границы - -100 ... 100
-            seriesBounds.parts.Add(new List<PartSeriesPoint>
-                                       {
-                                           new PartSeriesPoint(1, -100M),
-                                           new PartSeriesPoint(count, -100M)
-                                       });
-            seriesBounds.parts.Add(new List<PartSeriesPoint>
-                                       {
+            seriesBounds.parts.Add(new PartSeries.Polyline(new PartSeriesPoint(1, -100M),
+                                           new PartSeriesPoint(count, -100M)));
+            seriesBounds.parts.Add(new PartSeries.Polyline(
                                            new PartSeriesPoint(1, 100M),
-                                           new PartSeriesPoint(count, 100M)
-                                       });
-            seriesBounds.parts.Add(new List<PartSeriesPoint>
-                                       {
+                                           new PartSeriesPoint(count, 100M)));
+            seriesBounds.parts.Add(new PartSeries.Polyline(
                                            new PartSeriesPoint(1, 0),
-                                           new PartSeriesPoint(count, 0)
-                                       });
+                                           new PartSeriesPoint(count, 0)));
 
             // пустое начало графика
             for (var i = 0; i < Period + Period; i++)

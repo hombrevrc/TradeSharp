@@ -196,12 +196,15 @@ namespace Entity
 
         public override bool Equals(object obj)
         {
+            if (obj == null) return false;
             if (obj is BarSettings == false) return false;
             return Equals((BarSettings) obj);
         }
 
         public static bool operator ==(BarSettings a, BarSettings b)
         {
+            if (ReferenceEquals(a, null) && ReferenceEquals(b, null))
+                return true;
             if (ReferenceEquals(a, null) || ReferenceEquals(b, null))
                 return false;
             return a.Equals(b);
@@ -209,6 +212,8 @@ namespace Entity
 
         public static bool operator !=(BarSettings a, BarSettings b)
         {
+            if (ReferenceEquals(a, null) && ReferenceEquals(b, null))
+                return false;
             if (ReferenceEquals(a, null) || ReferenceEquals(b, null))
                 return true;
             return !a.Equals(b);

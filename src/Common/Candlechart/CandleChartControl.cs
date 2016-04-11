@@ -789,6 +789,10 @@ namespace Candlechart
             candlePacker = new CandlePacker(chart.Timeframe);
             foreach (var minuteCandle in minuteCandles)
             {
+                // фильтровать выходные дни
+                if (chart.Timeframe.Intervals[0] == 1440 &&
+                    !WorkingDay.Instance.IsWorkingDay(minuteCandle.timeOpen)) continue;
+
                 var candle = candlePacker.UpdateCandle(minuteCandle);
                 if (candle != null) chart.StockSeries.Data.Candles.Add(candle);
             }

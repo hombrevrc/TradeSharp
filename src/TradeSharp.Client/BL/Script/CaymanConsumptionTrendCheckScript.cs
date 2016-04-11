@@ -87,11 +87,11 @@ namespace TradeSharp.Client.BL.Script
 
             for (var i = 1; i < pivots.Count; i++)
             {
-                var deltaAbs = Math.Abs(pivots[i].b - pivots[i - 1].b);
+                var deltaAbs = Math.Abs(pivots[i].price - pivots[i - 1].price);
                 trends.Add(new Trend
                 {
-                    startIndex = pivots[i - 1].a,
-                    endIndex = pivots[i].a,
+                    startIndex = pivots[i - 1].index,
+                    endIndex = pivots[i].index,
                     points = (decimal) deltaAbs * pointCost
                 });
             }

@@ -240,13 +240,13 @@ namespace TradeSharp.Robot.Robot
             
             // отметить вершину ЗЗ            
             if (ShowFiboTurnBars && (markedZigZagPivots.Count == 0 ||
-                markedZigZagPivots[markedZigZagPivots.Count - 1] < ptA.a))
+                markedZigZagPivots[markedZigZagPivots.Count - 1] < ptA.index))
             {
-                markedZigZagPivots.Add(ptA.a);
-                events.Add(new RobotHint(ticker, Graphics[0].b.ToString(), "З.З", "З.З", "z", ptA.b)
+                markedZigZagPivots.Add(ptA.index);
+                events.Add(new RobotHint(ticker, Graphics[0].b.ToString(), "З.З", "З.З", "z", ptA.price)
                 {
                     ColorFill = Color.Olive,
-                    Time = candles[ptA.a].timeOpen,
+                    Time = candles[ptA.index].timeOpen,
                     RobotHintType = RobotHint.HintType.Коментарий
                 }.ToString());
             }
@@ -254,17 +254,17 @@ namespace TradeSharp.Robot.Robot
             // соблюдаются ли условия входа в рынок?
             // - уровень Фибо пройден N-м баром Фибо
             // - с клоза того бара рынок вырос (для продаж)
-            var fiboLevel = ptA.b + (ptA.b - ptB.b)*fiboLevels[0];
+            var fiboLevel = ptA.price + (ptA.price - ptB.price)*fiboLevels[0];
             //var potentialDealSide = screenPointA.b > screenPointB.b ? -1 : 1;
             var fiboBreachIndex = -1;
             float fiboBreachPrice = 0;
             foreach (var fiboMember in fiboBars)
             {
-                var index = fiboMember + ptB.a - 1;
+                var index = fiboMember + ptB.index - 1;
                 if (index >= candles.Count) break;
                 // свеча закрылась дальше расширения Фибо?
                 var close = candles[index].close;
-                var fiboReached = ptA.b > ptB.b ? close > fiboLevel : close < fiboLevel;
+                var fiboReached = ptA.price > ptB.price ? close > fiboLevel : close < fiboLevel;
                 if (!fiboReached) continue;
                 fiboBreachIndex = index;
                 fiboBreachPrice = close;
@@ -279,20 +279,20 @@ namespace TradeSharp.Robot.Robot
                 // потенциальные сделки
                 for (var i = fiboBreachIndex + 1; i < candles.Count - 1; i++)
                 {
-                    if ((candles[i].close > fiboBreachPrice && ptA.b > ptB.b) ||
-                        (candles[i].close < fiboBreachPrice && ptA.b < ptB.b))
+                    if ((candles[i].close > fiboBreachPrice && ptA.price > ptB.price) ||
+                        (candles[i].close < fiboBreachPrice && ptA.price < ptB.price))
                     {
                         fiboBreachPrice = candles[i].close;
                         countDeals++;
                     }
                 }
-                var isEnterBetter = (candle.close > fiboBreachPrice && ptA.b > ptB.b) ||
-                                    (candle.close < fiboBreachPrice && ptA.b < ptB.b);
+                var isEnterBetter = (candle.close > fiboBreachPrice && ptA.price > ptB.price) ||
+                                    (candle.close < fiboBreachPrice && ptA.price < ptB.price);
 
                 if ((isEnterBetter || fiboBreachIndex == candles.Count - 1) && 
                     countDeals <= maxDealsInSeries)
                 {// войти в рынок, закрыв противонаправленные сделки
-                    var dealSide = ptA.b > ptB.b ? -1 : 1;
+                    var dealSide = ptA.price > ptB.price ? -1 : 1;
 
                     List<MarketOrder> orders;
                     robotContext.GetMarketOrders(robotContext.AccountInfo.ID, out orders);

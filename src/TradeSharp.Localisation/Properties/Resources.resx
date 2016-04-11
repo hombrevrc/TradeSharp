@@ -4974,4 +4974,16 @@
   <data name="TitleIndicatorConsumptionMinCount" xml:space="preserve">
     <value>Мин. свечей</value>
   </data>
+  <data name="TitleNarrowChainBound" xml:space="preserve">
+    <value>Длина периода</value>
+  </data>
+  <data name="TitleCorrectionColor" xml:space="preserve">
+    <value>Цвет коррекции</value>
+  </data>
+  <data name="TitleTrendColor" xml:space="preserve">
+    <value>Цвет тренда</value>
+  </data>
+  <data name="TitleCorrectionPercent" xml:space="preserve">
+    <value>Процент коррекции</value>
+  </data>
 </root>

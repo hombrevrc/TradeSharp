@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using Candlechart.ChartMath;
 using Candlechart.Core;
+using Entity;
 
 namespace Candlechart.Series
 {
@@ -9,11 +11,33 @@ namespace Candlechart.Series
     /// Серия ломаных
     /// </summary>
     public class PartSeries : Series
-    {       
+    {
+        public class Polyline
+        {
+            public List<PartSeriesPoint> parts;
+
+            public Color? color;
+
+            public Polyline()
+            {
+                parts = new List<PartSeriesPoint>();
+            }
+
+            public Polyline(params PartSeriesPoint[] lines)
+            {
+                parts = lines.ToList();
+            }
+
+            public Polyline(Color cl, params PartSeriesPoint[] lines) : this (lines)
+            {
+                color = cl;
+            }
+        }
+          
         /// <summary>
         /// отрезки (индекс данных - цена)
         /// </summary>
-        public List<List<PartSeriesPoint>> parts = new List<List<PartSeriesPoint>>();
+        public List<Polyline> parts = new List<Polyline>();
 
         public override int DataCount { get { return parts.Count; } }
 
@@ -27,15 +51,10 @@ namespace Candlechart.Series
             set { lineColor = value; }
         }
 
-        private float markerRadius;
         /// <summary>
         /// радиус окружности-маркера (0 - не рисуется)
         /// </summary>
-        public float MarkerRadius
-        {
-            get { return markerRadius; }
-            set { markerRadius = value; }
-        }
+        public float MarkerRadius { get; set; }
 
         public PartSeries(string name)
             : base(name)
@@ -57,33 +76,32 @@ namespace Candlechart.Series
 
         private void DrawParts(Graphics g, RectangleD worldRect, Rectangle canvasRect)
         {
-            using (var linePen = MakePen(lineColor))                
+            using (var penStor = new PenStorage())
             {
-                using (var markerPen = new Pen(LineColor, 1))
+                var markerPen = penStor.GetPen(lineColor);
+                using (var markerBrush = new SolidBrush(Color.White))
                 {
-                    using (var markerBrush = new SolidBrush(Color.White))
-                    {
-                        foreach (var chain in parts)
-                        {
-                            DrawRegion(chain, g, worldRect, canvasRect, linePen, markerPen, markerBrush);
-                        }
-                    }
+                    foreach (var chain in parts)
+                        DrawRegion(chain, g, worldRect, canvasRect, penStor, markerPen, markerBrush);
                 }
             }
         }
 
-        private void DrawRegion(List<PartSeriesPoint> chain, Graphics g, 
-            RectangleD worldRect, Rectangle canvasRect, 
-            Pen linePen, Pen markerPen, Brush markerBrush)
+        private void DrawRegion(Polyline chain, Graphics g, 
+            RectangleD worldRect, Rectangle canvasRect,
+            PenStorage penStor, Pen markerPen, Brush markerBrush)
         {
             var linePoints = new List<PointF>();
-            for (var i = 0; i < chain.Count; i++)
+            for (var i = 0; i < chain.parts.Count; i++)
             {
                 var p = Conversion.WorldToScreen(
-                    new PointD(chain[i].index - 0.5, (double) chain[i].quote), worldRect, canvasRect);
+                    new PointD(chain.parts[i].index - 0.5, (double) chain.parts[i].quote), worldRect, canvasRect);
                 linePoints.Add(new PointF((float)p.X, (float)p.Y));
             }
-            g.DrawLines(linePen, linePoints.ToArray());
+
+            var pen = penStor.GetPen(chain.color ?? lineColor);
+
+            g.DrawLines(pen, linePoints.ToArray());
             if (MarkerRadius > 0)
             {
                 foreach (var point in linePoints)
