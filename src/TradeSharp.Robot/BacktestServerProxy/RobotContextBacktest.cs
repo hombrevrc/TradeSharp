@@ -114,13 +114,21 @@ namespace TradeSharp.Robot.BacktestServerProxy
 
         private decimal dailyHwm, hwm, maxDailyDrawdown, maxDrawdown, maxAbsDrawdown;
 
+        private DateTime highWaterMarkTime, drawdownRelTime, drawDownStartTime;
+
         private DateTime? prevModelTime;
+
+        private DateTime curModelTime;
 
         public decimal MaxDailyDrawDown => maxDailyDrawdown;
 
         public decimal MaxDrawDown => maxDrawdown;
 
         public decimal MaxAbsDrawDown => maxAbsDrawdown;
+
+        public DateTime DrawDownStartTime => drawDownStartTime;
+
+        public DateTime DrawdownRelTime => drawdownRelTime;
         #endregion
 
         #region Предустановленные переменные
@@ -159,6 +167,10 @@ namespace TradeSharp.Robot.BacktestServerProxy
             firstDateOfTest = null;
             startModelTime = null;
             endModelTime = null;
+            hwm = 0;
+            maxAbsDrawdown = 0;
+            maxDailyDrawdown = 0;
+            maxDrawdown = 0;
             // начальная инициализация
             robotLogEntries.Clear();
             previousQuotes = new UnsafeStorage<string, QuoteData>();
@@ -242,6 +254,7 @@ namespace TradeSharp.Robot.BacktestServerProxy
             if (candles.Count == 0) return true;
 
             modelTime = candles[0].b.timeOpen;
+            curModelTime = modelTime;
             startModelTime = startModelTime ?? modelTime;
             endModelTime = modelTime;
 
@@ -283,11 +296,12 @@ namespace TradeSharp.Robot.BacktestServerProxy
             
             // обновить кривые средств и экспозиции
             if (historyStartoffPassed)
+            {
                 UpdateDailyEquityExposure(modelTime.Date);
-
-            // дневное "проседание"
-            CalcMaxDailyDrawDown(modelTime);            
-
+                // дневное "проседание"
+                CalcMaxDailyDrawDown(modelTime);
+            }
+                    
             previousQuotes.UpdateValues(names, quotes);
             if (!testCursor.MoveNext()) return true;
             if (timeTo < modelTime.Date) return true;
@@ -296,6 +310,9 @@ namespace TradeSharp.Robot.BacktestServerProxy
 
         private void CalcMaxDailyDrawDown(DateTime modelTime)
         {
+            //if (highWaterMarkTime == default(DateTime)) highWaterMarkTime = modelTime;
+            //if (drawdownRelTime == default(DateTime)) drawdownRelTime = modelTime;
+            
             if (historyStartoffPassed && prevModelTime.HasValue)
             {
                 if (prevModelTime.Value.Date != modelTime.Date)
@@ -310,12 +327,17 @@ namespace TradeSharp.Robot.BacktestServerProxy
                             : AccountInfo.Equity <= 0
                                 ? -100
                                 : -100 * (dailyHwm - AccountInfo.Equity) / dailyHwm;
-                        if (drawDown < maxDailyDrawdown) maxDailyDrawdown = drawDown;
+                        if (drawDown < maxDailyDrawdown)
+                            maxDailyDrawdown = drawDown;
                     }
                 }
             }
 
-            if (AccountInfo.Equity > hwm) hwm = AccountInfo.Equity;
+            if (AccountInfo.Equity > hwm)
+            {
+                hwm = AccountInfo.Equity;
+                highWaterMarkTime = modelTime;
+            }
             else
             {
                 var drawDown = hwm == 0
@@ -326,7 +348,11 @@ namespace TradeSharp.Robot.BacktestServerProxy
                 var absDrawdown = AccountInfo.Equity - hwm;
                 if (absDrawdown < maxAbsDrawdown) maxAbsDrawdown = absDrawdown;
                 if (drawDown < maxDrawdown)
+                {
                     maxDrawdown = drawDown;
+                    drawdownRelTime = modelTime;
+                    drawDownStartTime = highWaterMarkTime;
+                }
             }
 
             prevModelTime = modelTime;
@@ -392,7 +418,7 @@ namespace TradeSharp.Robot.BacktestServerProxy
                                    : (order.Side == 1
                                           ? quotesStorage.ReceiveValue(order.Symbol).ask
                                           : quotesStorage.ReceiveValue(order.Symbol).bid);
-            order.TimeEnter = quotesStorage.ReceiveValue(order.Symbol).time;
+            order.TimeEnter = curModelTime; //quotesStorage.ReceiveValue(order.Symbol).time;
             order.State = PositionState.Opened;
             order.ID = nextOrderId++;
             positions.Add(order);
@@ -706,7 +732,7 @@ namespace TradeSharp.Robot.BacktestServerProxy
                     if ((pos.TakeProfit < pos.PriceExit && pos.Side == 1) || (pos.TakeProfit > pos.PriceExit && pos.Side == -1))
                         pos.PriceExit = pos.TakeProfit;
                 }
-            pos.TimeExit = quote.time;
+            pos.TimeExit = curModelTime; //quote.time;
             pos.State = PositionState.Closed;
             var deltaAbs = pos.Side * (pos.PriceExit.Value - pos.PriceEnter);
             pos.ResultPoints = DalSpot.Instance.GetPointsValue(pos.Symbol, deltaAbs);

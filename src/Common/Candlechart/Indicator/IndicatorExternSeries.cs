@@ -188,34 +188,15 @@ namespace Candlechart.Indicator
             if (string.IsNullOrEmpty(Path) || !File.Exists(Path)) return;
             var timeframe = DeriveTimeframeMinutes();
 
-            var candles = new Dictionary<DateTime, CandleData>();
-            using (var sr = new StreamReader(Path))
+            var candlesList = CsvReader.ReadCandles(Path, timeframe);
+            for (var i = 1; i < candlesList.Count; i++)
             {
-                while (!sr.EndOfStream)
-                {
-                    var line = sr.ReadLine();
-                    if (string.IsNullOrEmpty(line)) continue;
-                    var parts = line.Split(new[] {' ', (char) 9}, StringSplitOptions.RemoveEmptyEntries);
-                    if (parts.Length != 7) continue;
-                    var dateStr = parts[0] + " " + parts[1];
-
-                    //KS_EURUSD Bid
-                    //TIME	OPEN	HIGH	LOW	CLOSE	VOLUME	
-                    //29/07/15 11:00:00	41,18	41,18	40,37	40,52	12,00
-                    DateTime date;
-                    if (!DateTime.TryParseExact(dateStr, "dd/MM/yy HH:mm:ss", CultureProvider.Common, DateTimeStyles.None, out date))
-                        continue;
-                    var open = parts[2].Replace(',', '.').ToFloatUniformSafe();
-                    var high = parts[3].Replace(',', '.').ToFloatUniformSafe();
-                    var low = parts[4].Replace(',', '.').ToFloatUniformSafe();
-                    var close = parts[5].Replace(',', '.').ToFloatUniformSafe();
-
-                    if (!open.HasValue || !close.HasValue || !high.HasValue || !low.HasValue)
-                        continue;
-                    candles.Add(date, new CandleData(open.Value, high.Value, low.Value, close.Value,
-                        date, date.AddMinutes(timeframe)));                    
-                }
+                var c = candlesList[i];
+                c.open = candlesList[i - 1].close;
+                if (c.high < c.open) c.high = c.open;
+                if (c.low > c.open) c.low = c.open;
             }
+            var candles = candlesList.DistinctBy(c => c.timeOpen).ToDictionary(c => c.timeOpen, c => c);
 
             AdjustAndAddCandles(candles, timeframe);
         }

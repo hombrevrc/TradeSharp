@@ -54,10 +54,13 @@ namespace TradeSharp.QuoteService
         {
             // получение котировок
             filter = new QuoteFilter();
-            var feederType = AppConfig.GetStringParam("Feeder", "Test");
-            if (feederType.ToUpper() == "UDP") MakeUDPFeeder();
-            if (feederType.ToUpper() == "TCP") MakeTCPFeeder();
-            if (feederType.ToUpper() == "TEST") MakeRandomFeeder();
+            var feederType = AppConfig.GetStringParam("Feeder", "Test").ToUpper();
+            if (feederType == "UDP") MakeUDPFeeder();
+            if (feederType == "TCP") MakeTCPFeeder();
+            if (feederType == "WEBSOCK") MakeWebSocketFeeder();
+            if (feederType == "TEST") MakeRandomFeeder();
+
+
             feeder.OnQuotesReceived += FeederOnQuotesReceived;
             indexMaker = new IndexMaker();
 
@@ -303,6 +306,11 @@ namespace TradeSharp.QuoteService
         private void MakeTCPFeeder()
         {
             feeder = new TCPFeeder();
+        }
+
+        private void MakeWebSocketFeeder()
+        {
+            feeder = new WebSocketQuoteFeeder(AppConfig.GetStringParam("WebSocketFeeder.URI", "ws://91.185.184.13:19004/"));
         }
 
         private void StartWebServer()

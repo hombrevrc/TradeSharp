@@ -106,6 +106,7 @@
     <Compile Include="Robot\BaseRobot.cs" />
     <Compile Include="Robot\BollingerRobot.cs" />
     <Compile Include="Robot\CaymanRobot.cs" />
+    <Compile Include="Robot\CounterNettoRobot.cs" />
     <Compile Include="Robot\DoubleTopRobot.cs" />
     <Compile Include="Robot\DrawDownStopoutChecker.cs" />
     <Compile Include="Robot\FiboLevelRobot.cs" />

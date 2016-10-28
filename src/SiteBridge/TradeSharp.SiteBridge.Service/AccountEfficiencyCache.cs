@@ -167,7 +167,10 @@ namespace TradeSharp.SiteBridge.Service
             try
             {
                 var pfs = dicPerformers.ReceiveValue(accountId);
-                return pfs == null ? null : pfs.MakeCopy(needOpenedDeals, needClosedDeals, false);
+                var result = pfs == null ? null : pfs.MakeCopy(needOpenedDeals, needClosedDeals, false);
+                if (result != null && result.Statistics != null)
+                    AddFakeSubscribers(result.Statistics);
+                return result;
             }
             catch (Exception ex)
             {
@@ -182,7 +185,12 @@ namespace TradeSharp.SiteBridge.Service
             if (!cacheUpdated) return null;
             try
             {
-                return (from pair in dicPerformers.ReceiveAllData() where pair.Value.Statistics.Service == signalCatId select pair.Value.Statistics).FirstOrDefault();
+                var val = (from pair in dicPerformers.ReceiveAllData()
+                        where pair.Value.Statistics.Service == signalCatId
+                        select pair.Value.Statistics).FirstOrDefault();
+                if (val != null)
+                    AddFakeSubscribers(val);
+                return val;
             }
             catch (Exception ex)
             {
@@ -197,6 +205,8 @@ namespace TradeSharp.SiteBridge.Service
             try
             {
                 var stat = dicPerformers.ReceiveValue(accountId);
+                if (stat != null && stat.Statistics != null)
+                    AddFakeSubscribers(stat.Statistics);
                 return stat == null ? null : stat.Statistics;
             }
             catch (Exception ex)
@@ -397,6 +407,18 @@ namespace TradeSharp.SiteBridge.Service
             if (y == null)
                 return 1;
             return x.UserScore.CompareTo(y.UserScore);
+        }
+
+        private static void AddFakeSubscribers(PerformerStat s)
+        {
+            // иногда от программиста требуют написать такое
+            var fakeSubscriberStats = AppConfig.GetStringParam("FakeSubscribers", "").ToIntArrayUniform();
+            var fakeDeltaSubs = new Dictionary<int, int>();
+            for (var i = 0; i < fakeSubscriberStats.Length / 2; i++)
+                fakeDeltaSubs.Add(fakeSubscriberStats[i * 2], fakeSubscriberStats[i * 2 + 1]);
+            int delta;
+            fakeDeltaSubs.TryGetValue(s.Account, out delta);
+            s.SubscriberCount += delta;
         }
     }    
 }

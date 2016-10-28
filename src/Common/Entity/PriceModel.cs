@@ -20,6 +20,8 @@ namespace Entity
 
         private readonly ValueRange tailLeft, tailRight, body;
 
+        private readonly int tailRandomLimit, halfOfMaxInt;
+
         public PriceModel(List<double> deltas) : this (deltas, 0.1)
         {            
         }
@@ -30,18 +32,22 @@ namespace Entity
             // отсечь 0.2% + 0.2% результатов "справа" и "слева" как "хвосты"
             var tailCount = (int)(deltas.Count * this.tailPercent / 100);
             var bodyCount = deltas.Count - tailCount * 2;
-
-            tailLeft = new ValueRange(deltas.Take(tailCount).ToArray(), StepsPerTail);
+            if (tailCount > 0)
+            {
+                tailLeft = new ValueRange(deltas.Take(tailCount).ToArray(), StepsPerTail);
+                tailRight = new ValueRange(deltas.Skip(tailCount + bodyCount).ToArray(), StepsPerTail);
+            }
             body = new ValueRange(deltas.Skip(tailCount).Take(bodyCount).ToArray(), StepsPerBody);
-            tailRight = new ValueRange(deltas.Skip(tailCount + bodyCount).ToArray(), StepsPerTail);
+            tailRandomLimit = (int) (int.MaxValue * tailPercent);
+            halfOfMaxInt = int.MaxValue / 2;
         }
 
         public double GetRandomDelta()
         {
-            var isTail = random.Next(int.MaxValue) < (int)(int.MaxValue * tailPercent / 100);
+            var isTail = random.Next(int.MaxValue) < tailRandomLimit;
             if (!isTail)
                 return body.GetRandomValue();
-            var isLeft = random.Next(int.MaxValue) <= (int.MaxValue / 2);
+            var isLeft = random.Next(int.MaxValue) <= halfOfMaxInt;
             var tail = isLeft ? tailLeft : tailRight;
             return tail.GetRandomValue();
         }

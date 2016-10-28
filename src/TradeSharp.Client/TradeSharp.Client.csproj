@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TradeSharp.Client</RootNamespace>
     <AssemblyName>TradeSharp.Client</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -1243,7 +1243,7 @@
       <Name>TradeSharp.SiteBridge.Lib</Name>
     </ProjectReference>
     <ProjectReference Include="..\TradeSharp.Client.Subscription\TradeSharp.Client.Subscription.csproj">
-      <Project>{1D43B7A3-D499-4624-B5E3-70D6196C67E4}</Project>
+      <Project>{1d43b7a3-d499-4624-b5e3-70d6196c67e4}</Project>
       <Name>TradeSharp.Client.Subscription</Name>
     </ProjectReference>
     <ProjectReference Include="..\TradeSharp.Client.Util\TradeSharp.Client.Util.csproj">

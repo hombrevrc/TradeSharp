@@ -61,6 +61,7 @@
     <Compile Include="CandlePacker.cs" />
     <Compile Include="CandlePackerPool.cs" />
     <Compile Include="CommandStack.cs" />
+    <Compile Include="CsvReader.cs" />
     <Compile Include="DalAccountGroup.cs" />
     <Compile Include="DalSpot.cs" />
     <Compile Include="DealStatus.cs" />

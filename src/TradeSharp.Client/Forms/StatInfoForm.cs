@@ -263,6 +263,16 @@ namespace TradeSharp.Client.Forms
                                                Localizer.GetString("TitleMaxIntradayDrawdown"),
                                                o => ((decimal)o).ToStringUniform(2) + " %"));
 
+            if (robotContext.DrawdownRelTime != default(DateTime))
+            {
+                statParams.Add(new StatisticsParam("Старт макс. проседания", robotContext.DrawDownStartTime,
+                                               "Старт макс. проседания",
+                                               o => ((DateTime)o).ToStringUniform()));
+                statParams.Add(new StatisticsParam("Дата макс. проседания", robotContext.DrawdownRelTime,
+                                               "Дата макс. проседания",
+                                               o => ((DateTime)o).ToStringUniform()));
+            }
+
             statParams.Add(new StatisticsParam(Localizer.GetString("TitleProfitInPoints"), pointsTotal,
                                                Localizer.GetString("TitleProfitInPoints"), o => ((float)o).ToStringUniform(1)));
             statParams.Add(new StatisticsParam(Localizer.GetString("TitlePointsPerDeal"), pointsPerDeal,
@@ -297,9 +307,11 @@ namespace TradeSharp.Client.Forms
             statParams.Add(new StatisticsParam(Localizer.GetString("TitleMaxLossSeries"), maxLossCount,
                                                Localizer.GetString("TitleMaxLossSeries"), null));
             statParams.Add(new StatisticsParam(Localizer.GetString("TitleAvgMinutesOfProfitable"), avgMinutesProfit,
-                                               Localizer.GetString("TitleAvgMinutesOfProfitable"), o => ((double)o).ToStringUniform(1) + " m"));
+                                               Localizer.GetString("TitleAvgMinutesOfProfitable"),                                                
+                                                o => UniFormatterExtensions.MinutesToStr((int)Math.Round((double)o))));
             statParams.Add(new StatisticsParam(Localizer.GetString("TitleAvgMinutesOfLoss"), avgMinutesLoss,
-                                               Localizer.GetString("TitleAvgMinutesOfLoss"), o => ((double)o).ToStringUniform(1) + " m"));
+                                               Localizer.GetString("TitleAvgMinutesOfLoss"),
+                                                o => UniFormatterExtensions.MinutesToStr((int)Math.Round((double)o))));
 
             // среднее число баров? у выигрышных и проигрышных
             if (barMinutes > 0)

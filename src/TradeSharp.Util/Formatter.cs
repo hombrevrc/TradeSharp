@@ -235,7 +235,20 @@ namespace TradeSharp.Util
                        : price.Value > 7 ? price.Value.ToString(extraDigit ? "f4" : "f3", CultureInfo.InvariantCulture)
                        : price.Value.ToString(extraDigit ? "f5" : "f4", CultureInfo.InvariantCulture);
         }
-        
+
+        public static string MinutesToStr(decimal minutes)
+        {
+            var days = (int)minutes / 1440;
+            if (days > 0) minutes -= days * 1440;
+            var hours = (int)minutes / 60;
+            if (hours > 0) minutes -= hours * 60;
+            var parts = new List<string>();
+            if (days > 0) parts.Add(days + "д");
+            if (hours > 0) parts.Add(hours + "ч");
+            parts.Add(minutes.ToString("f2") + "м");
+            return string.Join(" ", parts);
+        }
+
         #endregion
 
         #region ToTarget

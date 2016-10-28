@@ -485,7 +485,7 @@ namespace TradeSharp.Robot.Robot
         /// </summary>
         protected int CalculateVolume(string ticker, decimal? calculateLeverage = null, int? fixedVolm = null)
         {
-            int? depoDealVolume = fixedVolm ?? FixedVolume;
+            int? baseDealVolume = fixedVolm ?? FixedVolume;
             if (!fixedVolm.HasValue || fixedVolm.Value == 0)
             {
                 calculateLeverage = calculateLeverage ?? Leverage;
@@ -501,16 +501,19 @@ namespace TradeSharp.Robot.Robot
                     return 0;
                 }
 
+                var leverageVolume = ac.Equity * calculateLeverage.Value;
                 string error;
-                depoDealVolume = (int?)DalSpot.Instance.ConvertToTargetCurrency(ticker, true, ac.Currency,
-                    (double) (ac.Equity*calculateLeverage), robotContext.QuotesStorage.ReceiveAllData(),
-                    out error);
+                var depoVolm = DalSpot.Instance.ConvertToTargetCurrency(ticker, true, ac.Currency,
+                    (double) leverageVolume, robotContext.QuotesStorage.ReceiveAllData(),
+                    out error) ?? 0M;
             
-                if (!depoDealVolume.HasValue)
+                if (depoVolm == 0)
                 {
                     Logger.InfoFormat("Не удалось перевести средства в валюту депозита. " + error);
                     return 0;
                 }
+
+                baseDealVolume = (int) Math.Round(leverageVolume * leverageVolume / depoVolm);
             }
 
             var roundMinVolm = RoundMinVolume;
@@ -525,7 +528,7 @@ namespace TradeSharp.Robot.Robot
                     roundVolmStep = minStepLot.a;
             }
 
-            var volume = MarketOrder.RoundDealVolume((int)depoDealVolume.Value, RoundType, roundMinVolm, roundVolmStep);
+            var volume = MarketOrder.RoundDealVolume((int)baseDealVolume.Value, RoundType, roundMinVolm, roundVolmStep);
 
             if (volume == 0)
                 Logger.InfoFormat("{0}: OpenDeal({0} {1}) - объем в валюте депозита ({2:f2}) недостаточен",TypeName,ticker, volume);                            

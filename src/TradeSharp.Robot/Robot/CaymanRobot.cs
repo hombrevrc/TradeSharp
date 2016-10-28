@@ -26,21 +26,6 @@ namespace TradeSharp.Robot.Robot
 
 
         // ReSharper disable ConvertToAutoProperty
-        private int skipCandles = 1;
-        [PropertyXMLTag("Robot.TakeRange")]
-        [DisplayName("Коэффициент TakeRange, %")]
-        [Category("Торговые")]
-        [Description("Входить на первой - второй - ... свече")]
-        public int SkipCandles
-        {
-            get { return skipCandles; }
-            set
-            {
-                if (value > 0 && value <= 100)
-                    skipCandles = value;
-            }
-        }
-
         private int stopLossPoints;
         [PropertyXMLTag("Robot.StopLossPoints")]
         [DisplayName("Стоплосс, пп")]
@@ -63,19 +48,26 @@ namespace TradeSharp.Robot.Robot
             set { takeProfitPoints = value; }
         }
 
-        private int highLevel = 50;
         [PropertyXMLTag("Robot.HighLevel")]
         [DisplayName("Верхняя граница Каймана")]
         [Category("Торговые")]
         [Description("Верхняя граница коридора Каймана")]
         public int HighLevel { get; set; } = 50;
 
-        private int lowLevel = 50;
         [PropertyXMLTag("Robot.LowLevel")]
         [DisplayName("Нижняя граница Каймана")]
         [Category("Торговые")]
         [Description("Нижняя граница коридора Каймана")]
         public int LowLevel { get; set; } = 50;
+
+        public enum CloseSignalType { ПоУровню = 0, По50Процентам }
+
+        [PropertyXMLTag("Robot.CloseSignal")]
+        [DisplayName("Сигнал для выхода")]
+        [Category("Торговые")]
+        [Description("По обратному сигналу (выход из коридора) / по пересечению 50%")]
+        public CloseSignalType CloseSignal { get; set; }
+
         // ReSharper restore ConvertToAutoProperty
         #endregion
 
@@ -88,7 +80,7 @@ namespace TradeSharp.Robot.Robot
         /// <summary>
         /// знаки Каймана
         /// </summary>
-        private RestrictedQueue<int> caymanLastSigns;
+        private int lastCaymanSign;
         #endregion
 
         public override BaseRobot MakeCopy()
@@ -96,7 +88,6 @@ namespace TradeSharp.Robot.Robot
             var bot = new CaymanRobot
             {
                 CaymanFilePath = CaymanFilePath,
-                SkipCandles = SkipCandles,
                 FixedVolume = FixedVolume,
                 StopLossPoints = StopLossPoints,
                 TakeProfitPoints = TakeProfitPoints,
@@ -106,7 +97,8 @@ namespace TradeSharp.Robot.Robot
                 RoundMinVolume = RoundMinVolume,
                 RoundVolumeStep = RoundVolumeStep,
                 HighLevel = HighLevel,
-                LowLevel = LowLevel
+                LowLevel = LowLevel,
+                CloseSignal = CloseSignal
             };
             CopyBaseSettings(bot);
             return bot;
@@ -127,8 +119,7 @@ namespace TradeSharp.Robot.Robot
                 return;
             }
             packer = new CandlePacker(Graphics[0].b);
-            ticker = Graphics[0].a;
-            caymanLastSigns = new RestrictedQueue<int>(SkipCandles);
+            ticker = Graphics[0].a;            
             ReadCaymanHistory();  
         }
 
@@ -150,28 +141,46 @@ namespace TradeSharp.Robot.Robot
                 return events;
 
             // знак Каймана
-            var sign = cayCandle.close >= 50 ? -1 : 1;
-            caymanLastSigns.Add(sign);
-            if (caymanLastSigns.Length < caymanLastSigns.MaxQueueLength) return events;
+            var enterSign = GetEnterSign(cayCandle.close);
 
             // последняя сделка
+            bool stillOpened;
+            CloseExisting(cayCandle.close, enterSign, out stillOpened);
+
+            // войти в рынок?
+            if (stillOpened || enterSign == 0) return events;
+            OpenDeal(candle.close, enterSign);
+
+            return events;
+        }
+
+        private int GetEnterSign(float caymanClose)
+        {
+            var sign = caymanClose >= HighLevel ? 1 : caymanClose <= LowLevel ? -1 : 0;
+            if (sign == lastCaymanSign) return 0;
+            lastCaymanSign = sign;
+            return -sign; // > High ? SELL : < LOW ? BUY
+        }
+
+        private void CloseExisting(float caymanClose, int enterSign, out bool stillOpened)
+        {
+            stillOpened = false;
             List<MarketOrder> orders;
             GetMarketOrders(out orders);
             var lastOrder = orders.LastOrDefault();
+            if (lastOrder == null) return;
+
+            var caymanSign = enterSign;
+            if (CloseSignal == CloseSignalType.По50Процентам)
+                caymanSign = caymanClose < 50 ? 1 : -1;
 
             // закрыть ордер
-            if (lastOrder != null && sign != lastOrder.Side)
+            if (lastOrder != null && caymanSign != lastOrder.Side && caymanSign != 0)
             {
                 CloseMarketOrder(lastOrder.ID);
                 lastOrder = null;
             }
-
-            // войти в рынок?
-            if (lastOrder != null) return events;
-            if (caymanLastSigns.Any(s => s != sign)) return events;
-            OpenDeal(candle.close, sign);
-
-            return events;
+            stillOpened = lastOrder != null;
         }
 
         private CandleData UpdateCurrentCandle(string[] names, CandleDataBidAsk[] quotes)
@@ -232,36 +241,10 @@ namespace TradeSharp.Robot.Robot
                 return;
             }
 
-            caymanCandles = new Dictionary<DateTime, CandleData>();
             var timeframe = Graphics[0].b.Intervals[0];
 
-            using (var sr = new StreamReader(CaymanFilePath))
-            {
-                while (!sr.EndOfStream)
-                {
-                    var line = sr.ReadLine();
-                    if (string.IsNullOrEmpty(line)) continue;
-                    var parts = line.Split(new[] { ' ', (char)9 }, StringSplitOptions.RemoveEmptyEntries);
-                    if (parts.Length != 7) continue;
-                    var dateStr = parts[0] + " " + parts[1];
-
-                    //KS_EURUSD Bid
-                    //TIME	OPEN	HIGH	LOW	CLOSE	VOLUME	
-                    //29/07/15 11:00:00	41,18	41,18	40,37	40,52	12,00
-                    DateTime date;
-                    if (!DateTime.TryParseExact(dateStr, "dd/MM/yy HH:mm:ss", CultureProvider.Common, DateTimeStyles.None, out date))
-                        continue;
-                    var open = parts[2].Replace(',', '.').ToFloatUniformSafe();
-                    var high = parts[3].Replace(',', '.').ToFloatUniformSafe();
-                    var low = parts[4].Replace(',', '.').ToFloatUniformSafe();
-                    var close = parts[5].Replace(',', '.').ToFloatUniformSafe();
-
-                    if (!open.HasValue || !close.HasValue || !high.HasValue || !low.HasValue)
-                        continue;
-                    caymanCandles.Add(date, new CandleData(open.Value, high.Value, low.Value, close.Value,
-                        date, date.AddMinutes(timeframe)));
-                }
-            }
+            var candles = CsvReader.ReadCandles(CaymanFilePath, timeframe);
+            caymanCandles = candles.ToDictionary(c => c.timeOpen, c => c);            
         }
     }
     // ReSharper restore LocalizableElement

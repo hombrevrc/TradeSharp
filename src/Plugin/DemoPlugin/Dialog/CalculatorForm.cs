@@ -15,6 +15,8 @@ namespace DemoPlugin.Dialog
 
         private readonly PointD worldCoords;
 
+        private readonly Random rand = new Random();
+
         private enum OptionType
         {
             Classic = 0, Touch
@@ -34,7 +36,7 @@ namespace DemoPlugin.Dialog
             dpTimeCalc.Value = time;
             dpTimeExpires.Value = time.AddMinutes(chart.Timeframe.TotalMinutes * 200);
             tbPriceAtTime.Text = price.ToStringUniformPriceFormat(true);
-            tbStrikePrice.Text = "0.0";
+            tbStrikePrice.Text = tbPriceAtTime.Text;
         }
 
         private void btnCalcPremium_Click_1(object sender, System.EventArgs e)
@@ -42,38 +44,50 @@ namespace DemoPlugin.Dialog
             var optTypeString = (string) cbOptionType.SelectedItem;
             var optionSide = optTypeString.StartsWith("PUT") ? -1 : 1;
             var optionType = optTypeString.EndsWith("TOUCH") ? OptionType.Touch : OptionType.Classic;
-            var strike = tbStrikePrice.Text.ToFloatUniform();
-            var closeTime = dpTimeExpires.Value;
+            var start = tbStrikePrice.Text.ToDoubleUniform();
+            var strike = tbPriceAtTime.Text.ToDoubleUniform();
 
             var candles = AtomCandleStorage.Instance.GetAllMinuteCandles(chart.Symbol);
-            var deltas = candles.Select(c => c.close - c.open).OrderBy(d => d).ToList();
-            
+            var listOc = candles.Select(c => Math.Abs((double)(c.close - c.open))).OrderBy(c => c).ToList();
+            // убрать тренд
+            //var avg = listOc.Average();
+            //listOc = listOc.Select(l => l - avg).ToList();
+            var model = new PriceModel(listOc, 5);
 
-            foreach (var candle in candles)
+            const int checksCount = 5000;
+
+            var money = 0.0;
+            var totalMinutes = (dpTimeExpires.Value - dpTimeCalc.Value).TotalMinutes;
+            //var avgTf = chart.chart.Timeframe.Intervals.Average();
+            var tfCount = (int) Math.Round(totalMinutes);
+            if (tfCount < 1) tfCount = 1;
+
+            var volume = tbVolume.Text.Replace(" ", "").ToInt();
+            for (var i = 0; i < checksCount; i++)
             {
-                if (candle.timeOpen < dpTimeCalc.Value) continue;
-                //if (candle.timeClose > )
-                if (optionType == OptionType.Touch)
-                {
-                    var touched = optionSide > 0 ? (candle.high > strike) : (candle.low < strike);
-                    if (touched)
-                    {
-                        LoggMessageSafeFormat("Страйк достигнут ({0})",
-                            optionSide > 0
-                                ? candle.high.ToStringUniformPriceFormat()
-                                : candle.low.ToStringUniformPriceFormat());
-                        break;
-                    }
-                }
-                
-                
+                money += MoneyAtStroke(model, start, strike, optionType, optionSide, tfCount, volume);
             }
+            var premium = money/checksCount;
+            LoggMessageSafe($"Премия: " + premium.ToStringUniformMoneyFormat());
         }
 
-        private void LoggMessageSafeFormat(string format, params object[] ptrs)
+        private double MoneyAtStroke(PriceModel model, double startPrice, double strike, OptionType type, int optSide, int periods, int volume)
         {
-            if (ptrs.Length == 0) LoggMessageSafe(format);
-            else LoggMessageSafe(string.Format(format, ptrs));
+            var price = startPrice;
+            for (var i = 0; i < periods; i++)
+            {
+                var delta = model.GetRandomDelta();
+                var sign = rand.Next(2) > 0 ? 1 : -1;
+                price += delta * sign;
+                if (type == OptionType.Touch)
+                {
+                    if (optSide > 0 && price >= strike) return volume;
+                    if (optSide < 0 && price <= strike) return volume;
+                }
+            }
+            if (optSide > 0 && price >= strike) return volume * (price - strike);
+            if (optSide < 0 && price <= strike) return volume * (strike - price);
+            return 0;
         }
 
         private void LoggMessageSafe(string msg)
@@ -81,12 +95,12 @@ namespace DemoPlugin.Dialog
             if (InvokeRequired)
                 Invoke(new Action<string>(LoggMessageUnsafe), msg);
             else
-                tbResult.AppendText(msg);
+                LoggMessageUnsafe(msg);
         }
 
         private void LoggMessageUnsafe(string msg)
         {
-            tbResult.AppendText(msg);
+            tbResult.AppendText(msg + Environment.NewLine);
         }
     }
 }

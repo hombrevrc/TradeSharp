@@ -24,6 +24,11 @@ namespace TradeSharp.Server.Contract
         public List<PerformerStat> GetAllManagers(PaidServiceType? serviceTypeFilter)
         {
             var performers = new List<PerformerStat>();
+            // иногда от программиста требуют написать такое
+            var fakeSubscriberStats = AppConfig.GetStringParam("FakeSubscribers", "").ToIntArrayUniform();
+            var fakeDeltaSubs = new Dictionary<int, int>();
+            for (var i = 0; i < fakeSubscriberStats.Length / 2; i++)
+                fakeDeltaSubs.Add(fakeSubscriberStats[i * 2], fakeSubscriberStats[i * 2 + 1]);
 
             using (var ctx = DatabaseContext.Instance.Make())
             {
@@ -33,13 +38,15 @@ namespace TradeSharp.Server.Contract
                     foreach (var p in ctx.GetPerformers())
                     // ReSharper restore LoopCanBeConvertedToQuery
                     {
+                        int fakeDelta;
+                        fakeDeltaSubs.TryGetValue(p.AccountId ?? -1, out fakeDelta);
                         performers.Add(new PerformerStat
                         {
-                            Account = p.AccountId.HasValue ? p.AccountId.Value : -1,
+                            Account = p.AccountId ?? -1,
                             Login = p.UserNames,
                             Email = p.Email,
                             Group = p.AccountGroup,
-                            SubscriberCount = p.SubscriberCount ?? 0,
+                            SubscriberCount = (p.SubscriberCount ?? 0) + fakeDelta,
                             DepoCurrency = p.Currency,
                             Service = p.ID,
                             ServiceType = p.ServiceType,
