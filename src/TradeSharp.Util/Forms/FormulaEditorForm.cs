@@ -46,5 +46,22 @@ namespace TradeSharp.Util.Forms
             var template = dlg.CodeTemplate;
             codeEditor.Text = template.MakeFormula();
         }
+
+        private void codeEditor_KeyDown(object sender, KeyEventArgs e)
+        {
+            ShowCursorPos();
+        }
+
+        private void codeEditor_MouseDown(object sender, MouseEventArgs e)
+        {
+            ShowCursorPos();
+        }
+
+        private void ShowCursorPos()
+        {
+            int line = codeEditor.GetLineFromCharIndex(codeEditor.SelectionStart);
+            int column = codeEditor.SelectionStart - codeEditor.GetFirstCharIndexFromLine(line);
+            lblPos.Text = $"{line}:{column}";
+        }
     }    
 }

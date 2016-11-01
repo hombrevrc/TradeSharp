@@ -569,6 +569,10 @@ namespace TradeSharp.Client
                 };
             child.chart.makeTrade += MakeTrade;
             child.chart.NewOrder += PlaceNewOrder;
+            child.chart.LogMessageInStatusPane += s =>
+            {
+                AddMessageToStatusPanelSafe(DateTime.Now, s);
+            };
             child.chart.ShowQuoteArchive += delegate(string symbol)
                                                 {
                                                     new QuoteBaseForm(symbol).ShowDialog();

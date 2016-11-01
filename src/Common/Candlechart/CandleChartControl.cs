@@ -101,6 +101,20 @@ namespace Candlechart
             // ReSharper restore DelegateSubtraction
         }
 
+        private Action<string> logMessageInStatusPane;
+        public event Action<string> LogMessageInStatusPane
+        {
+            add { logMessageInStatusPane += value; }
+            // ReSharper disable DelegateSubtraction
+            remove { logMessageInStatusPane -= value; }
+            // ReSharper restore DelegateSubtraction
+        }
+
+        public void DoLogMessageInStatusPane(string s)
+        {
+            logMessageInStatusPane(s);
+        }
+
         private SyncQuoteHistoryDel syncQuoteHistory;
         public event SyncQuoteHistoryDel SyncQuoteHistory
         {

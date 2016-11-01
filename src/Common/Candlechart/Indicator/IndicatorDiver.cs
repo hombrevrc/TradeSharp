@@ -447,12 +447,12 @@ namespace Candlechart.Indicator
 
         public List<IChartInteractiveObject> GetObjectsUnderCursor(int screenX, int screenY, int tolerance)
         {
-            return new List<IChartInteractiveObject>();
+            return GetDiversUnderCursor(screenX, screenY, tolerance);
         }
 
-        private List<object> GetDiversUnderCursor(int screenX, int screenY, int tolerance)
+        private List<IChartInteractiveObject> GetDiversUnderCursor(int screenX, int screenY, int tolerance)
         {
-            var list = new List<object>();
+            var list = new List<IChartInteractiveObject>();
             if (DrawPane == null) return list;
             var ptClient = owner.PointToClient(new Point(screenX, screenY));
 
@@ -466,15 +466,15 @@ namespace Candlechart.Indicator
                 if (Geometry.IsDotInArea(new PointD(ptClient.X, ptClient.Y), a, b, tolerance))
                     list.Add(arrow);
             }
-            foreach (var arrow in seriesRegion.data)
-            {
-                var a = Conversion.WorldToScreen(new PointD(arrow.IndexStart.Value, (double)arrow.UpperBound.Value),
-                    DrawPane.WorldRect, DrawPane.CanvasRect);
-                var b = Conversion.WorldToScreen(new PointD(arrow.IndexEnd.Value, (double)arrow.LowerBound.Value),
-                    DrawPane.WorldRect, DrawPane.CanvasRect);
-                if (Geometry.IsDotInArea(new PointD(ptClient.X, ptClient.Y), a, b, tolerance))
-                    list.Add(arrow);
-            }
+            //foreach (var arrow in seriesRegion.data)
+            //{
+            //    var a = Conversion.WorldToScreen(new PointD(arrow.IndexStart.Value, (double)arrow.UpperBound.Value),
+            //        DrawPane.WorldRect, DrawPane.CanvasRect);
+            //    var b = Conversion.WorldToScreen(new PointD(arrow.IndexEnd.Value, (double)arrow.LowerBound.Value),
+            //        DrawPane.WorldRect, DrawPane.CanvasRect);
+            //    if (Geometry.IsDotInArea(new PointD(ptClient.X, ptClient.Y), a, b, tolerance))
+            //        list.Add(new );
+            //}
             return list;
         }
     }

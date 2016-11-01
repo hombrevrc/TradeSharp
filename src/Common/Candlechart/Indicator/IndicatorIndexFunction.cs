@@ -53,7 +53,7 @@ namespace Candlechart.Indicator
         }
 
         [Browsable(false)]
-        public override string Name { get { return Localizer.GetString("TitleUserIndex"); } }
+        public override string Name => Localizer.GetString("TitleUserIndex");
 
         [LocalizedDisplayName("TitleSourceSeries")]
         [Description("Серии источников-данных для индикатора")]

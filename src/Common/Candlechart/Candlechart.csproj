@@ -274,6 +274,7 @@
     <Compile Include="Core\PluginManager.cs" />
     <Compile Include="Indicator\BaseChartIndicator.cs" />
     <Compile Include="Indicator\CheckedListBoxSeriesUITypeEditor.cs" />
+    <Compile Include="Indicator\CodedIndicator.cs" />
     <Compile Include="Indicator\ComboBoxDrawPaneUITypeEditor.cs" />
     <Compile Include="Indicator\ComboBoxSeriesUITypeEditor.cs" />
     <Compile Include="Indicator\CrossChartDiverUITypeEditor.cs" />
@@ -328,6 +329,7 @@
     <Compile Include="Indicator\IndicatorEllipse.cs" />
     <Compile Include="Indicator\PopupCheckedListBoxSeriesUITypeEditor.cs" />
     <Compile Include="Indicator\PopupComboboxDrawPaneUITypeEditor.cs" />
+    <Compile Include="Interface\CodeIndicatorBase.cs" />
     <Compile Include="ProbabilityCore.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

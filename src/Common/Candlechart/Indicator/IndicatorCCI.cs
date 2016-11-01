@@ -37,42 +37,28 @@ namespace Candlechart.Indicator
         }
 
         [Browsable(false)]
-        public override string Name { get { return "CCI"; } }
+        public override string Name => "CCI";
 
-        private int period = 14;
         [LocalizedDisplayName("TitlePeriod")]
         [LocalizedDescription("MessageCCIPeriodDescription")]
         [LocalizedCategory("TitleMain")]
         [PropertyOrder(1)]
-        public int Period
-        {
-            get { return period; }
-            set { period = value; }
-        }
+        public int Period { get; set; } = 14;
 
-        private Color colorLine = Color.Teal;
         [LocalizedDisplayName("TitleColor")]
         [LocalizedDescription("MessageCurveColorDescription")]
         [LocalizedCategory("TitleVisuals")]
         [PropertyOrder(50)]
-        public Color ColorLine
-        {
-            get { return colorLine; }
-            set { colorLine = value; }
-        }
+        public Color ColorLine { get; set; } = Color.Teal;
 
-        private Color colorBorder = Color.DimGray;
         [LocalizedDisplayName("TitleBorder")]
         [LocalizedDescription("MessageBorderColorDescription")]
         [LocalizedCategory("TitleVisuals")]
         [PropertyOrder(51)]
-        public Color ColorBorder
-        {
-            get { return colorBorder; }
-            set { colorBorder = value; }
-        }
+        public Color ColorBorder { get; set; } = Color.DimGray;
 
         private LineSeries series;
+
         private PartSeries seriesBounds;
 
         #endregion
@@ -160,11 +146,11 @@ namespace Candlechart.Indicator
 
         public void AcceptSettings()
         {
-            series.LineColor = colorLine;
+            series.LineColor = ColorLine;
             series.Transparent = true;
             seriesBounds.LineColor = ColorBorder;
             if (DrawPane != null && DrawPane != owner.StockPane) 
-                DrawPane.Title = string.Format("{0} [{1}]", UniqueName, Period);
+                DrawPane.Title = $"{UniqueName} [{Period}]";
         }
 
         public void OnCandleUpdated(CandleData updatedCandle, List<CandleData> newCandles)

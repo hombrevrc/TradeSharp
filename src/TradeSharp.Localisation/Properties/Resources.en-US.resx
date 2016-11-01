@@ -4986,4 +4986,10 @@
   <data name="TitleCorrectionPercent" xml:space="preserve">
     <value>Correction's percent</value>
   </data>
+  <data name="TitleCodedIndicator" xml:space="preserve">
+    <value>Custom Code Indicator</value>
+  </data>
+  <data name="TitleCodeIndicatorCode" xml:space="preserve">
+    <value>Program Code</value>
+  </data>
 </root>

@@ -11,8 +11,8 @@ namespace Candlechart.Series
     {
         // Fields
         public volatile bool isDisposed;
+
         private string _name;
-        private int _numberDecimalDigits = 2;
 
         // Methods
         protected Series(string name)
@@ -21,22 +21,11 @@ namespace Candlechart.Series
         }
 
         // Properties
-        private Color backColor;
-        public Color BackColor
-        {
-            get { return backColor; }
-            set { backColor = value; }
-        }
+        public Color BackColor { get; set; }
 
-        protected ChartControl Chart
-        {
-            get { return Owner.Owner; }
-        }
+        protected ChartControl Chart => Owner.Owner;
 
-        internal virtual string CurrentPriceString
-        {
-            get { return string.Empty; }
-        }
+        internal virtual string CurrentPriceString => string.Empty;
 
         private Color? foreColor;
         public Color ForeColor
@@ -72,11 +61,7 @@ namespace Candlechart.Series
             }
         }
 
-        public int NumberDecimalDigits
-        {
-            get { return _numberDecimalDigits; }
-            set { _numberDecimalDigits = value; }
-        }
+        public int NumberDecimalDigits { get; set; } = 2;
 
         internal Pane Owner { get; set; }
 

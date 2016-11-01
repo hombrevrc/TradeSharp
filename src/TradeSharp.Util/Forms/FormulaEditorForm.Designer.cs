@@ -37,6 +37,7 @@
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnOK = new System.Windows.Forms.Button();
             this.codeEditor = new System.Windows.Forms.RichTextBox();
+            this.lblPos = new System.Windows.Forms.Label();
             this.panelTop.SuspendLayout();
             this.panelBotm.SuspendLayout();
             this.SuspendLayout();
@@ -84,6 +85,7 @@
             // 
             // panelBotm
             // 
+            this.panelBotm.Controls.Add(this.lblPos);
             this.panelBotm.Controls.Add(this.btnCancel);
             this.panelBotm.Controls.Add(this.btnOK);
             this.panelBotm.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -124,6 +126,17 @@
             this.codeEditor.Size = new System.Drawing.Size(439, 270);
             this.codeEditor.TabIndex = 2;
             this.codeEditor.Text = "";
+            this.codeEditor.KeyDown += new System.Windows.Forms.KeyEventHandler(this.codeEditor_KeyDown);
+            this.codeEditor.MouseDown += new System.Windows.Forms.MouseEventHandler(this.codeEditor_MouseDown);
+            // 
+            // lblPos
+            // 
+            this.lblPos.AutoSize = true;
+            this.lblPos.Location = new System.Drawing.Point(259, 11);
+            this.lblPos.Name = "lblPos";
+            this.lblPos.Size = new System.Drawing.Size(10, 13);
+            this.lblPos.TabIndex = 2;
+            this.lblPos.Text = ":";
             // 
             // FormulaEditorForm
             // 
@@ -141,6 +154,7 @@
             this.panelTop.ResumeLayout(false);
             this.panelTop.PerformLayout();
             this.panelBotm.ResumeLayout(false);
+            this.panelBotm.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -155,5 +169,6 @@
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnOK;
         private System.Windows.Forms.RichTextBox codeEditor;
+        private System.Windows.Forms.Label lblPos;
     }
 }
