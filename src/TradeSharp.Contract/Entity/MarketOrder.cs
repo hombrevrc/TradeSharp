@@ -261,7 +261,7 @@ namespace TradeSharp.Contract.Entity
                 if (хренТорганешь) return 0;                
             }
             var surVolume = srcVolume - minVolume;
-            var stepsCount = surVolume / (double)minVolume;
+            var stepsCount = surVolume / (double)volumeStep;
             var stepsInt = roundType == VolumeRoundType.Вниз
                                ? (int)stepsCount
                                : roundType == VolumeRoundType.Вверх

@@ -50,7 +50,7 @@ namespace TradeSharp.UI.Util.Forms
             dpEnter.Value = order.TimeEnter;
             if (order.PriceExit.HasValue)
                 tbPriceExit.Text = FormatPrice(order.PriceExit.Value);
-            if (order.TimeExit.HasValue)
+            if (order.TimeExit.HasValue && order.TimeExit.Value != default(DateTime))
                 dpExit.Value = order.TimeExit.Value;
             if (order.StopLoss.HasValue && order.StopLoss.Value > 0)
                 tbSL.Text = FormatPrice(order.StopLoss.Value);

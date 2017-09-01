@@ -35,34 +35,6 @@
       <HintPath>..\packages\log4net.1.2.10\lib\2.0\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="NetSockets, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\WebSocketDistribution.1.0.0\lib\NetSockets.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="SuperSocket.Common, Version=1.6.4.0, Culture=neutral, PublicKeyToken=6c80000676988ebb, processorArchitecture=MSIL">
-      <HintPath>..\packages\WebSocketDistribution.1.0.0\lib\SuperSocket.Common.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="SuperSocket.Dlr, Version=1.6.4.0, Culture=neutral, PublicKeyToken=6c80000676988ebb, processorArchitecture=MSIL">
-      <HintPath>..\packages\WebSocketDistribution.1.0.0\lib\SuperSocket.Dlr.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="SuperSocket.Facility, Version=1.6.4.0, Culture=neutral, PublicKeyToken=6c80000676988ebb, processorArchitecture=MSIL">
-      <HintPath>..\packages\WebSocketDistribution.1.0.0\lib\SuperSocket.Facility.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="SuperSocket.SocketBase, Version=1.6.4.0, Culture=neutral, PublicKeyToken=6c80000676988ebb, processorArchitecture=MSIL">
-      <HintPath>..\packages\WebSocketDistribution.1.0.0\lib\SuperSocket.SocketBase.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="SuperSocket.SocketEngine, Version=1.6.4.0, Culture=neutral, PublicKeyToken=6c80000676988ebb, processorArchitecture=MSIL">
-      <HintPath>..\packages\WebSocketDistribution.1.0.0\lib\SuperSocket.SocketEngine.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="SuperWebSocket, Version=0.10.0.0, Culture=neutral, PublicKeyToken=7ba53b9a7cef5d1c, processorArchitecture=MSIL">
-      <HintPath>..\packages\WebSocketDistribution.1.0.0\lib\SuperWebSocket.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -72,7 +44,7 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
     <Reference Include="WebSocket4Net, Version=0.14.1.0, Culture=neutral, PublicKeyToken=eb4e154b696bf72a, processorArchitecture=MSIL">
-      <HintPath>..\packages\WebSocketDistribution.1.0.0\lib\WebSocket4Net.dll</HintPath>
+      <HintPath>..\packages\WebSocket4Net.0.14.1\lib\net45\WebSocket4Net.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="WebSocketDistribution, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -83,6 +55,7 @@
   <ItemGroup>
     <Compile Include="IQuoteSource.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WebSocketClient.cs" />
     <Compile Include="WebSocketQuoteSource.cs" />
   </ItemGroup>
   <ItemGroup>

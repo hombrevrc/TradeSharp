@@ -212,12 +212,10 @@ namespace TradeSharp.Client.BL.Script
             // округлить объем
             var lotSize = DalSpot.Instance.GetMinStepLot(ticker, account.Group);
             volumeBase = MarketOrder.RoundDealVolume((int)volumeBase, VolumeRound,
-                                                   lotSize.a, lotSize.b);
+                                                   lotSize.minVolume, lotSize.volumeStep);
             if (volumeBase == 0)
             {
-                var msgError = string.Format(
-                    "Рассчетный объем входа ({0}) меньше допустимого ({1})",
-                    volumeBase, lotSize.a);
+                var msgError = $"Рассчетный объем входа ({volumeBase}) меньше допустимого ({lotSize.minVolume})";
                 MessageBox.Show(msgError);
                 return msgError;
             }
@@ -232,11 +230,8 @@ namespace TradeSharp.Client.BL.Script
             {
                 var msgError = 
                     DealCounting == DealCountingType.ОбщийУчет 
-                    ? string.Format(
-                        "Уже открыто {0} сделок из {1} макс.", ordersCount, dealsMax)
-                    : string.Format(
-                        "По \"{0}\" уже открыто {1} сделок из {2} макс.", 
-                            ticker, ordersCount, dealsMax);
+                    ? $"Уже открыто {ordersCount} сделок из {dealsMax} макс."
+                        : $"По \"{ticker}\" уже открыто {ordersCount} сделок из {dealsMax} макс.";
                 MessageBox.Show(msgError);
                 return msgError;
             }

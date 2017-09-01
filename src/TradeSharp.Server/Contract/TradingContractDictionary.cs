@@ -31,7 +31,7 @@ namespace TradeSharp.Server.Contract
 
         private readonly LotByGroupDictionary lotByGroup = new LotByGroupDictionary
             {
-                dictionary = new Dictionary<string, Dictionary<string, Cortege2<int, int>>>()
+                dictionary = new Dictionary<string, Dictionary<string, VolumeStep>>()
             };
         
         private readonly ThreadSafeTimeStamp lastTimeLotByGroupUpdated = new ThreadSafeTimeStamp();
@@ -82,7 +82,9 @@ namespace TradeSharp.Server.Contract
                             Precision = c.Precise,
                             SwapBuy = c.SwapBuy,
                             SwapSell = c.SwapSell,
-                            CodeFXI = c.CodeFXI
+                            CodeFXI = c.CodeFXI,
+                            MinStepVolume = c.MinStepVolume,
+                            MinVolume = c.MinVolume
                         };
                         list.Add(ticker);
                     }
@@ -114,14 +116,14 @@ namespace TradeSharp.Server.Contract
                 {
                     foreach (var lotGroup in ctx.LOT_BY_GROUP)
                     {
-                        Dictionary<string, Cortege2<int, int>> dic;
+                        Dictionary<string, VolumeStep> dic;
                         if (!lotByGroup.dictionary.TryGetValue(lotGroup.Group, out dic))
                         {
-                            dic = new Dictionary<string, Cortege2<int, int>>();
+                            dic = new Dictionary<string, VolumeStep>();
                             lotByGroup.dictionary.Add(lotGroup.Group, dic);
                         }
                         dic.Add(lotGroup.Spot,
-                                new Cortege2<int, int>((int) lotGroup.MinVolume, (int) lotGroup.MinStepVolume));
+                                new VolumeStep((int) lotGroup.MinVolume, (int) lotGroup.MinStepVolume));
                     }
                 }
             }

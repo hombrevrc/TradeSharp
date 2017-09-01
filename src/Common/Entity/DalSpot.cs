@@ -229,6 +229,12 @@ namespace Entity
             return ticker == null ? string.Empty : ticker.Title;
         }
 
+        public TradeTicker GetTickerByName(string name)
+        {
+            tickers.TryGetValue(name, out var ticker);
+            return ticker;
+        }
+
         public int GetPrecision(string symbol)
         {
             TradeTicker ticker;
@@ -555,14 +561,25 @@ namespace Entity
         /// <summary>
         /// вернуть минимальный объем входа для данного тикера - данной группы
         /// </summary>
-        public Cortege2<int, int> GetMinStepLot(string ticker, string accountGroup)
+        public VolumeStep GetMinStepLot(string ticker, string accountGroup)
         {
-            TradeTicker tick;
-            if (!tickers.TryGetValue(ticker, out tick))
-                return new Cortege2<int, int>(10000, 10000);
+            if (!tickers.TryGetValue(ticker, out var tick))
+                return new VolumeStep(10000, 10000);
 
-            var lot = dictionaryGroupLot.GetMinStepLot(accountGroup, ticker);
-            return lot ?? new Cortege2<int, int>(10000, 10000);
+            var minVolm = tick.MinVolume ?? 0;
+            var stepVolm = tick.MinStepVolume ?? 0;
+            if (minVolm == 0 || stepVolm == 0)
+            {
+                var lot = dictionaryGroupLot.GetMinStepLot(accountGroup, ticker);
+                if (lot != null)
+                {
+                    minVolm = lot.Value.minVolume;
+                    stepVolm = lot.Value.volumeStep;
+                }
+            }
+            if (minVolm == 0) minVolm = 10000;
+            if (stepVolm == 0) stepVolm = 10000;
+            return new VolumeStep(minVolm, stepVolm);
         }
 
         /// <summary>

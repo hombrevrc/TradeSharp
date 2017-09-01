@@ -6,16 +6,10 @@ namespace FastGrid
     public class ValueListAttribute : Attribute
     {
         private bool isEditable;
-        public bool IsEditable
-        {
-            get { return isEditable; }
-        }
+        public bool IsEditable => isEditable;
 
         private object[] values;
-        public object[] Values
-        {
-            get { return values; }
-        }
+        public object[] Values => values;
 
         public ValueListAttribute(bool isEditable, params object[] values)
         {

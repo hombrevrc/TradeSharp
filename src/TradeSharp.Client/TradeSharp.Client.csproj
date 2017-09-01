@@ -146,6 +146,18 @@
     <Compile Include="BL\Script\CaymanScript.cs" />
     <Compile Include="BL\Script\ChartTickerStatTerminalScript.cs" />
     <Compile Include="BL\Script\CopyDealsInMt4Script.cs" />
+    <Compile Include="BL\Script\FxRobotVolumeSetupDlg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BL\Script\FxRobotVolumeSetupDlg.Designer.cs">
+      <DependentUpon>FxRobotVolumeSetupDlg.cs</DependentUpon>
+    </Compile>
+    <Compile Include="BL\Script\FxRobotVolumeWizzardDlg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BL\Script\FxRobotVolumeWizzardDlg.Designer.cs">
+      <DependentUpon>FxRobotVolumeWizzardDlg.cs</DependentUpon>
+    </Compile>
     <Compile Include="BL\Script\MakeOpenPosSql.cs" />
     <Compile Include="BL\Script\Mt4ImportDlg.cs">
       <SubType>Form</SubType>
@@ -178,6 +190,7 @@
     <Compile Include="BL\Script\ScriptPartDepoFormDialog.Designer.cs">
       <DependentUpon>ScriptPartDepoFormDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="BL\Script\ScriptSetupFxRobotVolumes.cs" />
     <Compile Include="BL\Script\ScriptTradeFromSL.cs" />
     <Compile Include="BL\Script\ScriptTradePartDepo.cs" />
     <Compile Include="BL\Script\ScriptTriggerUIEditor.cs" />
@@ -895,6 +908,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="BL\Script\CaymanExtremumSignalScriptDlg.resx">
       <DependentUpon>CaymanExtremumSignalScriptDlg.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BL\Script\FxRobotVolumeSetupDlg.resx">
+      <DependentUpon>FxRobotVolumeSetupDlg.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BL\Script\FxRobotVolumeWizzardDlg.resx">
+      <DependentUpon>FxRobotVolumeWizzardDlg.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="BL\Script\Mt4ImportDlg.resx">
       <DependentUpon>Mt4ImportDlg.cs</DependentUpon>

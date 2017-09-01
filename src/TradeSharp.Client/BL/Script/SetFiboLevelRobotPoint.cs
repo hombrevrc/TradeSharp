@@ -55,10 +55,7 @@ namespace TradeSharp.Client.BL.Script
         public PriceRefineType RefineType { get; set; }
         #endregion
 
-        public override bool CanBeTriggered
-        {
-            get { return true; }
-        }
+        public override bool CanBeTriggered => true;
 
         public ScriptSetFiboLevelRobotPoint()
         {

@@ -15,7 +15,7 @@ namespace TradeSharp.Contract.Entity
         /// <summary>
         /// группа - (тикер)
         /// </summary>
-        public Dictionary<string, Dictionary<string, Cortege2<int, int>>> dictionary;
+        public Dictionary<string, Dictionary<string, VolumeStep>> dictionary;
 
         public long calculatedHashCode;
 
@@ -31,14 +31,14 @@ namespace TradeSharp.Contract.Entity
                 var pairHash = MakeHashSum(pair.Key.GetHashCode(), MakeHashFromDic(pair.Value));
                 hash = hash.HasValue ? MakeHashSum(hash.Value, pairHash) : pairHash;
             }
-            return calculatedHashCode = (hash ?? 0);
+            return calculatedHashCode = hash ?? 0;
         }
 
         public static LotByGroupDictionary LoadFromFile(string path)
         {
             var dic = new LotByGroupDictionary
                 {
-                    dictionary = new Dictionary<string, Dictionary<string, Cortege2<int, int>>>()
+                    dictionary = new Dictionary<string, Dictionary<string, VolumeStep>>()
                 };
 
             if (!File.Exists(path)) return dic;
@@ -46,7 +46,7 @@ namespace TradeSharp.Contract.Entity
             {
                 using (var sr = new StreamReader(path, Encoding.UTF8))
                 {
-                    Dictionary<string, Cortege2<int, int>> curGroup = null;
+                    Dictionary<string, VolumeStep> curGroup = null;
                     string curTicker = string.Empty;
 
                     while (!sr.EndOfStream)
@@ -59,7 +59,7 @@ namespace TradeSharp.Contract.Entity
                         if (line.StartsWith("["))
                         {
                             curTicker = line.Substring(1, line.Length - 2);
-                            curGroup = new Dictionary<string, Cortege2<int, int>>();
+                            curGroup = new Dictionary<string, VolumeStep>();
                             dic.dictionary.Add(curTicker, curGroup);
 
                             continue;
@@ -73,7 +73,7 @@ namespace TradeSharp.Contract.Entity
                         var stepVolm = parts[2].ToIntSafe();
                         if (!stepVolm.HasValue) continue;
 
-                        curGroup.Add(parts[0], new Cortege2<int, int>(minVolm.Value, stepVolm.Value));                        
+                        curGroup.Add(parts[0], new VolumeStep(minVolm.Value, stepVolm.Value));                        
                     }
                 }
             }
@@ -98,7 +98,7 @@ namespace TradeSharp.Contract.Entity
                         sw.WriteLine("[" + pair.Key + "]");
                         foreach (var lot in pair.Value)
                         {
-                            sw.WriteLine(lot.Key + " " + lot.Value.a + " " + lot.Value.b);
+                            sw.WriteLine(lot.Key + " " + lot.Value.minVolume + " " + lot.Value.volumeStep);
                         }
                     }
                 }
@@ -115,23 +115,23 @@ namespace TradeSharp.Contract.Entity
             calculatedHashCode = 0;
         }
 
-        public Cortege2<int, int>? GetMinStepLot(string group, string ticker)
+        public VolumeStep? GetMinStepLot(string group, string ticker)
         {
-            Dictionary<string, Cortege2<int, int>> dic;
+            Dictionary<string, VolumeStep> dic;
             if (!dictionary.TryGetValue(group, out dic)) return null;
 
-            Cortege2<int, int> tickerLot;
+            VolumeStep tickerLot;
             if (!dic.TryGetValue(ticker, out tickerLot)) return null;
             return tickerLot;
         }
 
-        private static long MakeHashFromDic(Dictionary<string, Cortege2<int, int>> dic)
+        private static long MakeHashFromDic(Dictionary<string, VolumeStep> dic)
         {
             long? hash = null;
             foreach (var pair in dic)
             {
                 var keyHash = pair.Key.GetHashCode();
-                var valHash = pair.Value.a*31 + pair.Value.b;
+                var valHash = pair.Value.volumeStep*31 + pair.Value.minVolume;
                 var pairHash = MakeHashSum(keyHash, valHash);
 
                 hash = hash.HasValue ? MakeHashSum(hash.Value, pairHash) : pairHash;

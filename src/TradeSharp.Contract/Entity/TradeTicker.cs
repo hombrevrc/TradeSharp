@@ -51,5 +51,9 @@ namespace TradeSharp.Contract.Entity
         /// флаг хранится не в БД, а в настройках пользовательского терминала
         /// </summary>
         public bool IsFavourite { get; set; }
+
+        public int? MinStepVolume { get; set; }
+
+        public int? MinVolume { get; set; }
     }
 }

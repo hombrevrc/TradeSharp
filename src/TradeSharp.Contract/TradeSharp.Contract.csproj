@@ -137,6 +137,7 @@
     <Compile Include="Entity\UserPaymentSystem.cs" />
     <Compile Include="Entity\UserRole.cs" />
     <Compile Include="Entity\UserSession.cs" />
+    <Compile Include="Entity\VolumeStep.cs" />
     <Compile Include="Entity\Wallet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Proxy\CommonChannelSettings.cs" />

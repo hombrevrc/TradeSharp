@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using NUnit.Framework;
 using TradeSharp.Contract.Entity;
 using TradeSharp.Util;
@@ -18,21 +16,21 @@ namespace TradeSharp.Test.Entity
         {
             lotDictionary = new LotByGroupDictionary
                 {
-                    dictionary = new Dictionary<string, Dictionary<string, Cortege2<int, int>>>
+                    dictionary = new Dictionary<string, Dictionary<string, VolumeStep>>
                         {
                             {
-                                "Demo", new Dictionary<string, Cortege2<int, int>>
+                                "Demo", new Dictionary<string, VolumeStep>
                                     {
-                                        {"EURUSD", new Cortege2<int, int>(10000, 10000)},
-                                        {"GBPUSD", new Cortege2<int, int>(10000, 5000)}
+                                        {"EURUSD", new VolumeStep(10000, 10000)},
+                                        {"GBPUSD", new VolumeStep(10000, 5000)}
                                     }
                             },
                             {
-                                "Nano", new Dictionary<string, Cortege2<int, int>>
+                                "Nano", new Dictionary<string, VolumeStep>
                                     {
-                                        {"EURUSD", new Cortege2<int, int>(100, 100)},
-                                        {"GBPUSD", new Cortege2<int, int>(100, 100)},
-                                        {"USDJPY", new Cortege2<int, int>(100, 100)}
+                                        {"EURUSD", new VolumeStep(100, 100)},
+                                        {"GBPUSD", new VolumeStep(100, 100)},
+                                        {"USDJPY", new VolumeStep(100, 100)}
                                     }
                             }
                         }
@@ -52,7 +50,7 @@ namespace TradeSharp.Test.Entity
 
             var firstKey = dic2.dictionary.Keys.First();
             var firstPair = dic2.dictionary[firstKey].Keys.First();
-            dic2.dictionary[firstKey][firstPair] = new Cortege2<int, int>(5000, 1000);
+            dic2.dictionary[firstKey][firstPair] = new VolumeStep(5000, 1000);
             Assert.AreNotEqual(0, dic2.GetHashCodeForDic(), "loaded&modified dic has not 0 hash");
             Assert.AreNotEqual(lotDictionary.GetHashCodeForDic(), dic2.GetHashCodeForDic(), "modified dics has different hashes");
         }

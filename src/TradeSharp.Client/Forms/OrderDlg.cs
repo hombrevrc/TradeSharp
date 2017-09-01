@@ -928,7 +928,7 @@ namespace TradeSharp.Client.Forms
             {
                 var lotSize = DalSpot.Instance.GetMinStepLot(symbol, account.Group);
                 volmBase = MarketOrder.RoundDealVolume((int)volmBase.Value, UserSettings.Instance.VolumeRoundType,
-                                                       lotSize.a, lotSize.b);
+                                                       lotSize.minVolume, lotSize.volumeStep);
             }
 
             cbVolume.Text = ((int)volmBase.Value).ToStringUniformMoneyFormat();

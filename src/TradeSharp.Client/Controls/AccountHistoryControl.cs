@@ -151,7 +151,7 @@ namespace TradeSharp.Client.Controls
                 summaryOrder = new MarketOrder
                                    {
                                        ResultDepo = filtOrders.Sum(o => o.ResultDepo),
-                                       ResultPoints = filtOrders.Sum(o => o.ResultPoints),
+                                       ResultPoints = filtOrders.Sum(o => o.ResultPoints),                                       
                                        Symbol = "сумм."
                                    };
             }
@@ -180,10 +180,34 @@ namespace TradeSharp.Client.Controls
             }
 
             // суммарный ордер
-            if (summaryOrder != null) filtOrders.Add(summaryOrder);
+            if (summaryOrder != null)
+            {
+                summaryOrder.Volume = SumVolumeByOrders(filtOrders);
+                filtOrders.Add(summaryOrder);
+            }
             
             historyGrid.DataBind(filtOrders, typeof(MarketOrder));
             historyGrid.CheckSize(true);
+        }
+
+        private int SumVolumeByOrders(List<MarketOrder> orders)
+        {
+            if (orders.Count == 0) return 0;
+            var account = AccountStatus.Instance.AccountData;
+            if (account == null) return 0;
+            
+            var totalVolume = 0M;
+            var quotes = Contract.Util.BL.QuoteStorage.Instance.ReceiveAllData();
+            string strError;
+            foreach (var o in orders)
+            {
+                var total = o.Side < 10 && !string.IsNullOrEmpty(o.Symbol)
+                    ? (Entity.DalSpot.Instance.ConvertToTargetCurrency(o.Symbol, true, account.Currency, o.Volume, quotes, out strError) ?? 0)
+                    : 0;// (decimal)o.ResultDepo;
+                // конвертировать 
+                totalVolume += total;
+            }
+            return (int)Math.Round(totalVolume);
         }
         
         private void ФильтрToolStripMenuItemClick(object sender, EventArgs e)

@@ -22,7 +22,7 @@ namespace Candlechart.Series
         public InteractiveObjectSeries Owner { get; set; }
 
         [Browsable(false)]
-        public virtual string ClassName { get { return Localizer.GetString("TitleTrendLine"); } }
+        public virtual string ClassName => Localizer.GetString("TitleTrendLine");
 
         [DisplayName("Magic")]
         [LocalizedCategory("TitleMain")]
@@ -1257,6 +1257,8 @@ namespace Candlechart.Series
 
         public ChartObjectMarker IsInMarker(int screenX, int screenY, Keys modifierKeys)
         {
+            if (Owner == null)
+                throw new NullReferenceException($"TrendLine [{Name}] - Owner series is null");
             copyModeOn = false;
             var ptClient = Owner.Owner.PointToClient(new Point(screenX, screenY));
             var selMarker = markers.FirstOrDefault(marker => marker.IsIn(ptClient.X, ptClient.Y,

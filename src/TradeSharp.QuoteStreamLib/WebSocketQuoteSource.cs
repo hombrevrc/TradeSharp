@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using TradeSharp.Contract.Entity;
 using TradeSharp.Util;
 using WebSocket4Net;
-using WebSocketDistribution.Model;
 
 namespace TradeSharp.QuoteStreamLib
 {
@@ -23,19 +22,10 @@ namespace TradeSharp.QuoteStreamLib
         {
             Logger.Info($"Connecting to {uri}");
             client = new WebSocketClient();
-            client.Setup(uri, "basic", WebSocketVersion.Rfc6455,
-                OnMessage, (@event, s) =>
-                {
-                    if (@event == ConnectionEvent.Connected)
-                        logNoFlood.LogMessageCheckFlood(LogEntryType.Info, (int)@event, 1000 * 60 * 60 * 2,
-                            $"WebSocket quote stream: connected to {uri}");
-                    if (@event == ConnectionEvent.Disconnected)
-                        logNoFlood.LogMessageCheckFlood(LogEntryType.Info, (int)@event, 1000 * 60 * 60 * 2,
-                            $"WebSocket quote stream: disconnected");
-                    if (@event == ConnectionEvent.Faulted)
-                        logNoFlood.LogMessageCheckFlood(LogEntryType.Info, (int)@event, 1000 * 60 * 60,
-                            $"WebSocket quote stream: faulted to connect ({s})");
-                });
+            client.Setup(uri);//, "basic", WebSocketVersion.Rfc6455,
+            client.MessageRecieved += OnMessage;
+            client.ErrorRecieved += e => logNoFlood.LogMessageCheckFlood(LogEntryType.Info, 1, 1000 * 60 * 60,
+                            $"WebSocket quote stream: faulted to connect ({e})");            
         }
 
         public void Start()

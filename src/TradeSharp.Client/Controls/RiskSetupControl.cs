@@ -98,7 +98,7 @@ namespace TradeSharp.Client.Controls
             tbResultRounded.Text = volmBase.HasValue
                                        ? MarketOrder.RoundDealVolume((int) Math.Round(volmBase.Value),
                                                                      ((EnumItem<VolumeRoundType>) cbRoundVolume.SelectedItem).Value,
-                                                                     lotSize.a, lotSize.b).ToStringUniformMoneyFormat()
+                                                                     lotSize.minVolume, lotSize.volumeStep).ToStringUniformMoneyFormat()
                                        : "-";
         }
 

@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Net;
 using Entity;
+using FastGrid;
 using TradeSharp.Contract.Entity;
 using TradeSharp.Contract.Util.BL;
 using TradeSharp.Robot.BL;
@@ -15,88 +16,20 @@ namespace TradeSharp.Robot.Robot
 {
     // ReSharper disable LocalizableElement
     [DisplayName("FX")]
-    public class FiboLevelRobot : BaseRobot
+    public partial class FiboLevelRobot : BaseRobot
     {
         private const string HintCodePriceLevel = "FXBotEnterLevel";
+
         private const string HintPriceBIsUpdated = "FXBotBUpdated";
 
         private CandlePacker packer;
+
         private readonly List<CandleData> candles = new List<CandleData>();
+
         private string ticker;
+
         public const string RobotNamePreffix = "FiboLevelRobot";
-
-        /// <summary>
-        /// содержит дополнительные атрибуты ордера,
-        /// определяемые через поле ExpertComment
-        /// (цены A - B, номер в серии)
-        /// </summary>
-        class FiboRobotPosition
-        {
-            public MarketOrder order;
-
-            public BarSettings timeframe;
-
-            public decimal PriceA { get; set; }
-
-            public decimal PriceB { get; set; }
-
-            /// <summary>
-            /// 1 для "первичного" входа, 2 для "вторичного" и т.д.
-            /// </summary>
-            public int Sequence { get; set; }
-
-            public static void MakeOrderComments(MarketOrder order, BarSettings timeframe,
-                decimal priceA, decimal priceB, int sequence = 1)
-            {
-                order.ExpertComment = RobotNamePreffix;
-                order.Comment = string.Join(";",
-                                            BarSettingsStorage.Instance.GetBarSettingsFriendlyName(timeframe),
-                                            priceA.ToStringUniformPriceFormat(),
-                                            priceB.ToStringUniformPriceFormat(),
-                                            sequence);
-            }
-
-            public static List<FiboRobotPosition> GetRobotPositions(string ticker,
-                IEnumerable<MarketOrder> orders, BarSettings timeframe,
-                decimal? priceAFilter, decimal? priceBFilter)
-            {
-                var maxDeltaPriceAbs = DalSpot.Instance.GetAbsValue(ticker, 1.5M);
-                var deals = orders.Select(MakeFiboPosition)
-                          .Where(o => o != null)
-                          .Where(d =>
-                              d.timeframe == timeframe &&
-                              (!priceAFilter.HasValue || d.PriceA.RoughCompares(priceAFilter.Value, maxDeltaPriceAbs)) &&
-                              (!priceBFilter.HasValue || d.PriceB.RoughCompares(priceBFilter.Value, maxDeltaPriceAbs)))
-                          .ToList();
-                return deals;
-            }
-
-            private static FiboRobotPosition MakeFiboPosition(MarketOrder order)
-            {
-                if (order.ExpertComment != RobotNamePreffix) return null;
-                var barSetsPreffixLength = order.Comment.IndexOf(';');
-                if (barSetsPreffixLength <= 0) return null;
-                var barSetsPreffix = order.Comment.Substring(0, barSetsPreffixLength);
-                var barSettings = BarSettingsStorage.Instance.GetBarSettingsByName(barSetsPreffix);
-                if (barSettings == null)
-                    return null;
-
-                var commentStr = order.Comment.Substring(barSetsPreffixLength + 1);
-
-                var commentParts = commentStr.ToDecimalArrayUniform();
-                if (commentParts.Length < 2 || commentParts.Length > 3) return null;
-
-                return new FiboRobotPosition
-                {
-                    timeframe = barSettings,
-                    order = order,
-                    PriceA = commentParts[0],
-                    PriceB = commentParts[1],
-                    Sequence = commentParts.Length > 2 ? (int)commentParts[2] : 1
-                };
-            }
-        }
-
+        
         #region Неактуальные настройки
         [Browsable(false)]
         public override string NewsChannels { get; set; }
@@ -105,31 +38,25 @@ namespace TradeSharp.Robot.Robot
         #region Money Management
 
         [PropertyXMLTag("Robot.FixedVolume")]
-        [DisplayName("Фикс. объем входа")]
+        [DisplayName("Объем первой сделки")]
         [Category("Money Management")]
         [Description("Объём, которым робот входит в рынок. 0 - не задан")]
-        [PropertyOrder(12, 4)]
-        public override int? FixedVolume { get; set; }
+        [PropertyOrder(11, 4)]
+        public override int? FixedVolume { get; set; } = 10000;
 
-        private decimal leverageStep = 0.025M;
-        [DisplayName("Шаг плеча")]
-        [Description("Шаг плеча сделки")]
+        [DisplayName("Шаг объема")]
+        [Description("Приращение объема каждой послед. сделки")]
         [Category("Money Management")]
         [PropertyXMLTag("LeverageStep")]
-        [PropertyOrder(10, 4)]
-        public decimal LeverageStep
-        {
-            get { return leverageStep; }
-            set { leverageStep = value; }
-        }
+        [PropertyOrder(12, 4)]
+        public int VolumeStep { get; set; } = 1000;
 
-        private int maxDealsInSeries = 5;
         [PropertyXMLTag("Robot.MaxDealsInSeries")]
         [DisplayName("Макс сделок подряд")]
         [Category("Money Management")]
         [Description("Макс. количество последовательно идущих входов")]
-        [PropertyOrder(11, 4)]
-        public int MaxDealsInSeries { get { return maxDealsInSeries; } set { maxDealsInSeries = value; } }
+        [PropertyOrder(10, 4)]
+        public int MaxDealsInSeries { get; set; } = 5;
 
         #endregion
 
@@ -179,6 +106,7 @@ namespace TradeSharp.Robot.Robot
         [RuntimeAccess(true)]
         [PropertyOrder(10, 1)]
         [DisplayFormat(DataFormatString = "{0:F3}")]
+        [ValueList(true, 0.24, 0.38, 0.62, 0.74, 1.618, 2.168)]
         public decimal KoefEnter
         {
             get { return koefEnter; }
@@ -193,6 +121,7 @@ namespace TradeSharp.Robot.Robot
         [RuntimeAccess(true)]
         [PropertyOrder(11, 1)]
         [DisplayFormat(DataFormatString = "{0:F3}")]
+        [ValueList(true, 0.618, 0.74, 1.618, 2.168)]
         public decimal KoeffEnterLowB
         {
             get { return koeffEnterLowB; }
@@ -207,6 +136,7 @@ namespace TradeSharp.Robot.Robot
         [RuntimeAccess(true)]
         [PropertyOrder(12, 1)]
         [DisplayFormat(DataFormatString = "{0:F3}")]
+        [ValueList(true, 0.74, 1.618, 2.168)]
         public decimal KoeffEnterHighA
         {
             get { return koeffEnterHighA; } 
@@ -221,6 +151,7 @@ namespace TradeSharp.Robot.Robot
         [RuntimeAccess(true)]
         [PropertyOrder(13, 1)]
         [DisplayFormat(DataFormatString = "{0:F3}")]
+        [ValueList(true, 1.618, 2.168)]
         public decimal KoeffEnterHighB
         {
             get { return koeffEnterHighB; } 
@@ -243,10 +174,7 @@ namespace TradeSharp.Robot.Robot
         [Category("Основные")]
         [Description("Направление возможного входа в рынок")]
         [RuntimeAccess(true)]
-        public string Side
-        {
-            get { return side > 0 ? "BUY" : side < 0 ? "SELL" : "-"; }
-        }
+        public string Side => side > 0 ? "BUY" : side < 0 ? "SELL" : "-";
 
         private bool priceBwasUpdated;
 
@@ -254,10 +182,7 @@ namespace TradeSharp.Robot.Robot
         [Description("Цена B была обновлена с момента запуска робота")]
         [Category("Текущие")]
         [RuntimeAccess(true)]
-        public bool PriceBWasUpdated
-        {
-            get { return priceBwasUpdated; }
-        }
+        public bool PriceBWasUpdated => priceBwasUpdated;
 
         [DisplayName("Текущий уровень")]
         [Description("Уровень коррекции-расширения для входа в рынок")]
@@ -399,7 +324,7 @@ namespace TradeSharp.Robot.Robot
         [Description("Уровень \"коррекции\" или \"расширения\" для \"защиты\" сделки")]
         [Category("Правила входа")]
         [PropertyXMLTag("Robot.koefProtect")]
-        [PropertyOrder(10, 3)]
+        [PropertyOrder(300, 3)]
         public float KoefProtect
         {
             get { return koefProtect; }
@@ -543,38 +468,11 @@ namespace TradeSharp.Robot.Robot
         {
             get
             {
-                if (FixedVolume.HasValue && FixedVolume > 0)
-                    return FixedVolume.Value.ToStringUniformMoneyFormat();
-
-                if (!Leverage.HasValue || Leverage <= 0) return "-";
-
-                var equity = 100000M;
-                var depoCurx = "USD";
-                if (robotContext != null)
-                {
-                    equity = robotContext.AccountInfo.Equity;
-                    depoCurx = robotContext.AccountInfo.Currency;
-                }
-            
-
-                var allTickers = DalSpot.Instance.GetTickerNames();
-                var ticker = allTickers.Contains("EURUSD") ? "EURUSD" : allTickers[0];
-
-                var volumeStart = (int) Math.Round(equity * Leverage.Value);
-                var lotStep = DalSpot.Instance.GetMinStepLot(ticker, robotContext == null
-                                                                 ? "Demo" : robotContext.AccountInfo.Group);
-                var volStartRound = MarketOrder.RoundDealVolume(volumeStart, RoundType, lotStep.a, lotStep.b);
-                var volMax = (int) Math.Round(volumeStart + leverageStep * equity * (maxDealsInSeries - 1));
-                var volMaxRound = MarketOrder.RoundDealVolume(volMax, RoundType, lotStep.a, lotStep.b);
-                var volmStep = (int) Math.Round(leverageStep*equity);
-
-                return string.Format("Депо. {0} {1}, {2}({3}) .. {4}, шаг {5}",
-                                     equity.ToStringUniformMoneyFormat(false),
-                                     depoCurx,
-                                     volStartRound.ToStringUniformMoneyFormat(),
-                                     ticker,
-                                     volMaxRound.ToStringUniformMoneyFormat(),
-                                     volmStep.ToStringUniformMoneyFormat());
+                var factTicker = Graphics.Count > 0 ? Graphics[0].a : "EURUSD";
+                var start = CalculateVolume(factTicker, null, FixedVolume ?? 0);
+                var end = (FixedVolume ?? 0) + (MaxDealsInSeries - 1) * VolumeStep;
+                end = CalculateVolume(factTicker, null, end);
+                return $"{start.ToStringUniformMoneyFormat()} .. {end.ToStringUniformMoneyFormat()} {factTicker}, {MaxDealsInSeries} сделок";               
             }
         }
 
@@ -606,6 +504,9 @@ namespace TradeSharp.Robot.Robot
 
         [Browsable(false)]
         public override int RoundVolumeStep { get { return 0; } set { } }
+
+        [Browsable(false)]
+        public override decimal? Leverage { get; set; }
         #endregion
 
         #region Служебные переменные
@@ -650,7 +551,7 @@ namespace TradeSharp.Robot.Robot
             var bot = new FiboLevelRobot
             {
                 Leverage = Leverage,
-                LeverageStep = LeverageStep,
+                VolumeStep = VolumeStep,
                 PriceA = PriceA,
                 PriceB = PriceB,
                 koefEnter = koefEnter,
@@ -1301,9 +1202,8 @@ namespace TradeSharp.Robot.Robot
             events.Add(msgLevelBroken);
             // таки войти в рынок
             var enterIsOk = OpenDeal(orders);
-            if (enterIsOk && (ordersCount >= maxDealsInSeries - 1))
-                events.Add(string.Format("Робот \"FX\" {0} осуществил {1} входов в рынок",
-                    HumanRTickers, maxDealsInSeries));
+            if (enterIsOk && ordersCount >= MaxDealsInSeries - 1)
+                events.Add($"Робот \"FX\" {HumanRTickers} осуществил {MaxDealsInSeries} входов в рынок");
             return true;
         }
 
@@ -1494,8 +1394,8 @@ namespace TradeSharp.Robot.Robot
         private bool OpenDeal(List<MarketOrder> orders, decimal dealPriceA, decimal dealPriceB, int sequence, int dealSide)
         {
             var countSame = orders.Count(o => o.Side == dealSide);
-            var lever = Leverage + leverageStep * countSame;
-            var dealVolumeDepo = CalculateVolume(ticker, lever);
+            var volm = (FixedVolume ?? 0) + countSame * VolumeStep;
+            var dealVolumeDepo = CalculateVolume(ticker, null, volm);
             if (VerboseLogging)
                 Logger.InfoFormat(RobotNamePreffix + ": планируемый вход ({0} {1}) отменен - объем входа равен 0",
                     dealSide, ticker);

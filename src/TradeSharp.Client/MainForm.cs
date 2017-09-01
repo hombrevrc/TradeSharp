@@ -197,6 +197,7 @@ namespace TradeSharp.Client
 
             bookmarkStrip.ImgList = lstGlyph32;
             SetupMenuImages();
+            
             try
             {
                 MakeFormMdi();

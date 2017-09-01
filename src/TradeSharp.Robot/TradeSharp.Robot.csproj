@@ -110,6 +110,7 @@
     <Compile Include="Robot\DoubleTopRobot.cs" />
     <Compile Include="Robot\DrawDownStopoutChecker.cs" />
     <Compile Include="Robot\FiboLevelRobot.cs" />
+    <Compile Include="Robot\FiboLevelRobot.Position.cs" />
     <Compile Include="Robot\FibonacciRobot.cs" />
     <Compile Include="Robot\ForexSignalRobot.cs" />
     <Compile Include="Robot\ForexSignalRobot.DiversByTimeframe.cs" />

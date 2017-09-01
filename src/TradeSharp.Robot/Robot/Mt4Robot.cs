@@ -466,6 +466,7 @@ namespace TradeSharp.Robot.Robot
             if ((DateTime.Now - timeSinceActList.GetLastHit()).TotalMilliseconds > MilsBetweenSendActualOrdersList)
             {
                 SendActualOrdersCommand(orders);
+                SendReportCommand();
                 timeSinceActList.Touch();
             }
             
@@ -490,6 +491,11 @@ namespace TradeSharp.Robot.Robot
                 SendCloseCommands(ordersClosed);
             if (ordersNew.Count > 0)
                 SendOpenCommands(ordersNew);
+        }
+
+        private void SendReportCommand()
+        {
+            outgoingCommandsList.Add("REPORT", CommandListTimeout);
         }
 
         private void SendActualOrdersCommand(List<MarketOrder> orders)

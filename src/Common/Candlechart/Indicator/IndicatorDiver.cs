@@ -291,6 +291,7 @@ namespace Candlechart.Indicator
             if (endIndex < 0 || endIndex >= dataCount) return;
             
             var line = new TrendLine();
+            line.Owner = seriesDivArrow;
             line.linePoints.Add(new PointD(startIndex, GetSourcePrice(startIndex)));
             line.linePoints.Add(new PointD(endIndex, GetSourcePrice(endIndex)));
             line.LineStyle = TrendLine.TrendLineStyle.Стрелка;
@@ -311,6 +312,7 @@ namespace Candlechart.Indicator
                                ShapeAlpha = 192,
                                ShapeFillColor = sign > 0 ? ColorArrowUp : ColorArrowDown
                            };
+            line.Owner = seriesDivArrow;
             line.AddPoint(endIndex, price - sign * price * 0.01);
             line.AddPoint(endIndex, price);
             seriesDivArrow.data.Add(line);

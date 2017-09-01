@@ -18,7 +18,9 @@ namespace TradeSharp.Linq
                            Precision = spot.Precise,
                            SwapBuy = spot.SwapBuy,
                            SwapSell = spot.SwapSell,
-                           Title = spot.Title
+                           Title = spot.Title,
+                           MinStepVolume = spot.MinStepVolume,
+                           MinVolume = spot.MinVolume
                        };
         }
 

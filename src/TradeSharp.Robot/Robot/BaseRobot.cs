@@ -41,7 +41,7 @@ namespace TradeSharp.Robot.Robot
             set { magic = value; }
         }
 
-        private decimal? leverage = 0.2M;
+        private decimal? _leverage = 0.2M;
         [LocalizedDisplayName("TitleLeverage")]
         [Description("Плечо сделки")]
         [Category("Money Management")]
@@ -49,8 +49,8 @@ namespace TradeSharp.Robot.Robot
         [PropertyOrder(31, 2)]
         public virtual decimal? Leverage
         {
-            get { return leverage; }
-            set { leverage = value; }
+            get { return _leverage; }
+            set { _leverage = value; }
         }
 
         private int? fixedVolume = 10000;
@@ -489,8 +489,11 @@ namespace TradeSharp.Robot.Robot
             if (!fixedVolm.HasValue || fixedVolm.Value == 0)
             {
                 calculateLeverage = calculateLeverage ?? Leverage;
-                Account ac;
-                robotContext.GetAccountInfo(robotContext.AccountInfo.ID, true, out ac);
+                if (robotContext == null)
+                {
+                    return 0;
+                }
+                robotContext.GetAccountInfo(robotContext.AccountInfo.ID, true, out var ac);
                 if (ac == null || ac.Equity <= 0)
                 {
                     var errorStr = ac == null
@@ -521,11 +524,14 @@ namespace TradeSharp.Robot.Robot
 
             if (roundMinVolm == 0 || roundVolmStep == 0)
             {
-                var minStepLot = DalSpot.Instance.GetMinStepLot(ticker, robotContext.AccountInfo.Group);
+                var groupName = robotContext?.AccountInfo != null
+                    ? robotContext.AccountInfo.Group
+                    : "";
+                var minStepLot = DalSpot.Instance.GetMinStepLot(ticker, groupName);
                 if (roundMinVolm == 0)
-                    roundMinVolm = minStepLot.b;
+                    roundMinVolm = minStepLot.minVolume;
                 if (roundVolmStep == 0)
-                    roundVolmStep = minStepLot.a;
+                    roundVolmStep = minStepLot.volumeStep;
             }
 
             var volume = MarketOrder.RoundDealVolume((int)baseDealVolume.Value, RoundType, roundMinVolm, roundVolmStep);

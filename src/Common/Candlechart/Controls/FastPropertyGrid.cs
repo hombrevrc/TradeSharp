@@ -335,8 +335,8 @@ namespace Candlechart.Controls
             {
                 // редактор подставляется в FastGrid.PopupTextBox
                 try
-                {
-                    var pop = new PopupTextBox(cellValue, col.ResultedWidth, fastGrid.CellHeight, rowIndex, col, property, null);
+                {              
+                    var pop = new PopupTextBox(cellValue, col.ResultedWidth, fastGrid.CellHeight + 2, rowIndex, col, property, null);
                     pop.OnValueUpdated += UpdateObject;
                     pop.Show(fastGrid, coords);
                 }
