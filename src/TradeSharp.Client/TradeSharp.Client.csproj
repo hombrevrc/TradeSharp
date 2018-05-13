@@ -128,6 +128,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="BL\RobotFarm.cs" />
+    <Compile Include="BL\Script\AccountInfoCommentScript.cs" />
     <Compile Include="BL\Script\CaymanConsumptionTrendCheckScript.cs" />
     <Compile Include="BL\Script\CaymanDivergenceScript.cs" />
     <Compile Include="BL\Script\CaymanDivergenceSetupDlg.cs">
