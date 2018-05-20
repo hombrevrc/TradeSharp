@@ -53,10 +53,6 @@
     <Reference Include="TradeSharp.Linq">
       <HintPath>..\..\TradeSharp.Linq\bin\Debug\TradeSharp.Linq.dll</HintPath>
     </Reference>
-    <Reference Include="TradeSharp.Util, Version=1.0.0.0, Culture=neutral, PublicKeyToken=e9433adc0478c5d9, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\TradeSharp.Client\bin\Debug\TradeSharp.Util.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DbProcessing.cs" />
@@ -77,6 +73,10 @@
     <ProjectReference Include="..\..\TradeSharp.Contract\TradeSharp.Contract.csproj">
       <Project>{168f1cac-77c9-4847-b6c1-138e4373ccea}</Project>
       <Name>TradeSharp.Contract</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\TradeSharp.Util\TradeSharp.Util.csproj">
+      <Project>{4b406c3d-89c3-4c9f-a677-c3114d93b8f9}</Project>
+      <Name>TradeSharp.Util</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

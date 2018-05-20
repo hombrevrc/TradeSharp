@@ -110,6 +110,15 @@ namespace TradeSharp.Client.BL
             ProfitGeomDay = avgROR;
         }
 
+        public float CalculateDrawdown(List<EquityOnTime> listProfit1000)
+        {
+            this.listProfit1000 = listProfit1000;
+
+            Statistics = new PerformerStat();
+            CalculateDrawdown();
+            return Statistics.MaxRelDrawDown;
+        }
+
         private void CalculateDrawdown()
         {
             Statistics.MaxRelDrawDown = 0;

@@ -4992,4 +4992,7 @@
   <data name="TitleCodeIndicatorCode" xml:space="preserve">
     <value>Программный код</value>
   </data>
+  <data name="TitleAccountInfoCommentScript" xml:space="preserve">
+    <value>Информация по счёту</value>
+  </data>
 </root>

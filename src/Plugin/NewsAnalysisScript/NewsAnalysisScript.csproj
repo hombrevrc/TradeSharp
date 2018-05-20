@@ -108,7 +108,7 @@
       <Name>TradeSharp.Util</Name>
     </ProjectReference>
     <ProjectReference Include="..\RobotPackage\NewsRobot\NewsRobot.csproj">
-      <Project>{A64DD735-67AB-4EB7-8200-39A6FEEA13B1}</Project>
+      <Project>{a64dd735-67ab-4eb7-8200-39a6feea13b1}</Project>
       <Name>NewsRobot</Name>
     </ProjectReference>
   </ItemGroup>
