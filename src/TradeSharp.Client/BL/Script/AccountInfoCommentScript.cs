@@ -95,76 +95,96 @@ namespace TradeSharp.Client.BL.Script
         private string GetCommentText(Account accountData)
         {
             var result = new StringBuilder();
-            /*
-            var balanceChanges = GetBalanceChanges(accountData.ID, DateTime.Now.AddDays(-7));
-            var orders = GetMarketOrders(accountData.ID, DateTime.Now.AddDays(-7));
-            var quotes = QuoteStorage.Instance.proxy.GetQuoteData();
-            */
-            
+            var profitStatistic = GetProfitStatistic(accountData.ID, accountData.Balance, accountData.Equity);
+            var ordersStatistic = GetOrdersStatistic(accountData.ID);
+            result.Append(profitStatistic);
+            result.Append(ordersStatistic);
+            return result.ToString();
+        }
+
+        private StringBuilder GetProfitStatistic(int accountID, decimal accountBalance, decimal accountEquity)
+        {
+            var result = new StringBuilder();
             var balanceChangesText = "[b] Balance changes: - ";
             var balanceChangesPercentText = "[b] Balance changes (percent): - ";
+            var currentDrawDownText = "[b] Current draw down (percent): - ";
+            var maxDrawDownText = "[b] Max draw down (percent): - ";
+
+            try
+            {
+                var accountStatistics = TradeSharpAccountStatistics.Instance.proxy.GetAccountProfit1000(accountID);
+                if (accountStatistics.Count > 1)
+                {
+                    var equtyByDay = accountStatistics.Skip(Math.Max(0, accountStatistics.Count - 7)).Select(x => x.equity).ToList();
+                    var profitWeek = 0F;
+                    for (int i = 0; i < equtyByDay.Count - 1; i++)
+                        profitWeek += (equtyByDay[i + 1] - equtyByDay[i]);
+                    var profitWeekPercent
+                        = (equtyByDay.Last() - equtyByDay.First()) / equtyByDay.Last();
+                    var profitToday =
+                        equtyByDay[equtyByDay.Count - 1] - equtyByDay[equtyByDay.Count - 2];
+                    var profitTodayPercent =
+                        (equtyByDay[equtyByDay.Count - 1] - equtyByDay[equtyByDay.Count - 2]) / equtyByDay[equtyByDay.Count - 1];
+
+                    balanceChangesText = $"[b] Balance changes: {profitToday:F3} / {profitWeek:F3}";
+                    balanceChangesPercentText = $"[b] Balance changes (percent): {profitTodayPercent * 100:F3} % / {profitWeekPercent * 100:F3} %";
+
+                    var stat = new AccountStatistics();
+                    var maxDrawDown = stat.CalculateDrawdown(accountStatistics);
+                    maxDrawDownText = $"[b] Max draw down (percent): {maxDrawDown:F3} %";
+
+                    var currentDrawDown = accountEquity < accountBalance 
+                        ? 100 * (accountEquity - accountBalance) / accountBalance 
+                        : 0;
+                    currentDrawDownText = $"[b] Current draw down (percent): {currentDrawDown} %";
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Ошибка скрипта AccountInfoCommentScript", ex);
+            }
+
+            result.AppendLine(balanceChangesText);
+            result.AppendLine(balanceChangesPercentText);
+            result.AppendLine(currentDrawDownText);
+            result.AppendLine(maxDrawDownText);
+
+            return result;
+        }
+
+        private StringBuilder GetOrdersStatistic(int accountID)
+        {
+            var result = new StringBuilder();
             var pipChangeText = "[b] Pip change: - ";
             var pipAverageText = "[b] Pip average: - ";
             var successDealPercentText = "[b] Success deal (percent): - ";
 
-            var currentDrawDownText = "[b] Current draw down (percent): - ";
-            var maxDrawDownText = "[b] Max draw down (percent): - ";
-
-
-            var accountStatistics = TradeSharpAccountStatistics.Instance.proxy.GetAccountProfit1000(accountData.ID);
-            if (accountStatistics.Count > 1)
+            try
             {
-                var equtyByDay = accountStatistics.Skip(Math.Max(0, accountStatistics.Count - 7)).Select(x => x.equity).ToList();
-                var profitWeek = 0F;
-                for (int i = 0; i < equtyByDay.Count - 1 ; i++)
-                    profitWeek += (equtyByDay[i + 1] - equtyByDay[i]);
-                var profitWeekPercent 
-                    = (equtyByDay.Last() - equtyByDay.First()) / equtyByDay.Last();
-                var profitToday =
-                    equtyByDay[accountStatistics.Count - 1] - equtyByDay[accountStatistics.Count - 2];
-                var profitTodayPercent = 
-                    (equtyByDay[accountStatistics.Count - 1] - equtyByDay[accountStatistics.Count - 2]) / equtyByDay[accountStatistics.Count - 1];
-                
-                balanceChangesText = $"[b] Balance changes: {profitToday:F3} / {profitWeek:F3}";
-                balanceChangesPercentText = $"[b] Balance changes (percent): {profitTodayPercent * 100:F3} % / {profitWeekPercent * 100:F3} %";
+                var orders = GetMarketOrders(accountID);
+                if (orders != null || orders.Count > 0)
+                {
+                    var pips = orders.Where(x => x.ResultPoints != 0).Select(x => x.ResultPoints).ToArray();
+                    pipChangeText = $"[b] Pip change: {pips.Sum():F3}";
+                    pipAverageText = $"[b] Pip average: {pips.Average():F3}";
 
-                var stat = new AccountStatistics();
-                var maxDrawDown = stat.CalculateDrawdown(accountStatistics);
-                maxDrawDownText = $"[b] Max draw down (percent): {maxDrawDown:F3} %";
+                    //Ордера с ResultDepo == 0 отфильтровываем
+                    var successDeals = orders.Count(x => x.ResultDepo > 0);
+                    var successDealPercent = (float)successDeals / orders.Count(x => x.ResultDepo != 0);
 
-                if (accountData.Equity < accountData.Balance)
-                    currentDrawDownText =
-                        $"[b] Current draw down (percent): {100 * (accountData.Equity - accountData.Balance) / accountData.Balance} %"; 
+                    successDealPercentText = $"[b] Success deals (percent): {successDealPercent * 100:F3} %";
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Ошибка скрипта AccountInfoCommentScript", ex);
             }
 
-            var orders = GetMarketOrders(accountData.ID);
-            if (orders != null || orders.Count > 0)
-            {
-                var pips = orders.Where(x => x.ResultPoints != 0).Select(x => x.ResultPoints).ToArray();
-                pipChangeText = $"[b] Pip change: {pips.Sum():F3}";
-                pipAverageText = $"[b] Pip average: {pips.Average():F3}";
-
-                //Ордера с ResultDepo == 0 отфильтровываем
-                var failDeals = orders.Count(x => x.ResultDepo < 0);
-                var successDeals = orders.Count(x => x.ResultDepo > 0);
-                var successDealPercent = failDeals > 0
-                    ? successDeals / failDeals
-                    : successDeals > 0
-                        ? 1 : 0;
-
-                successDealPercentText = $"[b] Success deals (percent): {successDealPercent * 100:F3} %";
-            }
-
-            //Statistics.MaxRelDrawDown
-            result.AppendLine($"[b] Balance {accountData.Balance}");
-            result.AppendLine(balanceChangesText);
-            result.AppendLine(balanceChangesPercentText);
             result.AppendLine(pipChangeText);
-            result.AppendLine(currentDrawDownText);
-            result.AppendLine(maxDrawDownText);
-            result.AppendLine(successDealPercentText);
             result.AppendLine(pipAverageText);
-            return result.ToString();
+            result.AppendLine(successDealPercentText);
+
+            return result;
         }
 
         private List<BalanceChange> GetBalanceChanges(int accountId, DateTime startDate)
