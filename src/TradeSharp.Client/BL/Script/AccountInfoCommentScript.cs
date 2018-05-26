@@ -19,6 +19,7 @@ namespace TradeSharp.Client.BL.Script
     public class AccountInfoCommentScript : TerminalScript
     {
         private const string CommentSpecName = "ScriptAccountInfo";
+        private string chartSymbol;
 
         public AccountInfoCommentScript()
         {
@@ -27,6 +28,7 @@ namespace TradeSharp.Client.BL.Script
 
         public override string ActivateScript(CandleChartControl chart, PointD worldCoords)
         {
+            chartSymbol = chart.Symbol;
             var comment = chart
                 .seriesComment
                 .data
@@ -41,7 +43,9 @@ namespace TradeSharp.Client.BL.Script
             }
 
             var accountData = AccountStatus.Instance.AccountData;
-            var scriptText = GetCommentText(accountData);
+            var accountStatistics = TradeSharpAccountStatistics.Instance.proxy.GetAccountProfit1000(accountData.ID);
+            var ordersBySymbol = GetMarketOrders(accountData.ID).Where(x => x.Symbol == chart.Symbol);
+            var scriptText = GetCommentText(accountData, accountStatistics, ordersBySymbol);
 
             comment = new ChartComment
             {
@@ -72,18 +76,22 @@ namespace TradeSharp.Client.BL.Script
         {
             if (!byTrigger)
                 throw new Exception("Неверный тип вызова скрипта \"AccountInfoCommentScript\"");
-            
+
             var accountData = AccountStatus.Instance.AccountData;
-            var scriptText = GetCommentText(accountData);
+            
 
             // обновить комментарии на графиках
             var charts = MainForm.Instance.GetChartList(true);
+            var accountStatistics = TradeSharpAccountStatistics.Instance.proxy.GetAccountProfit1000(accountData.ID);
+            var orders = GetMarketOrders(accountData.ID);
+
             foreach (var chart in charts)
             {
                 var comment = chart.seriesComment.data.FirstOrDefault(c => c.Name == CommentSpecName);
                 if (comment == null) continue;
 
-                comment.Text = scriptText;
+                var ordersBySymbol = orders.Where(x => x.Symbol == chart.Symbol);
+                comment.Text = GetCommentText(accountData, accountStatistics, ordersBySymbol);
             }
 
             return string.Empty;
@@ -92,27 +100,26 @@ namespace TradeSharp.Client.BL.Script
         /// <summary>
         /// формируем текст для коментария
         /// </summary>
-        private string GetCommentText(Account accountData)
+        private string GetCommentText(Account accountData, List<EquityOnTime> accountStatistics, IEnumerable<MarketOrder> ordersBySymbol)
         {
             var result = new StringBuilder();
-            var profitStatistic = GetProfitStatistic(accountData.ID, accountData.Balance, accountData.Equity);
-            var ordersStatistic = GetOrdersStatistic(accountData.ID);
+            var profitStatistic = GetProfitStatistic(accountStatistics, accountData.Balance, accountData.Equity);
+            var ordersStatistic = GetOrdersStatistic(ordersBySymbol);
             result.Append(profitStatistic);
             result.Append(ordersStatistic);
             return result.ToString();
         }
 
-        private StringBuilder GetProfitStatistic(int accountID, decimal accountBalance, decimal accountEquity)
+        private StringBuilder GetProfitStatistic(List<EquityOnTime> accountStatistics, decimal accountBalance, decimal accountEquity)
         {
             var result = new StringBuilder();
-            var balanceChangesText = "[b] Balance changes: - ";
-            var balanceChangesPercentText = "[b] Balance changes (percent): - ";
-            var currentDrawDownText = "[b] Current draw down (percent): - ";
-            var maxDrawDownText = "[b] Max draw down (percent): - ";
+            var balanceChangesText = "- ";
+            var balanceChangesPercentText = "- ";
+            var currentDrawDownText = "- ";
+            var maxDrawDownText = "- ";
 
             try
             {
-                var accountStatistics = TradeSharpAccountStatistics.Instance.proxy.GetAccountProfit1000(accountID);
                 if (accountStatistics.Count > 1)
                 {
                     var equtyByDay = accountStatistics.Skip(Math.Max(0, accountStatistics.Count - 7)).Select(x => x.equity).ToList();
@@ -126,17 +133,17 @@ namespace TradeSharp.Client.BL.Script
                     var profitTodayPercent =
                         (equtyByDay[equtyByDay.Count - 1] - equtyByDay[equtyByDay.Count - 2]) / equtyByDay[equtyByDay.Count - 1];
 
-                    balanceChangesText = $"[b] Balance changes: {profitToday:F3} / {profitWeek:F3}";
-                    balanceChangesPercentText = $"[b] Balance changes (percent): {profitTodayPercent * 100:F3} % / {profitWeekPercent * 100:F3} %";
+                    balanceChangesText = $"{profitToday:F3} / {profitWeek:F3}";
+                    balanceChangesPercentText = $"{profitTodayPercent * 100:F3} % / {profitWeekPercent * 100:F3} %";
 
                     var stat = new AccountStatistics();
                     var maxDrawDown = stat.CalculateDrawdown(accountStatistics);
-                    maxDrawDownText = $"[b] Max draw down (percent): {maxDrawDown:F3} %";
+                    maxDrawDownText = $"{maxDrawDown:F3} %";
 
                     var currentDrawDown = accountEquity < accountBalance 
                         ? 100 * (accountEquity - accountBalance) / accountBalance 
                         : 0;
-                    currentDrawDownText = $"[b] Current draw down (percent): {currentDrawDown} %";
+                    currentDrawDownText = $"{currentDrawDown} %";
                 }
             }
             catch (Exception ex)
@@ -144,35 +151,35 @@ namespace TradeSharp.Client.BL.Script
                 Logger.Error("Ошибка скрипта AccountInfoCommentScript", ex);
             }
 
-            result.AppendLine(balanceChangesText);
-            result.AppendLine(balanceChangesPercentText);
-            result.AppendLine(currentDrawDownText);
-            result.AppendLine(maxDrawDownText);
+            result.AppendLine($"[b] Баланс {accountBalance}");
+            result.AppendLine($"[b] Прирост за сутки / неделю: {balanceChangesText}");
+            result.AppendLine($"[b] Прирост за сутки / неделю (%/%): {balanceChangesPercentText}");
+            result.AppendLine($"[b] Текущее draw down (%): {currentDrawDownText}");
+            result.AppendLine($"[b] Max draw down (%): {maxDrawDownText}");
 
             return result;
         }
 
-        private StringBuilder GetOrdersStatistic(int accountID)
+        private StringBuilder GetOrdersStatistic(IEnumerable<MarketOrder> ordersBySymbol)
         {
             var result = new StringBuilder();
-            var pipChangeText = "[b] Pip change: - ";
-            var pipAverageText = "[b] Pip average: - ";
-            var successDealPercentText = "[b] Success deal (percent): - ";
+            var pipChangeText = "- ";
+            var pipAverageText = "- ";
+            var successDealPercentText = "- ";
 
             try
             {
-                var orders = GetMarketOrders(accountID);
-                if (orders != null || orders.Count > 0)
+                if (ordersBySymbol != null || ordersBySymbol.Count() > 0)
                 {
-                    var pips = orders.Where(x => x.ResultPoints != 0).Select(x => x.ResultPoints).ToArray();
-                    pipChangeText = $"[b] Pip change: {pips.Sum():F3}";
-                    pipAverageText = $"[b] Pip average: {pips.Average():F3}";
+                    var pips = ordersBySymbol.Where(x => x.ResultPoints != 0).Select(x => x.ResultPoints).ToArray();
+                    pipChangeText = $"{pips.Sum():F3}";
+                    pipAverageText = $"{pips.Average():F3}";
 
                     //Ордера с ResultDepo == 0 отфильтровываем
-                    var successDeals = orders.Count(x => x.ResultDepo > 0);
-                    var successDealPercent = (float)successDeals / orders.Count(x => x.ResultDepo != 0);
+                    var successDeals = ordersBySymbol.Count(x => x.ResultDepo > 0);
+                    var successDealPercent = (float)successDeals / ordersBySymbol.Count(x => x.ResultDepo != 0);
 
-                    successDealPercentText = $"[b] Success deals (percent): {successDealPercent * 100:F3} %";
+                    successDealPercentText = $"{successDealPercent * 100:F3} %";
                 }
             }
             catch (Exception ex)
@@ -180,9 +187,9 @@ namespace TradeSharp.Client.BL.Script
                 Logger.Error("Ошибка скрипта AccountInfoCommentScript", ex);
             }
 
-            result.AppendLine(pipChangeText);
-            result.AppendLine(pipAverageText);
-            result.AppendLine(successDealPercentText);
+            result.AppendLine($"[b] Прирост в pip: {pipChangeText}");
+            result.AppendLine($"[b] Среднее значение pip: {pipAverageText}");
+            result.AppendLine($"[b] % успешных сделок: {successDealPercentText}");
 
             return result;
         }
