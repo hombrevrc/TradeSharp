@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Candlechart.Series;
 
 namespace Candlechart.Core
@@ -32,6 +33,19 @@ namespace Candlechart.Core
                 timeA = timeB;
             }
             return stockSeries.Data.Count;
+        }
+
+        /// <summary>
+        /// Получить первую, из имеющихся за день, свечку
+        /// </summary>
+        public float? GetStartDayPrice(DateTime t)
+        {
+            return stockSeries
+                .Data
+                .Candles
+                .FirstOrDefault(x => 
+                    x.timeOpen.Year == t.Year
+                    && x.timeOpen.DayOfYear == t.DayOfYear)?.close;
         }
     }
 }

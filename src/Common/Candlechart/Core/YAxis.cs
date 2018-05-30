@@ -318,10 +318,13 @@ namespace Candlechart.Core
             RectangleD worldRect, Rectangle canvasRect, Graphics g)
         {
             var price = labelPrice / LabelInfo.Exponent;
-            var priceFont = new Font(Font.Name, Font.Size - 1,
-                                     Font.Style, Font.Unit);
-            var rect = new Rectangle(axisRect.Left + 5, 0, 
-                axisRect.Width - (int)priceFont.SizeInPoints, priceFont.Height);
+            var priceFont = new Font(Font.Name, Font.Size - 1, Font.Style, Font.Unit);
+            var rect = new Rectangle(
+                axisRect.Left + 5, 
+                0, 
+                axisRect.Width - (int)priceFont.SizeInPoints, 
+                priceFont.Height + 30);
+
             var tf = (PointF)Conversion.WorldToScreen(new PointD(0.0, price), worldRect, canvasRect);
             rect.Y = ((int)tf.Y) - (priceFont.Height / 2);
             if (axisRect.Contains(rect))
@@ -332,7 +335,29 @@ namespace Candlechart.Core
                     g.FillRectangle(fillbrush, rect);
                 using (pen)
                     g.DrawRectangle(pen, rect);
-                g.DrawString(labelPrice.ToString(Chart.PriceFormat), priceFont, brush, rect, format);
+
+
+                var deltaPriceText = "-";
+                var deltaPricePercentText = "-";
+
+                var startDayPrice = Chart.CandleRange.GetStartDayPrice(DateTime.Today);
+                if (startDayPrice != null && CurrentPrice != null)
+                {
+                    deltaPriceText = (CurrentPrice.Value - startDayPrice.Value).ToString("F3");
+                    if (startDayPrice.Value != 0)
+                    {
+                        var deltaPricePercent = (CurrentPrice.Value - startDayPrice.Value) * 100 / startDayPrice.Value;
+                        deltaPricePercentText = deltaPricePercent.ToString("F3") + " %";
+                    }
+                }
+                var lableContent = labelPrice.ToString(Chart.PriceFormat) 
+                    + Environment.NewLine 
+                    + deltaPriceText
+                    + Environment.NewLine
+                    + deltaPricePercentText;
+
+                g.DrawString(lableContent, priceFont, brush, rect, format);
+  
             }
         }
 
