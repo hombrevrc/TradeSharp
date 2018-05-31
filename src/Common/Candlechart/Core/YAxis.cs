@@ -25,7 +25,8 @@ namespace Candlechart.Core
         private Point? startDragPoint;
         private Point? currentDragPoint;
 
-        private bool extraPriceMark;
+        private bool showExtraPriceMark;
+        private Cortege2<DateTime, float?>? dayOpenPrice = null;
 
         public bool DragModeIsOn
         {
@@ -50,7 +51,7 @@ namespace Candlechart.Core
             LeftAxisRect = new Rectangle(0, 0, 0, 0);
             RightAxisRect = new Rectangle(0, 0, 0, 0);
             exponentLabel = new ExponentLabel(this);
-            extraPriceMark = AppConfig.GetBooleanParam("VerbosePriceMark", false);
+            showExtraPriceMark = AppConfig.GetBooleanParam("VerbosePriceMark", false);
         }
 
         public ExponentLabel ExponentLabel
@@ -324,7 +325,7 @@ namespace Candlechart.Core
         {
             var price = labelPrice / LabelInfo.Exponent;
             var priceFont = new Font(Font.Name, Font.Size - 1, Font.Style, Font.Unit);
-            var height = extraPriceMark ? priceFont.Height + 30 : priceFont.Height;
+            var height = showExtraPriceMark ? priceFont.Height + 30 : priceFont.Height;
             var rect = new Rectangle(
                 axisRect.Left + 5, 
                 0, 
@@ -353,13 +354,20 @@ namespace Candlechart.Core
 
         private void ExtraPriceMark(StringBuilder priceMarkContent)
         {
-            if (!extraPriceMark)
+            if (!showExtraPriceMark)
                 return;
 
             try
             {
-                var startDayPrice = Chart.CandleRange.GetStartDayPrice(DateTime.Today);
-                if (startDayPrice != null && CurrentPrice != null)
+                if (!dayOpenPrice.HasValue || dayOpenPrice.Value.a != DateTime.Today)
+                    dayOpenPrice = 
+                        new Cortege2<DateTime, float?>(
+                            DateTime.Today,
+                            Chart.CandleRange.GetStartDayPrice(DateTime.Today));
+
+                var startDayPrice = dayOpenPrice.Value.b;
+
+                if (startDayPrice.HasValue && CurrentPrice != null)
                 {
                     var deltaPriceText = (CurrentPrice.Value - startDayPrice.Value).ToString("F3");
                     priceMarkContent.AppendLine(deltaPriceText);
