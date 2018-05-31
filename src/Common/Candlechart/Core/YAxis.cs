@@ -369,12 +369,13 @@ namespace Candlechart.Core
 
                 if (startDayPrice.HasValue && CurrentPrice != null)
                 {
-                    var deltaPriceText = (CurrentPrice.Value - startDayPrice.Value).ToString("F3");
+                    var deltaPrice = DalSpot.Instance.GetPointsValue(Chart.Symbol, CurrentPrice.Value - startDayPrice.Value);
+                    var deltaPriceText = $"{deltaPrice:F0} пп";
                     priceMarkContent.AppendLine(deltaPriceText);
                     if (startDayPrice.Value != 0)
                     {
                         var deltaPricePercent = (CurrentPrice.Value - startDayPrice.Value) * 100 / startDayPrice.Value;
-                        var deltaPricePercentText = deltaPricePercent.ToString("F3") + " %";
+                        var deltaPricePercentText = deltaPricePercent.ToString("F2") + " %";
                         priceMarkContent.AppendLine(deltaPricePercentText);
                     }
                 }
