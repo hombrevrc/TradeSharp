@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Globalization;
+using System.Text;
 using Candlechart.ChartMath;
 using Candlechart.Theme;
 using Entity;
+using TradeSharp.Util;
 
 namespace Candlechart.Core
 {
@@ -22,6 +24,8 @@ namespace Candlechart.Core
         /// </summary>
         private Point? startDragPoint;
         private Point? currentDragPoint;
+
+        private bool extraPriceMark;
 
         public bool DragModeIsOn
         {
@@ -46,6 +50,7 @@ namespace Candlechart.Core
             LeftAxisRect = new Rectangle(0, 0, 0, 0);
             RightAxisRect = new Rectangle(0, 0, 0, 0);
             exponentLabel = new ExponentLabel(this);
+            extraPriceMark = AppConfig.GetBooleanParam("VerbosePriceMark", false);
         }
 
         public ExponentLabel ExponentLabel
@@ -319,11 +324,12 @@ namespace Candlechart.Core
         {
             var price = labelPrice / LabelInfo.Exponent;
             var priceFont = new Font(Font.Name, Font.Size - 1, Font.Style, Font.Unit);
+            var height = extraPriceMark ? priceFont.Height + 30 : priceFont.Height;
             var rect = new Rectangle(
                 axisRect.Left + 5, 
                 0, 
-                axisRect.Width - (int)priceFont.SizeInPoints, 
-                priceFont.Height + 30);
+                axisRect.Width - (int)priceFont.SizeInPoints,
+                height);
 
             var tf = (PointF)Conversion.WorldToScreen(new PointD(0.0, price), worldRect, canvasRect);
             rect.Y = ((int)tf.Y) - (priceFont.Height / 2);
@@ -331,33 +337,43 @@ namespace Candlechart.Core
             {
                 var pen = new Pen(ForeColor);
                 var fillbrush = new SolidBrush(BackColor);
-                using(fillbrush)
+                using (fillbrush)
                     g.FillRectangle(fillbrush, rect);
                 using (pen)
                     g.DrawRectangle(pen, rect);
 
+                var priceMarkContent = new StringBuilder();
+                priceMarkContent.AppendLine(labelPrice.ToString(Chart.PriceFormat));
 
-                var deltaPriceText = "-";
-                var deltaPricePercentText = "-";
+                ExtraPriceMark(priceMarkContent);
 
+                g.DrawString(priceMarkContent.ToString(), priceFont, brush, rect, format);
+            }
+        }
+
+        private void ExtraPriceMark(StringBuilder priceMarkContent)
+        {
+            if (!extraPriceMark)
+                return;
+
+            try
+            {
                 var startDayPrice = Chart.CandleRange.GetStartDayPrice(DateTime.Today);
                 if (startDayPrice != null && CurrentPrice != null)
                 {
-                    deltaPriceText = (CurrentPrice.Value - startDayPrice.Value).ToString("F3");
+                    var deltaPriceText = (CurrentPrice.Value - startDayPrice.Value).ToString("F3");
+                    priceMarkContent.AppendLine(deltaPriceText);
                     if (startDayPrice.Value != 0)
                     {
                         var deltaPricePercent = (CurrentPrice.Value - startDayPrice.Value) * 100 / startDayPrice.Value;
-                        deltaPricePercentText = deltaPricePercent.ToString("F3") + " %";
+                        var deltaPricePercentText = deltaPricePercent.ToString("F3") + " %";
+                        priceMarkContent.AppendLine(deltaPricePercentText);
                     }
                 }
-                var lableContent = labelPrice.ToString(Chart.PriceFormat) 
-                    + Environment.NewLine 
-                    + deltaPriceText
-                    + Environment.NewLine
-                    + deltaPricePercentText;
-
-                g.DrawString(lableContent, priceFont, brush, rect, format);
-  
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex.Message, ex);
             }
         }
 
