@@ -1906,6 +1906,7 @@ namespace TradeSharp.Client
             
             var depoCurx = AccountStatus.Instance.AccountData.Currency;
             var percentProf = acData.Equity == 0 ? 0 : 100*order.ResultDepo/(float)acData.Equity;
+            var maxDrawDown = GetDrawDown(acData.ID);
 
             ShowMsgWindowSafe(new AccountEvent(
                 string.Format(Localizer.GetString("MessageNotificationCloseTitleFmt"), order.ID),
@@ -1922,7 +1923,10 @@ namespace TradeSharp.Client
                                    order.ResultPoints,
                                    percentProf,
                                    acData.Equity.ToStringUniformMoneyFormat(true),
-                                   depoCurx), AccountEventCode.DealClosed));
+                                   depoCurx,
+                                   maxDrawDown.ToString("F3"),
+                                   Environment.NewLine), 
+                               AccountEventCode.DealClosed));
             // проиграть звук - торговый ордер
             EventSoundPlayer.Instance.PlayEvent(VocalizedEvent.TradeResponse);
             CheckScriptTriggerOrder(ScriptTriggerDealEventType.ЗакрытиеОрдера, order);
@@ -1930,18 +1934,33 @@ namespace TradeSharp.Client
 
         public void EditOrderResponse(MarketOrder order, RequestStatus status, string detailMessage)
         {
-            ShowMsgWindowSafe(new AccountEvent(
-                Localizer.GetString("MessageNotificationOrderChangedTitle"),
-                string.Format(Localizer.GetString("MessageNotificationOrderModifiedBodyFmt"), 
-                    order.ID, order.Side > 0 ? "BUY" : "SELL",
-                    order.Symbol, order.PriceEnter, order.StopLoss.HasValue ? order.StopLoss.ToString() : Localizer.GetString("TitleNo").ToLower(), 
-                    order.TakeProfit.HasValue ? order.TakeProfit.ToString() : Localizer.GetString("TitleNo").ToLower(), 
+            var accountData = AccountStatus.Instance.AccountData;
+            if (accountData == null) return;
+
+            var maxDrawDown = GetDrawDown(accountData.ID);
+
+            var body = string.Format(Localizer.GetString("MessageNotificationOrderModifiedBodyFmt"),
+                    order.ID, 
+                    order.Side > 0 ? "BUY" : "SELL",
+                    order.Symbol,
+                    order.PriceEnter,
+                    order.StopLoss.HasValue ? order.StopLoss.ToString() : Localizer.GetString("TitleNo").ToLower(),
+                    order.TakeProfit.HasValue ? order.TakeProfit.ToString() : Localizer.GetString("TitleNo").ToLower(),
                     order.AccountID,
-                    order.TrailLevel1 == null 
+
+                    order.TrailLevel1 == null
                         ? ""
-                        : "\n" + string.Format(Localizer.GetString("MessageNotificationModifiedAutoTrailFmt"), 
-                    order.PriceEnter + DalSpot.Instance.GetAbsValue(order.Symbol, (float) (order.TrailLevel1) * order.Side), order.TrailTarget1)),
-                    AccountEventCode.DealModified));
+                        : "\n" + string.Format(Localizer.GetString("MessageNotificationModifiedAutoTrailFmt"),
+                    order.PriceEnter + DalSpot.Instance.GetAbsValue(order.Symbol, (float)(order.TrailLevel1) * order.Side),
+                    order.TrailTarget1),
+
+                    accountData.Balance,
+                    accountData.Equity,
+                    maxDrawDown.ToString("F3"),
+                    Environment.NewLine);
+
+            ShowMsgWindowSafe(new AccountEvent(
+                Localizer.GetString("MessageNotificationOrderChangedTitle"), body, AccountEventCode.DealModified));
             CheckScriptTriggerOrder(ScriptTriggerDealEventType.РедактированиеОрдера, order);
         }
 
@@ -2705,6 +2724,13 @@ namespace TradeSharp.Client
             var walletForm = MdiChildren.FirstOrDefault(f => f is WalletForm);
             if (walletForm == null) return;
             ((WalletForm)walletForm).OpenInvestInPAMMDialog(stat, invest);
+        }
+
+        private float GetDrawDown(int accountId)
+        {
+            var accountStatistics = TradeSharpAccountStatistics.Instance.proxy.GetAccountProfit1000(accountId);
+            var stat = new AccountStatistics();
+            return stat.CalculateDrawdown(accountStatistics);
         }
     }
     // ReSharper restore ParameterTypeCanBeEnumerable.Local

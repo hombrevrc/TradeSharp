@@ -3085,7 +3085,7 @@
     <value>Нет доступных графиков для отображения результатов</value>
   </data>
   <data name="MessageNotificationCloseBodyFmt" xml:space="preserve">
-    <value>Закрытие позиции №{0} ({1} {2} {3})\nВход {4} по {5}, выход по {6}\nФин. результат сделки: {7} {8},  {9:f1} пункта,  {10:f2}%\nТекущий баланс счета: {11} {12}</value>
+    <value>Закрытие позиции №{0} ({1} {2} {3}){14}Вход {4} по {5}, выход по {6}{14}Фин. результат сделки: {7} {8},  {9:f1} пункта,  {10:f2}%{14}Текущий баланс счета: {11} {12} Просадка: {13}</value>
   </data>
   <data name="MessageNotificationCloseTitleFmt" xml:space="preserve">
     <value>Закрытие сделки №{0}</value>
@@ -3100,7 +3100,7 @@
     <value>Изменен ордер</value>
   </data>
   <data name="MessageNotificationOrderModifiedBodyFmt" xml:space="preserve">
-    <value>Изменен ордер №{0}. {1} {2} Цена входа {3}, SL={4}, TP={5}{7}\nСчет: {6}</value>
+    <value>Изменен ордер №{0}. {1} {2} Цена входа {3}, SL={4}, TP={5}{7}{11}Счет: {6}{11}Баланс: {8} Средства: {9} Просадка: {10}</value>
   </data>
   <data name="MessageNotificationPendingChangedBodyFmt" xml:space="preserve">
     <value>Отложенный ордер №{0} {1} изменен\nСчет: {2}</value>

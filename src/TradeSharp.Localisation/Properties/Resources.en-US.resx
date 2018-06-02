@@ -3082,7 +3082,7 @@
     <value>There is not suitable charts to show backtest results</value>
   </data>
   <data name="MessageNotificationCloseBodyFmt" xml:space="preserve">
-    <value>Closing order #{0} ({1} {2} {3})\nEnter on {4} at {5}, exit at {6}\nProfit is: {7} {8},  {9:f1} price points, {10:f2}%\nCurrent account's balance: {11} {12}</value>
+    <value>Closing order #{0} ({1} {2} {3}){14}Enter on {4} at {5}, exit at {6}{14}Profit is: {7} {8},  {9:f1} price points, {10:f2}%{14}Current account's balance: {11} {12} DrawDown: {13}</value>
   </data>
   <data name="MessageNotificationCloseTitleFmt" xml:space="preserve">
     <value>Order #{0} was closed</value>
@@ -3097,7 +3097,7 @@
     <value>Order was modified</value>
   </data>
   <data name="MessageNotificationOrderModifiedBodyFmt" xml:space="preserve">
-    <value>Order #{0} was modified. {1} {2} Enter at {3}, SL={4}, TP={5}{7}\nAccount is {6}</value>
+    <value>Order #{0} was modified. {1} {2} Enter at {3}, SL={4}, TP={5}{7}{11}Account is {6}{11}Balance: {8} Equity: {9} DrawDown: {10}</value>
   </data>
   <data name="MessageNotificationPendingChangedBodyFmt" xml:space="preserve">
     <value>Pending order #{0} {1} was modified\nAccount is {2}</value>
