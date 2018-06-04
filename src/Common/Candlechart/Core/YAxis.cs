@@ -129,6 +129,8 @@ namespace Candlechart.Core
             get { return Chart.visualSettings.YAxisGridBandVisible; }
         }
 
+        public string PriceFormat => "F5";
+
         private void CalculateAxisWidth(Graphics g)
         {
             double num = double.IsInfinity(LabelInfo.Exponent) ? 0 
@@ -317,6 +319,9 @@ namespace Candlechart.Core
             }            
         }
 
+        /// <summary>
+        /// Расчёт и прорисовка текущей цены в рамке справа
+        /// </summary>
         private void DrawSelectedPriceLabel(
             double labelPrice,
             Brush brush, 
@@ -324,7 +329,7 @@ namespace Candlechart.Core
             RectangleD worldRect, Rectangle canvasRect, Graphics g)
         {
             var price = labelPrice / LabelInfo.Exponent;
-            var priceFont = new Font(Font.Name, Font.Size - 1, Font.Style, Font.Unit);
+            var priceFont = new Font(Font.Name, Font.Size, Font.Style, Font.Unit);
             var height = showExtraPriceMark ? priceFont.Height + 30 : priceFont.Height;
             var rect = new Rectangle(
                 axisRect.Left + 5, 
@@ -344,7 +349,7 @@ namespace Candlechart.Core
                     g.DrawRectangle(pen, rect);
 
                 var priceMarkContent = new StringBuilder();
-                priceMarkContent.AppendLine(labelPrice.ToString(Chart.PriceFormat));
+                priceMarkContent.AppendLine(labelPrice.ToString(PriceFormat));
 
                 ExtraPriceMark(priceMarkContent);
 
