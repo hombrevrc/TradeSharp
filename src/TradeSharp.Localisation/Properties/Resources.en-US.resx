@@ -1014,6 +1014,9 @@
   <data name="TitleProfit" xml:space="preserve">
     <value>Profit</value>
   </data>
+  <data name="TitleDrowDawn" xml:space="preserve">
+    <value>DrowDawn</value>
+  </data>
   <data name="TitleReal" xml:space="preserve">
     <value>Real</value>
   </data>

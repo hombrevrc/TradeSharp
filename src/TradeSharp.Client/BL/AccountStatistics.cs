@@ -9,6 +9,11 @@ namespace TradeSharp.Client.BL
 {
     class AccountStatistics : AccountEfficiency
     {
+        public enum DimensionKind
+        {
+            absolute, percent
+        }
+
         /// <summary>
         /// суммарный результат по закрытым сделкам
         /// </summary>
@@ -29,6 +34,9 @@ namespace TradeSharp.Client.BL
         /// </summary>
         public float ProfitGeomDay { get; set; }
 
+        /// <summary>
+        /// Расчёт вообще всей статистики
+        /// </summary>
         public void Calculate(
             List<BalanceChange> balanceChanges, 
             List<MarketOrder> marketOrders, DateTime startDate)
@@ -102,7 +110,7 @@ namespace TradeSharp.Client.BL
                 listProfit1000.Add(new EquityOnTime(startBalance1000, ret.a));
             }
             // посчитать макс. проседание
-            CalculateDrawdown();
+            CalculateMaxDrawdown();
             // посчитать среднегеометрическую дневную, месячную и годовую доходность
             var avgROR = listROR.Average(ret => ret.b);
             ProfitGeomMonth = (float)Math.Pow(1 + avgROR, 20f) - 1;
@@ -110,16 +118,74 @@ namespace TradeSharp.Client.BL
             ProfitGeomDay = avgROR;
         }
 
-        public float CalculateDrawdown(List<EquityOnTime> listProfit1000)
+        /// <summary>
+        /// Расчёт только максимальной просадки
+        /// </summary>
+        public float CalculateMaxDrawdown(List<EquityOnTime> listProfit1000)
         {
             this.listProfit1000 = listProfit1000;
 
-            Statistics = new PerformerStat();
-            CalculateDrawdown();
+            if (Statistics == null)
+                Statistics = new PerformerStat();
+            CalculateMaxDrawdown();
             return Statistics.MaxRelDrawDown;
         }
 
-        private void CalculateDrawdown()
+        /// <summary>
+        /// Расчёт всех просадок за доступный период
+        /// </summary>
+        public List<Cortege2<DateTime, float>> GetDrawdownPercent()
+        {
+            return GetEquityDifferential(DimensionKind.percent)
+                .Select(x => x.b <= 0 ? x : new Cortege2<DateTime, float>(x.a, 0))
+                .ToList();
+        }
+
+        public List<Cortege2<DateTime, float>> GetRunUpPercent()
+        {
+            return GetEquityDifferential(DimensionKind.percent)
+                .Select(x => x.b >= 0 ? x : new Cortege2<DateTime, float>(x.a, 0))
+                .ToList();
+        }
+
+        /// <summary>
+        /// Первая производняа от Средств (т.е. прибыль / просадка)
+        /// </summary>
+        private List<Cortege2<DateTime, float>> GetEquityDifferential(DimensionKind dimensionKind)
+        {
+            var result = new List<Cortege2<DateTime, float>>();
+            List<EquityOnTime> source = listEquity;
+
+            if (source.Count == 0)
+                return result;
+
+            result.Add(new Cortege2<DateTime, float>(source[0].time, 0));
+
+            for (var i = 0; i < source.Count - 1; i++)
+            {
+                var curBalance = source[i].equity;
+                var curDiff = source[i + 1].equity - curBalance;
+
+                switch (dimensionKind)
+                {
+                    case DimensionKind.absolute:
+                        break;
+                    case DimensionKind.percent:
+                        curDiff = curBalance == 0 
+                            ? 0 
+                            : curDiff * 100 / curBalance;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+
+                result.Add(new Cortege2<DateTime, float>(source[i + 1].time, curDiff));
+            }
+
+            return result;
+        }
+
+        private void CalculateMaxDrawdown()
         {
             Statistics.MaxRelDrawDown = 0;
             if (listProfit1000.Count == 0) return;

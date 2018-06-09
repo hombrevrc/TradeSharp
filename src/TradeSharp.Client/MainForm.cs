@@ -1906,7 +1906,7 @@ namespace TradeSharp.Client
             
             var depoCurx = AccountStatus.Instance.AccountData.Currency;
             var percentProf = acData.Equity == 0 ? 0 : 100*order.ResultDepo/(float)acData.Equity;
-            var maxDrawDown = GetDrawDown(acData.ID);
+            var maxDrawDown = GetMaxDrawDown(acData.ID);
 
             ShowMsgWindowSafe(new AccountEvent(
                 string.Format(Localizer.GetString("MessageNotificationCloseTitleFmt"), order.ID),
@@ -1937,7 +1937,7 @@ namespace TradeSharp.Client
             var accountData = AccountStatus.Instance.AccountData;
             if (accountData == null) return;
 
-            var maxDrawDown = GetDrawDown(accountData.ID);
+            var maxDrawDown = GetMaxDrawDown(accountData.ID);
 
             var body = string.Format(Localizer.GetString("MessageNotificationOrderModifiedBodyFmt"),
                     order.ID, 
@@ -2726,11 +2726,11 @@ namespace TradeSharp.Client
             ((WalletForm)walletForm).OpenInvestInPAMMDialog(stat, invest);
         }
 
-        private float GetDrawDown(int accountId)
+        private float GetMaxDrawDown(int accountId)
         {
             var accountStatistics = TradeSharpAccountStatistics.Instance.proxy.GetAccountProfit1000(accountId);
             var stat = new AccountStatistics();
-            return stat.CalculateDrawdown(accountStatistics);
+            return stat.CalculateMaxDrawdown(accountStatistics);
         }
     }
     // ReSharper restore ParameterTypeCanBeEnumerable.Local

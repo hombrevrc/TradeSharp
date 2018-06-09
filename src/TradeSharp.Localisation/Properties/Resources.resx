@@ -1017,6 +1017,9 @@
   <data name="TitleProfit" xml:space="preserve">
     <value>Прибыль</value>
   </data>
+  <data name="TitleDrowDawn" xml:space="preserve">
+    <value>Просадка</value>
+  </data>
   <data name="TitleReal" xml:space="preserve">
     <value>Реальный</value>
   </data>

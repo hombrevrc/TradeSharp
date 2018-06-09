@@ -39,8 +39,8 @@ namespace TradeSharp.Client.Forms
 
             Localizer.LocalizeControl(this);
             SetupStatGrid();
-            SetupChart(chartProfit, string.Empty);
-            SetupChart(chartProfit1000, string.Empty);
+            SetupChart(chartProfit, Color.FromArgb(80, 5, 5));
+            SetupChart(chartProfit1000, Color.FromArgb(80, 5, 5));
 
             worker.DoWork += MakeCalculation;
             worker.RunWorkerCompleted += WorkerRunWorkerCompleted;
@@ -84,7 +84,7 @@ namespace TradeSharp.Client.Forms
         }
         #endregion
 
-        private static void SetupChart(FastMultiChart.FastMultiChart chart, string extraSeriesName)
+        private static void SetupChart(FastMultiChart.FastMultiChart chart, Color color)
         {
             chart.GetXScaleValue = FastMultiChartUtils.GetDateTimeScaleValue;
             chart.GetXValue = FastMultiChartUtils.GetDateTimeValue;
@@ -93,14 +93,10 @@ namespace TradeSharp.Client.Forms
             chart.GetMinYScaleDivision = FastMultiChartUtils.GetDoubleMinScaleDivision;
             chart.GetXStringValue = FastMultiChartUtils.GetDateTimeStringValue;
             chart.GetXStringScaleValue = FastMultiChartUtils.GetDateTimeStringScaleValue;
+
             var blank = new BalanceByDate(DateTime.Now, 0);
-            chart.Graphs[0].Series.Add(new Series(blank.Property(p => p.X), blank.Property(p => p.Y),
-                                                  new Pen(Color.FromArgb(80, 5, 5), 2f)));
-            if (!string.IsNullOrEmpty(extraSeriesName))
-            {
-                chart.Graphs[0].Series.Add(new Series(blank.Property(p => p.X), blank.Property(p => p.Y),
-                                                      new Pen(Color.FromArgb(5, 105, 5), 2f)));
-            }
+            chart.Graphs[0].Series.Add(
+                new Series(blank.Property(p => p.X), blank.Property(p => p.Y), new Pen(color, 2f)));
         }
 
         private void SetupStatGrid()
@@ -298,24 +294,39 @@ namespace TradeSharp.Client.Forms
         private void BuildEquityChartUnsafe(AccountStatistics stat)
         {
             chartProfit.Graphs[0].Series[0].Clear();
-            //chartProfit.Graphs[0].Series[1].Clear();
             chartProfit1000.Graphs[0].Series[0].Clear();
+            chartDrowDawn.Series[0].Points.Clear();
+            chartDrowDawn.Series[1].Points.Clear();
+
             if (stat.listEquity == null || stat.listEquity.Count == 0) return;
 
             if (stat.listEquity != null)
                 foreach (var pt in stat.listEquity)
-                {
                     chartProfit.Graphs[0].Series[0].Add(new BalanceByDate(pt.time, pt.equity));
-                }
-
             chartProfit.Initialize();
+
+            var runUp = stat.GetRunUpPercent();
+            var drawdowns = stat.GetDrawdownPercent();
             
+
+            for (int i = 0; i < drawdowns.Count; i++)
+                chartDrowDawn.Series[0].Points.AddXY(drawdowns[i].a, drawdowns[i].b);
+
+            for (int i = 0; i < runUp.Count; i++)
+                chartDrowDawn.Series[1].Points.AddXY(runUp[i].a, runUp[i].b);
+
+            //==========================================================================================
+
             // доход на 1000
             foreach (var pt in stat.listProfit1000)
-            {
                 chartProfit1000.Graphs[0].Series[0].Add(new BalanceByDate(pt.time, pt.equity));
-            }
+
             chartProfit1000.Initialize();
+
+
+            //var drawdowns1000 = stat.GetDrawdown(AccountStatistics.ProfitType.Profit1000);
+            //for (int i = 0; i < drawdowns1000.Count; i++)
+            //    chartDrowDawn1000.Series[0].Points.AddXY(drawdowns1000[i].a, -drawdowns1000[i].b);
         }
 
         private AccountStatistics BuildEquityCurve(
@@ -613,7 +624,7 @@ namespace TradeSharp.Client.Forms
         }
 
         /// <summary>
-        /// точка графика
+        /// точка графика средств
         /// </summary>
         class BalanceByDate
         {
@@ -624,6 +635,24 @@ namespace TradeSharp.Client.Forms
             public double Y { get; set; }
 
             public BalanceByDate(DateTime x, double y)
+            {
+                X = x;
+                Y = y;
+            }
+        }
+
+        /// <summary>
+        /// точка графика просадки
+        /// </summary>
+        class DrawDownByDate
+        {
+            [DisplayName("дата")]
+            public DateTime X { get; set; }
+
+            [DisplayName("просадка")]
+            public double Y { get; set; }
+
+            public DrawDownByDate(DateTime x, double y)
             {
                 X = x;
                 Y = y;
@@ -648,6 +677,11 @@ namespace TradeSharp.Client.Forms
         {
             if (resizeEnded != null)
                 resizeEnded(this);
-        }        
+        }
+
+        private void ChartDrowDawnScaleReset(object sender, EventArgs e)
+        {
+            chartDrowDawn.ChartAreas[0].AxisX.ScaleView.ZoomReset();
+        }
     }    
 }
