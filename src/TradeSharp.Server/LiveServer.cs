@@ -338,5 +338,10 @@ namespace TradeSharp.Server
             }
             Logger.Info("Останов WCF - OK");
         }
+
+        private void StartSmsSender()
+        {
+
+        }
     }
 }
