@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ServiceModel;
 using TradeSharp.Contract.Entity;
+using TradeSharp.Util;
 
 namespace TradeSharp.Contract.Contract
 {
@@ -120,6 +121,9 @@ namespace TradeSharp.Contract.Contract
         /// </summary>
         [OperationContract(IsOneWay = false)]
         PlatformUser GetUserFullInfo(string hash, string userLogin, long localTime, out List<Account> accounts);
+
+        [OperationContract(IsOneWay = false)]
+        List<Cortege2<PlatformUser, Account[]>> GetUsersFullInfo(List<string> logins);
 
         [OperationContract(IsOneWay = false)]
         PlatformVolumesSummary GetPairVolumes(string semicolonSeparatedTickersListString);

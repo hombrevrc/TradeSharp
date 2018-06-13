@@ -351,6 +351,42 @@ namespace TradeSharp.Server.Contract
             }
         }
 
+        public List<Cortege2<PlatformUser, Account[]>> GetUsersFullInfo(List<string> logins)
+        {
+            using (var ctx = DatabaseContext.Instance.Make())
+            {
+                var users = ctx
+                    .PLATFORM_USER
+                    .Where(u => logins.Contains(u.Login))
+                    .Select(u => LinqToEntity.DecoratePlatformUser(u));
+                    
+
+                var userIds = users.Select(user => user.ID);
+
+                var pua = ctx
+                    .PLATFORM_USER_ACCOUNT
+                    .Where(x => userIds.Contains(x.PlatformUser))
+                    .GroupBy(x => x.PlatformUser)
+                    .ToArray();
+
+                var result = new List<Cortege2<PlatformUser, Account[]>>();
+
+                foreach (var user in users)
+                {
+                    var accounts = pua
+                        .Where(x => x.Key == user.ID)
+                        .SelectMany(x => x)             //извлекаем из IGrouping<int, PLATFORM_USER_ACCOUNT> объекты типа PLATFORM_USER_ACCOUNT
+                        .Select(x => x.ACCOUNT1)
+                        .Select(LinqToEntity.DecorateAccount)
+                        .ToArray();
+
+                    result.Add(new Cortege2<PlatformUser, Account[]>(user, accounts));
+                }
+
+                return result;
+            }
+        }
+
         public RequestStatus SubscribeOnPortfolio(string hash, string userLogin, long localTime,
                                                   int portfolioId, AutoTradeSettings tradeAutoSettings)
         {
