@@ -123,7 +123,7 @@ namespace TradeSharp.Contract.Contract
         PlatformUser GetUserFullInfo(string hash, string userLogin, long localTime, out List<Account> accounts);
 
         [OperationContract(IsOneWay = false)]
-        List<Cortege2<PlatformUser, Account[]>> GetUsersFullInfo(List<string> logins);
+        List<Cortege2<PlatformUser, Account[]>> GetUsersFullInfo(List<int> userIds);
 
         [OperationContract(IsOneWay = false)]
         PlatformVolumesSummary GetPairVolumes(string semicolonSeparatedTickersListString);

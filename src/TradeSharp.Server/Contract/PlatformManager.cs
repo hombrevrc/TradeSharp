@@ -351,29 +351,26 @@ namespace TradeSharp.Server.Contract
             }
         }
 
-        public List<Cortege2<PlatformUser, Account[]>> GetUsersFullInfo(List<string> logins)
+        public List<Cortege2<PlatformUser, Account[]>> GetUsersFullInfo(List<int> userIds)
         {
             using (var ctx = DatabaseContext.Instance.Make())
             {
-                var users = ctx
-                    .PLATFORM_USER
-                    .Where(u => logins.Contains(u.Login))
-                    .Select(u => LinqToEntity.DecoratePlatformUser(u));
-                    
-
-                var userIds = users.Select(user => user.ID);
-
                 var pua = ctx
                     .PLATFORM_USER_ACCOUNT
                     .Where(x => userIds.Contains(x.PlatformUser))
-                    .GroupBy(x => x.PlatformUser)
                     .ToArray();
 
+                var users = pua
+                    .DistinctBy(x => x.PlatformUser)
+                    .Select(u => LinqToEntity.DecoratePlatformUser(u.PLATFORM_USER));
+
+                var accountGroupByUserIds = pua.GroupBy(x => x.PlatformUser);
+                
                 var result = new List<Cortege2<PlatformUser, Account[]>>();
 
                 foreach (var user in users)
                 {
-                    var accounts = pua
+                    var accounts = accountGroupByUserIds
                         .Where(x => x.Key == user.ID)
                         .SelectMany(x => x)             //извлекаем из IGrouping<int, PLATFORM_USER_ACCOUNT> объекты типа PLATFORM_USER_ACCOUNT
                         .Select(x => x.ACCOUNT1)

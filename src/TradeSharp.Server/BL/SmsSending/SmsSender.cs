@@ -7,6 +7,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using TradeSharp.Contract.Util.Proxy;
 using TradeSharp.Server.Contract;
 using TradeSharp.Util;
 
@@ -14,14 +15,12 @@ namespace TradeSharp.Server.BL
 {
     public class SmsSender
     {
-        const String tokenUrl = "http://sms.ru/auth/get_token";
         const String sendUrl = "http://sms.ru/sms/send";
 
         protected Thread routineThread;
         protected volatile bool isStopped;
 
-        private bool isPaused = false;
-        private int sendHour = 20;
+        private ISmsSenderSettings settings;
 
         public void Start()
         {
@@ -41,7 +40,7 @@ namespace TradeSharp.Server.BL
             while (!isStopped)
             {
                 DateTime now = DateTime.Now;
-                DateTime tomorrow = now.AddDays(1).Date.AddHours(sendHour);
+                DateTime tomorrow = now.AddDays(1).Date.AddHours(settings.SendHour);
                 int nextSendTimeSpan = (int)(tomorrow - now).TotalMilliseconds;
 
                 if (nextSendTimeSpan < 0) //Эта ошибка возможна, если значение в TotalMilliseconds слишком большой для Int
@@ -53,17 +52,20 @@ namespace TradeSharp.Server.BL
 
                 Thread.Sleep(nextSendTimeSpan);
 
-                if (isPaused)
+                if (settings.IsPaused)
                     continue;
 
+                int accountId = 951;//GetUserFullInfo
+
+                //var f = TradeSharp.Contract.Util.Proxy.PlatformManager.Instance.proxy.GetUsersFullInfo()
+                //PlatformManager pm = new PlatformManager();
+               // TradeSharpDictionary.Instance.proxy.GetAllPlatformUsers();
                 //ManagerAccount.Instance.GetAccountInfo
             }
         }
 
         private void Send(String from, Dictionary<String, String> to)
         {
-            String apiId = "2E60E585-E741-4514-8E55-AF507EDB78E2";
-
             if (to.Count < 1)
                 throw new ArgumentNullException("to", "Неверные входные данные - массив пуст.");
             if (to.Count > 100)
@@ -75,7 +77,7 @@ namespace TradeSharp.Server.BL
 
             try
             {
-                auth = String.Format("api_id={0}", apiId);
+                auth = String.Format("api_id={0}", settings.ApiId);
 
                 foreach (var item in to)
                 {
@@ -95,6 +97,7 @@ namespace TradeSharp.Server.BL
                     {
                         if (resp == null)
                             return;
+
                         using (StreamReader sr = new StreamReader(resp.GetResponseStream()))
                         {
                             answer = sr.ReadToEnd().Trim();

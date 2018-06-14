@@ -76,7 +76,9 @@
     <Compile Include="BL\OrderWatchdog.cs" />
     <Compile Include="BL\ProviderQueueReader.cs" />
     <Compile Include="BL\RequestIdStorage.cs" />
-    <Compile Include="BL\SmsSender.cs" />
+    <Compile Include="BL\SmsSending\ISmsSenderSettings.cs" />
+    <Compile Include="BL\SmsSending\SmsSender.cs" />
+    <Compile Include="BL\SmsSending\SmsSenderSettings.cs" />
     <Compile Include="BL\UserEventManager.cs" />
     <Compile Include="BL\UserEventStorage.cs" />
     <Compile Include="BL\UserSessionStorage.cs" />
