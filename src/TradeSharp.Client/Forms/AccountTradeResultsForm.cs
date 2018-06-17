@@ -295,8 +295,10 @@ namespace TradeSharp.Client.Forms
         {
             chartProfit.Graphs[0].Series[0].Clear();
             chartProfit1000.Graphs[0].Series[0].Clear();
-            chartDrowDawn.Series[0].Points.Clear();
-            chartDrowDawn.Series[1].Points.Clear();
+            chartDrawDown.Series[0].Points.Clear();
+            chartDrawDown.Series[1].Points.Clear();
+            chartEquityDrawDown.Series[0].Points.Clear();
+            chartEquityDrawDown.Series[1].Points.Clear();
 
             if (stat.listEquity == null || stat.listEquity.Count == 0) return;
 
@@ -305,15 +307,39 @@ namespace TradeSharp.Client.Forms
                     chartProfit.Graphs[0].Series[0].Add(new BalanceByDate(pt.time, pt.equity));
             chartProfit.Initialize();
 
-            var runUp = stat.GetRunUpPercent();
-            var drawdowns = stat.GetDrawdownPercent();
-            
+            var equityDifferential = stat.GetEquityDifferential();
 
-            for (int i = 0; i < drawdowns.Count; i++)
-                chartDrowDawn.Series[0].Points.AddXY(drawdowns[i].a, drawdowns[i].b);
+            //================ Просадка / прибыль ================
+            var runUpSeriesData =
+                equityDifferential.Select(x =>
+                    new TradeSharp.Util.Cortege2<DateTime, float>(x.a, x.b <= 0 || x.c == 0 ? 0 : x.b * 100 / x.c)).ToList();
 
-            for (int i = 0; i < runUp.Count; i++)
-                chartDrowDawn.Series[1].Points.AddXY(runUp[i].a, runUp[i].b);
+            var drawdownPrecentSeriesData =
+                equityDifferential.Select(x => 
+                    new TradeSharp.Util.Cortege2<DateTime, float>(x.a, x.b >= 0 || x.c == 0 ? 0 : x.b * 100 / x.c)).ToList();
+
+            for (int i = 0; i < drawdownPrecentSeriesData.Count; i++)
+                chartDrawDown.Series[0].Points.AddXY(drawdownPrecentSeriesData[i].a, drawdownPrecentSeriesData[i].b);
+
+            for (int i = 0; i < runUpSeriesData.Count; i++)
+                chartDrawDown.Series[1].Points.AddXY(runUpSeriesData[i].a, runUpSeriesData[i].b);
+
+
+
+            //================ Средства / просадка ================
+
+            chartEquityDrawDown.ChartAreas["ChartArea1"].AxisY.Minimum 
+                = stat.listEquity.Min(x => x.equity);
+
+            for (int i = 0; i < stat.listEquity.Count; i++)
+                chartEquityDrawDown.Series[0].Points.AddXY(stat.listEquity[i].time, stat.listEquity[i].equity);
+
+            var drawdownSeriesData =
+                equityDifferential.Select(x =>
+                    new TradeSharp.Util.Cortege2<DateTime, float>(x.a, x.b >= 0 ? 0 : x.b)).ToList();
+
+            for (int i = 0; i < runUpSeriesData.Count; i++)
+                chartEquityDrawDown.Series[1].Points.AddXY(drawdownSeriesData[i].a, drawdownSeriesData[i].b);
 
             //==========================================================================================
 
@@ -322,11 +348,6 @@ namespace TradeSharp.Client.Forms
                 chartProfit1000.Graphs[0].Series[0].Add(new BalanceByDate(pt.time, pt.equity));
 
             chartProfit1000.Initialize();
-
-
-            //var drawdowns1000 = stat.GetDrawdown(AccountStatistics.ProfitType.Profit1000);
-            //for (int i = 0; i < drawdowns1000.Count; i++)
-            //    chartDrowDawn1000.Series[0].Points.AddXY(drawdowns1000[i].a, -drawdowns1000[i].b);
         }
 
         private AccountStatistics BuildEquityCurve(
@@ -681,7 +702,7 @@ namespace TradeSharp.Client.Forms
 
         private void ChartDrowDawnScaleReset(object sender, EventArgs e)
         {
-            chartDrowDawn.ChartAreas[0].AxisX.ScaleView.ZoomReset();
+            ((System.Windows.Forms.DataVisualization.Charting.Chart)sender).ChartAreas[0].AxisX.ScaleView.ZoomReset();
         }
     }    
 }

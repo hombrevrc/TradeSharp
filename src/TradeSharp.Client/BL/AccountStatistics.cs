@@ -9,11 +9,6 @@ namespace TradeSharp.Client.BL
 {
     class AccountStatistics : AccountEfficiency
     {
-        public enum DimensionKind
-        {
-            absolute, percent
-        }
-
         /// <summary>
         /// суммарный результат по закрытым сделкам
         /// </summary>
@@ -132,54 +127,25 @@ namespace TradeSharp.Client.BL
         }
 
         /// <summary>
-        /// Расчёт всех просадок за доступный период
-        /// </summary>
-        public List<Cortege2<DateTime, float>> GetDrawdownPercent()
-        {
-            return GetEquityDifferential(DimensionKind.percent)
-                .Select(x => x.b <= 0 ? x : new Cortege2<DateTime, float>(x.a, 0))
-                .ToList();
-        }
-
-        public List<Cortege2<DateTime, float>> GetRunUpPercent()
-        {
-            return GetEquityDifferential(DimensionKind.percent)
-                .Select(x => x.b >= 0 ? x : new Cortege2<DateTime, float>(x.a, 0))
-                .ToList();
-        }
-
-        /// <summary>
         /// Первая производняа от Средств (т.е. прибыль / просадка)
         /// </summary>
-        private List<Cortege2<DateTime, float>> GetEquityDifferential(DimensionKind dimensionKind)
+        /// <returns>Дата, изменение баланса, баланс</returns>
+        public List<Cortege3<DateTime, float, float>> GetEquityDifferential()
         {
-            var result = new List<Cortege2<DateTime, float>>();
+            var result = new List<Cortege3<DateTime, float, float>>();
             List<EquityOnTime> source = listEquity;
 
             if (source.Count == 0)
                 return result;
 
-            result.Add(new Cortege2<DateTime, float>(source[0].time, 0));
+            result.Add(new Cortege3<DateTime, float, float>(source[0].time, 0, 0));
 
             for (var i = 0; i < source.Count - 1; i++)
             {
                 var curBalance = source[i].equity;
                 var curDiff = source[i + 1].equity - curBalance;
 
-                switch (dimensionKind)
-                {
-                    case DimensionKind.absolute:
-                        break;
-                    case DimensionKind.percent:
-                        curDiff = curBalance == 0 
-                            ? 0 
-                            : curDiff * 100 / curBalance;
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-
-                result.Add(new Cortege2<DateTime, float>(source[i + 1].time, curDiff));
+                result.Add(new Cortege3<DateTime, float, float>(source[i + 1].time, curDiff, curBalance));
             }
 
             return result;

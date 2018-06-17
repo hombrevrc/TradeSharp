@@ -32,6 +32,10 @@
             System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Title title1 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AccountTradeResultsForm));
             this.progressBar = new System.Windows.Forms.ProgressBar();
             this.panelProgress = new System.Windows.Forms.Panel();
@@ -58,7 +62,9 @@
             this.tabPageProfit1000 = new System.Windows.Forms.TabPage();
             this.chartProfit1000 = new FastMultiChart.FastMultiChart();
             this.tabPageDrowDawn = new System.Windows.Forms.TabPage();
-            this.chartDrowDawn = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.chartDrawDown = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.tabPageEquityDrawDown = new System.Windows.Forms.TabPage();
+            this.chartEquityDrawDown = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.panelProgress.SuspendLayout();
             this.panel2.SuspendLayout();
             this.tabControl.SuspendLayout();
@@ -68,7 +74,9 @@
             this.tabPageEquityCurve.SuspendLayout();
             this.tabPageProfit1000.SuspendLayout();
             this.tabPageDrowDawn.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.chartDrowDawn)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.chartDrawDown)).BeginInit();
+            this.tabPageEquityDrawDown.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.chartEquityDrawDown)).BeginInit();
             this.SuspendLayout();
             // 
             // progressBar
@@ -76,7 +84,7 @@
             this.progressBar.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.progressBar.Location = new System.Drawing.Point(0, 0);
             this.progressBar.Name = "progressBar";
-            this.progressBar.Size = new System.Drawing.Size(468, 23);
+            this.progressBar.Size = new System.Drawing.Size(581, 23);
             this.progressBar.TabIndex = 37;
             // 
             // panelProgress
@@ -86,7 +94,7 @@
             this.panelProgress.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panelProgress.Location = new System.Drawing.Point(0, 401);
             this.panelProgress.Name = "panelProgress";
-            this.panelProgress.Size = new System.Drawing.Size(468, 23);
+            this.panelProgress.Size = new System.Drawing.Size(581, 23);
             this.panelProgress.TabIndex = 38;
             // 
             // lbProgress
@@ -105,7 +113,7 @@
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(468, 401);
+            this.panel2.Size = new System.Drawing.Size(581, 401);
             this.panel2.TabIndex = 39;
             // 
             // tabControl
@@ -115,11 +123,12 @@
             this.tabControl.Controls.Add(this.tabPageEquityCurve);
             this.tabControl.Controls.Add(this.tabPageProfit1000);
             this.tabControl.Controls.Add(this.tabPageDrowDawn);
+            this.tabControl.Controls.Add(this.tabPageEquityDrawDown);
             this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl.Location = new System.Drawing.Point(0, 0);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(468, 401);
+            this.tabControl.Size = new System.Drawing.Size(581, 401);
             this.tabControl.TabIndex = 0;
             // 
             // tabPageSetup
@@ -131,7 +140,7 @@
             this.tabPageSetup.Location = new System.Drawing.Point(4, 22);
             this.tabPageSetup.Name = "tabPageSetup";
             this.tabPageSetup.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageSetup.Size = new System.Drawing.Size(460, 375);
+            this.tabPageSetup.Size = new System.Drawing.Size(573, 375);
             this.tabPageSetup.TabIndex = 0;
             this.tabPageSetup.Text = "`````";
             this.tabPageSetup.UseVisualStyleBackColor = true;
@@ -279,7 +288,7 @@
             this.tabPageStat.Controls.Add(this.dgStat);
             this.tabPageStat.Location = new System.Drawing.Point(4, 22);
             this.tabPageStat.Name = "tabPageStat";
-            this.tabPageStat.Size = new System.Drawing.Size(460, 375);
+            this.tabPageStat.Size = new System.Drawing.Size(573, 375);
             this.tabPageStat.TabIndex = 2;
             this.tabPageStat.Tag = "TitleStatistics";
             this.tabPageStat.Text = "Статистика";
@@ -311,7 +320,7 @@
             this.dgStat.Name = "dgStat";
             this.dgStat.Padding = new System.Windows.Forms.Padding(3);
             this.dgStat.SelectEnabled = true;
-            this.dgStat.Size = new System.Drawing.Size(460, 375);
+            this.dgStat.Size = new System.Drawing.Size(573, 375);
             this.dgStat.StickFirst = false;
             this.dgStat.StickLast = false;
             this.dgStat.TabIndex = 2;
@@ -322,7 +331,7 @@
             this.tabPageEquityCurve.Location = new System.Drawing.Point(4, 22);
             this.tabPageEquityCurve.Name = "tabPageEquityCurve";
             this.tabPageEquityCurve.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageEquityCurve.Size = new System.Drawing.Size(460, 375);
+            this.tabPageEquityCurve.Size = new System.Drawing.Size(573, 375);
             this.tabPageEquityCurve.TabIndex = 1;
             this.tabPageEquityCurve.Tag = "TitleProfit";
             this.tabPageEquityCurve.Text = "Доходность";
@@ -347,7 +356,7 @@
             this.chartProfit.ShowHints = true;
             this.chartProfit.ShowScaleDivisionXLabel = true;
             this.chartProfit.ShowScaleDivisionYLabel = true;
-            this.chartProfit.Size = new System.Drawing.Size(454, 369);
+            this.chartProfit.Size = new System.Drawing.Size(567, 369);
             this.chartProfit.TabIndex = 1;
             // 
             // tabPageProfit1000
@@ -355,7 +364,7 @@
             this.tabPageProfit1000.Controls.Add(this.chartProfit1000);
             this.tabPageProfit1000.Location = new System.Drawing.Point(4, 22);
             this.tabPageProfit1000.Name = "tabPageProfit1000";
-            this.tabPageProfit1000.Size = new System.Drawing.Size(460, 375);
+            this.tabPageProfit1000.Size = new System.Drawing.Size(573, 375);
             this.tabPageProfit1000.TabIndex = 3;
             this.tabPageProfit1000.Tag = "TitleProfitBy1000";
             this.tabPageProfit1000.Text = "Доходность на 1000";
@@ -380,28 +389,28 @@
             this.chartProfit1000.ShowHints = true;
             this.chartProfit1000.ShowScaleDivisionXLabel = true;
             this.chartProfit1000.ShowScaleDivisionYLabel = true;
-            this.chartProfit1000.Size = new System.Drawing.Size(460, 375);
+            this.chartProfit1000.Size = new System.Drawing.Size(573, 375);
             this.chartProfit1000.TabIndex = 0;
             // 
             // tabPageDrowDawn
             // 
-            this.tabPageDrowDawn.Controls.Add(this.chartDrowDawn);
+            this.tabPageDrowDawn.Controls.Add(this.chartDrawDown);
             this.tabPageDrowDawn.Location = new System.Drawing.Point(4, 22);
             this.tabPageDrowDawn.Name = "tabPageDrowDawn";
-            this.tabPageDrowDawn.Size = new System.Drawing.Size(460, 375);
+            this.tabPageDrowDawn.Size = new System.Drawing.Size(573, 375);
             this.tabPageDrowDawn.TabIndex = 4;
             this.tabPageDrowDawn.Tag = "TitleDrowDawn";
-            this.tabPageDrowDawn.Text = "Просадка";
+            this.tabPageDrowDawn.Text = "Прибыль / Просадка";
             this.tabPageDrowDawn.UseVisualStyleBackColor = true;
             // 
-            // chartDrowDawn
+            // chartDrawDown
             // 
             chartArea1.CursorX.IsUserSelectionEnabled = true;
             chartArea1.Name = "ChartArea1";
-            this.chartDrowDawn.ChartAreas.Add(chartArea1);
-            this.chartDrowDawn.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.chartDrowDawn.Location = new System.Drawing.Point(0, 0);
-            this.chartDrowDawn.Name = "chartDrowDawn";
+            this.chartDrawDown.ChartAreas.Add(chartArea1);
+            this.chartDrawDown.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.chartDrawDown.Location = new System.Drawing.Point(0, 0);
+            this.chartDrawDown.Name = "chartDrawDown";
             series1.BorderWidth = 10;
             series1.ChartArea = "ChartArea1";
             series1.Color = System.Drawing.Color.Firebrick;
@@ -415,21 +424,62 @@
             series2.ToolTip = "#VALY{F2} %";
             series2.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Date;
             series2.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
-            this.chartDrowDawn.Series.Add(series1);
-            this.chartDrowDawn.Series.Add(series2);
-            this.chartDrowDawn.Size = new System.Drawing.Size(460, 375);
-            this.chartDrowDawn.TabIndex = 2;
-            this.chartDrowDawn.Text = "chart1";
+            this.chartDrawDown.Series.Add(series1);
+            this.chartDrawDown.Series.Add(series2);
+            this.chartDrawDown.Size = new System.Drawing.Size(573, 375);
+            this.chartDrawDown.TabIndex = 2;
+            this.chartDrawDown.Text = "chart1";
             title1.Name = "Title1";
             title1.Text = "DrawDown / RunUp (%)";
-            this.chartDrowDawn.Titles.Add(title1);
-            this.chartDrowDawn.DoubleClick += new System.EventHandler(this.ChartDrowDawnScaleReset);
+            this.chartDrawDown.Titles.Add(title1);
+            this.chartDrawDown.DoubleClick += new System.EventHandler(this.ChartDrowDawnScaleReset);
+            // 
+            // tabPageEquityDrawDown
+            // 
+            this.tabPageEquityDrawDown.Controls.Add(this.chartEquityDrawDown);
+            this.tabPageEquityDrawDown.Location = new System.Drawing.Point(4, 22);
+            this.tabPageEquityDrawDown.Name = "tabPageEquityDrawDown";
+            this.tabPageEquityDrawDown.Size = new System.Drawing.Size(573, 375);
+            this.tabPageEquityDrawDown.TabIndex = 5;
+            this.tabPageEquityDrawDown.Text = "Средства / Просадка";
+            this.tabPageEquityDrawDown.UseVisualStyleBackColor = true;
+            // 
+            // chartEquityDrawDown
+            // 
+            chartArea2.CursorX.IsUserSelectionEnabled = true;
+            chartArea2.Name = "ChartArea1";
+
+            chartArea3.CursorX.IsUserSelectionEnabled = true;
+            chartArea3.Name = "ChartArea3";
+            this.chartEquityDrawDown.ChartAreas.Add(chartArea2);
+            this.chartEquityDrawDown.ChartAreas.Add(chartArea3);
+
+            this.chartEquityDrawDown.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.chartEquityDrawDown.Location = new System.Drawing.Point(0, 0);
+            this.chartEquityDrawDown.Name = "chartEquityDrawDown";
+            series3.ChartArea = "ChartArea1";
+            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Area;
+            series3.Color = System.Drawing.Color.ForestGreen;
+            series3.Name = "Equity";
+            series3.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Date;
+            series4.ChartArea = "ChartArea3";
+            series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Area;
+            series4.Color = System.Drawing.Color.Firebrick;
+            series4.Name = "DrawDown";
+            series4.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Date;
+            series3.ToolTip = "#VALY{F2}";
+            series4.ToolTip = "#VALY{F2}";
+            this.chartEquityDrawDown.Series.Add(series3);
+            this.chartEquityDrawDown.Series.Add(series4);
+            this.chartEquityDrawDown.Size = new System.Drawing.Size(573, 375);
+            this.chartEquityDrawDown.TabIndex = 0;
+            this.chartEquityDrawDown.DoubleClick += new System.EventHandler(this.ChartDrowDawnScaleReset);
             // 
             // AccountTradeResultsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(468, 424);
+            this.ClientSize = new System.Drawing.Size(581, 424);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panelProgress);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -451,7 +501,9 @@
             this.tabPageEquityCurve.ResumeLayout(false);
             this.tabPageProfit1000.ResumeLayout(false);
             this.tabPageDrowDawn.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.chartDrowDawn)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.chartDrawDown)).EndInit();
+            this.tabPageEquityDrawDown.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.chartEquityDrawDown)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -482,6 +534,8 @@
         private System.Windows.Forms.TabPage tabPageProfit1000;
         private FastMultiChart.FastMultiChart chartProfit1000;
         private System.Windows.Forms.TabPage tabPageDrowDawn;
-        private System.Windows.Forms.DataVisualization.Charting.Chart chartDrowDawn;
+        private System.Windows.Forms.DataVisualization.Charting.Chart chartDrawDown;
+        private System.Windows.Forms.TabPage tabPageEquityDrawDown;
+        private System.Windows.Forms.DataVisualization.Charting.Chart chartEquityDrawDown;
     }
 }
