@@ -4,10 +4,12 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Globalization;
 using System.Text;
+using System.Linq;
 using Candlechart.ChartMath;
 using Candlechart.Theme;
 using Entity;
 using TradeSharp.Util;
+using TradeSharp.Contract.Entity;
 
 namespace Candlechart.Core
 {
@@ -27,6 +29,11 @@ namespace Candlechart.Core
 
         private bool showExtraPriceMark;
         private Cortege2<DateTime, float?>? dayOpenPrice = null;
+
+        /// <summary>
+        /// Для прорисовки "корабликов"
+        /// </summary>
+        public IEnumerable<MarketOrder> Orders { get; set; }
 
         public bool DragModeIsOn
         {
@@ -315,6 +322,12 @@ namespace Candlechart.Core
                     DrawSelectedPriceLabel(SelectedLabelPrice.Value,
                         brush, format, axisRect, worldRect, canvasRect, g);
                 }
+
+                //Рисуем кораблики к открытым сделкам
+                //DrawOrderShip(format, axisRect, worldRect, canvasRect, g);
+
+                DrawAverageOrderShip(format, axisRect, worldRect, canvasRect, g);
+
                 ExponentLabel.Draw(g, axisRect, alignment);
             }            
         }
@@ -343,6 +356,7 @@ namespace Candlechart.Core
             {
                 var pen = new Pen(ForeColor);
                 var fillbrush = new SolidBrush(BackColor);
+
                 using (fillbrush)
                     g.FillRectangle(fillbrush, rect);
                 using (pen)
@@ -351,13 +365,13 @@ namespace Candlechart.Core
                 var priceMarkContent = new StringBuilder();
                 priceMarkContent.AppendLine(labelPrice.ToString(PriceFormat));
 
-                ExtraPriceMark(priceMarkContent);
+                ExtraPriceMarkText(priceMarkContent);
 
                 g.DrawString(priceMarkContent.ToString(), priceFont, brush, rect, format);
             }
         }
 
-        private void ExtraPriceMark(StringBuilder priceMarkContent)
+        private void ExtraPriceMarkText(StringBuilder priceMarkContent)
         {
             if (!showExtraPriceMark)
                 return;
@@ -388,6 +402,75 @@ namespace Candlechart.Core
             catch (Exception ex)
             {
                 Logger.Error(ex.Message, ex);
+            }
+        }
+
+        /// <summary>
+        /// Рисуем кораблики к открытым сделкам
+        /// </summary>
+        private void DrawOrderShip(
+            StringFormat format, 
+            Rectangle axisRect,
+            RectangleD worldRect, 
+            Rectangle canvasRect, 
+            Graphics g)
+        {
+            foreach (var order in Orders.Where(x => x.IsOpened && x.Symbol == Chart.Symbol))
+            {
+                var priceFont = new Font(Font.Name, Font.Size, Font.Style, Font.Unit);
+                var tfOrder = (PointF)Conversion.WorldToScreen(new PointD(0.0, order.PriceEnter), worldRect, canvasRect);
+
+                var rectOrder = 
+                    new Rectangle(
+                        axisRect.Left + 5, 
+                        ((int)tfOrder.Y) - (priceFont.Height / 2), 
+                        axisRect.Width - (int)priceFont.SizeInPoints, 
+                        priceFont.Height);
+
+                double chartX = Chart.CandleRange.GetXCoord(order.TimeEnter);
+                var x = (int)Conversion.WorldToScreen(new PointD(chartX, 0), worldRect, canvasRect).X;
+                g.DrawLine(new Pen(ForeColor), x, tfOrder.Y, axisRect.Left + 5, tfOrder.Y);
+
+                g.FillRectangle(new SolidBrush(order.Side == 1 ? Color.LightGreen : Color.Firebrick), rectOrder);
+                g.DrawRectangle(new Pen(Color.Black), rectOrder);
+                g.DrawString(order.PriceEnter.ToString(), priceFont, new SolidBrush(Color.Black), rectOrder, format);
+            }
+        }
+
+        /// <summary>
+        /// Рисуем кораблики средних цены покупки и продажи
+        /// </summary>
+        private void DrawAverageOrderShip(
+            StringFormat format,
+            Rectangle axisRect,
+            RectangleD worldRect,
+            Rectangle canvasRect,
+            Graphics g)
+        {
+            var openedOrders = Orders.Where(x => x.IsOpened && x.Symbol == Chart.Symbol);
+
+
+            var priceFont = new Font(Font.Name, Font.Size, Font.Style, Font.Unit);
+
+            for (int i = 0; i < 2; i++)
+            {
+                var prices = openedOrders.Where(x => i == 0 ? x.Side == 1 : x.Side == -1).Select(x => x.PriceEnter).ToArray();
+                if (prices.Length == 0)
+                    continue;
+
+                var averagePrice = prices.Average();
+                var tf = (PointF)Conversion.WorldToScreen(new PointD(0.0, averagePrice), worldRect, canvasRect);
+
+                var rectOrder =
+                    new Rectangle(
+                        axisRect.Left + 5,
+                        ((int)tf.Y) - (priceFont.Height / 2),
+                        axisRect.Width - (int)priceFont.SizeInPoints,
+                        priceFont.Height);
+
+                g.FillRectangle(new SolidBrush(i == 0 ? Color.LightGreen : Color.Firebrick), rectOrder);
+                g.DrawRectangle(new Pen(Color.Black), rectOrder);
+                g.DrawString(averagePrice.ToString(), priceFont, new SolidBrush(Color.Black), rectOrder, format);
             }
         }
 
