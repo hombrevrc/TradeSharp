@@ -32,7 +32,8 @@ namespace Candlechart
                     { ChartIcon.ChartIcon.chartButtonFavIndicators, new [] { "ico_black_favourite.png" } },    
                     { ChartIcon.ChartIcon.chartButtonIndexAutoScroll, new [] { "ico_black_forward.png", "ico_black_pause.png" } },
                     { ChartIcon.ChartIcon.chartButtonIndicators, new [] { "ico_black_indicator.png" } },    
-                    { ChartIcon.ChartIcon.chartButtonNewOrder, new [] { "ico_black_dollar.png" } },    
+                    { ChartIcon.ChartIcon.chartButtonNewOrder, new [] { "ico_black_dollar.png" } },
+                    { ChartIcon.ChartIcon.chartButtonIndexShips, new [] { "ico_black_ship.png" } },
                     { ChartIcon.ChartIcon.chartButtonPatchQuotes, new [] { "ico_black_synch.png" } },    
                     { ChartIcon.ChartIcon.chartButtonQuoteArchive, new [] { "ico_black_archive.png" } },
                     { ChartIcon.ChartIcon.chartVisualSettings, new [] { "ico_makeup.png" } },
@@ -66,6 +67,10 @@ namespace Candlechart
             var iconAscroll = new ChartIconCheckBox(null)
             {
                 key = ChartIcon.ChartIcon.chartButtonIndexAutoScroll
+            };
+            var iconShips = new ChartIcon.ChartIcon((obj, e) => { })
+            {
+                key = ChartIcon.ChartIcon.chartButtonIndexShips
             };
             var iconIndi = new ChartIcon.ChartIcon((obj, e) => { })
             {
@@ -128,6 +133,7 @@ namespace Candlechart
             allChartIcons.Add(iconStatByTicker);
             allChartIcons.Add(iconFastOrders);
             allChartIcons.Add(iconAscroll);
+            allChartIcons.Add(iconShips);
             allChartIcons.Add(iconIndi);
             allChartIcons.Add(iconOrder);
             allChartIcons.Add(iconArchive);
@@ -349,6 +355,15 @@ namespace Candlechart
                             btnRobot.listControl.Values = getRobotsByTicker(Symbol).Cast<object>().ToList();
                         };
                     btnRobot.listControl.cellClicked += (obj, text) => onRobotSelected(text);
+                }
+                else if (btn.key == ChartIcon.ChartIcon.chartButtonIndexShips)
+                {
+                    btn.click += (sender, args) =>
+                    {
+                        ShipsDrawMode[] Arr = (ShipsDrawMode[])Enum.GetValues(typeof(ShipsDrawMode));
+                        int j = Array.IndexOf<ShipsDrawMode>(Arr, chart.Panes.StockPane.YAxis.ShipsDrawMode) + 1;
+                        chart.Panes.StockPane.YAxis.ShipsDrawMode = (Arr.Length == j) ? Arr[0] : Arr[j];
+                    };
                 }
             }
         }

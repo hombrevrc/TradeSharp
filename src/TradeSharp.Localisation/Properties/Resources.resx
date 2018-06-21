@@ -1689,6 +1689,9 @@
   <data name="TitleAutoscrollChart" xml:space="preserve">
     <value>Автопрокрутка графика</value>
   </data>
+  <data name="TitleShipsChart" xml:space="preserve">
+    <value>Кораблики</value>
+  </data>
   <data name="TitleByTwoPoints" xml:space="preserve">
     <value>По двум точкам</value>
   </data>

@@ -13,6 +13,8 @@ using TradeSharp.Contract.Entity;
 
 namespace Candlechart.Core
 {
+    public enum ShipsDrawMode { None, Default, Average } //TODO refactoring
+
     public class YAxis : Axis
     {
         private readonly ExponentLabel exponentLabel;
@@ -90,6 +92,8 @@ namespace Candlechart.Core
         internal Rectangle RightAxisRect { get; set; }
 
         public float? CurrentPrice { get; set; }
+
+        public ShipsDrawMode ShipsDrawMode { get; set; }
 
         public override Color BackColor
         {
@@ -323,10 +327,19 @@ namespace Candlechart.Core
                         brush, format, axisRect, worldRect, canvasRect, g);
                 }
 
-                //Рисуем кораблики к открытым сделкам
-                //DrawOrderShip(format, axisRect, worldRect, canvasRect, g);
-
-                DrawAverageOrderShip(format, axisRect, worldRect, canvasRect, g);
+                switch (ShipsDrawMode)
+                {
+                    case ShipsDrawMode.None:
+                        break;
+                    case ShipsDrawMode.Default:
+                        DrawOrderShip(format, axisRect, worldRect, canvasRect, g);   //Рисуем кораблики к открытым сделкам
+                        break;
+                    case ShipsDrawMode.Average:
+                        DrawAverageOrderShip(format, axisRect, worldRect, canvasRect, g);   //Рисуем кораблики средних значений к открытым сделкам
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(ShipsDrawMode));
+                }
 
                 ExponentLabel.Draw(g, axisRect, alignment);
             }            
@@ -415,6 +428,9 @@ namespace Candlechart.Core
             Rectangle canvasRect, 
             Graphics g)
         {
+            if (Orders == null)
+                return;
+
             foreach (var order in Orders.Where(x => x.IsOpened && x.Symbol == Chart.Symbol))
             {
                 var priceFont = new Font(Font.Name, Font.Size, Font.Style, Font.Unit);
@@ -447,9 +463,10 @@ namespace Candlechart.Core
             Rectangle canvasRect,
             Graphics g)
         {
+            if (Orders == null)
+                return;
+
             var openedOrders = Orders.Where(x => x.IsOpened && x.Symbol == Chart.Symbol);
-
-
             var priceFont = new Font(Font.Name, Font.Size, Font.Style, Font.Unit);
 
             for (int i = 0; i < 2; i++)

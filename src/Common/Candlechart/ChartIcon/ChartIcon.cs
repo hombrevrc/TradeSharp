@@ -18,6 +18,8 @@ namespace Candlechart.ChartIcon
             buttonImage = new Dictionary<string, ButtonImageCollection>();
 
         public static readonly string chartButtonIndexAutoScroll = "a";
+
+        public static readonly string chartButtonIndexShips = "sp";
         
         public static readonly string chartButtonIndicators = "i";
 
@@ -136,6 +138,7 @@ namespace Candlechart.ChartIcon
             if (key == chartButtonStatByTicker) return Localizer.GetString("TitleInstrumentStatistics");
             if (key == chartButtonDealByTicker) return Localizer.GetString("TitleDealsWithInstrument");
             if (key == chartButtonIndexAutoScroll) return Localizer.GetString("TitleAutoscrollChart");
+            if (key == chartButtonIndexShips) return Localizer.GetString("TitleShipsChart");
             if (key == chartButtonIndicators) return Localizer.GetString("TitleIndicators");
             if (key == chartButtonNewOrder) return Localizer.GetString("TitleNewOrder");
             if (key == chartButtonQuoteArchive) return Localizer.GetString("TitleQuoteArchive");

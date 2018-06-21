@@ -1686,6 +1686,9 @@
   <data name="TitleAutoscrollChart" xml:space="preserve">
     <value>Autoscroll chart</value>
   </data>
+  <data name="TitleShipsChart" xml:space="preserve">
+    <value>Ships</value>
+  </data>
   <data name="TitleChartSmall" xml:space="preserve">
     <value>chart</value>
   </data>
