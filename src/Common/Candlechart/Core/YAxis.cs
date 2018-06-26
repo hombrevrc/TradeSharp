@@ -398,7 +398,7 @@ namespace Candlechart.Core
                             Chart.CandleRange.GetStartDayPrice(DateTime.Today));
 
                 var startDayPrice = dayOpenPrice.Value.b;
-
+                
                 if (startDayPrice.HasValue && CurrentPrice != null)
                 {
                     var deltaPrice = DalSpot.Instance.GetPointsValue(Chart.Symbol, CurrentPrice.Value - startDayPrice.Value);
@@ -410,6 +410,11 @@ namespace Candlechart.Core
                         var deltaPricePercentText = deltaPricePercent.ToString("F2") + " %";
                         priceMarkContent.AppendLine(deltaPricePercentText);
                     }
+                }
+                else
+                {
+                    priceMarkContent.AppendLine("- пп");
+                    priceMarkContent.AppendLine("- %");
                 }
             }
             catch (Exception ex)
