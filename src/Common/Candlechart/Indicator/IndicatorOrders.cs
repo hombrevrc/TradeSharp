@@ -10,13 +10,14 @@ using Entity;
 using TradeSharp.Contract.Entity;
 using System.Linq;
 using TradeSharp.Util;
+using TradeSharp.Contract.Util.BL;
 
 namespace Candlechart.Indicator
 {
     [LocalizedDisplayName("TitleTradeOperations")]
     [LocalizedCategory("TitleTradingIndicatorsShort")]
     [TypeConverter(typeof(PropertySorter))]
-    public partial class IndicatorOrders : BaseChartIndicator, IChartIndicator
+    public partial class IndicatorOrders : BaseChartIndicator, IChartIndicator, IChartIndicatorPositionSummary
     {
         public enum OrderType { Рыночный = 0, Отложенный = 1, ЗакрытыеСделки = 2}
         public enum OpenPositionType { Совокупная = 0, Все }
@@ -505,8 +506,8 @@ namespace Candlechart.Indicator
                            {
                                PivotIndex = pivotIndex,
                                PivotPrice = owner.StockPane.StockSeries.Data[owner.StockPane.StockSeries.Data.Count - 1].close,
-                               ArrowAngle = 0,
-                               ArrowLength = 20,
+                               ArrowAngle = 330,
+                               ArrowLength = 23,
                                Text = "",
                                Color = owner.StockSeries.BarNeutralColor,
                                ColorText = owner.StockSeries.BarNeutralColor,
@@ -515,6 +516,36 @@ namespace Candlechart.Indicator
                                Name = "CurrProfit"
                            };
             seriesCommentLastBar.data.Add(comm);
+
+            var commProfitAbs = new ChartComment
+            {
+                PivotIndex = pivotIndex ,
+                PivotPrice = owner.StockPane.StockSeries.Data[owner.StockPane.StockSeries.Data.Count - 1].close,
+                ArrowAngle = 0,
+                ArrowLength = 20,
+                Text = "",
+                Color = owner.StockSeries.BarNeutralColor,
+                ColorText = owner.StockSeries.BarNeutralColor,
+                HideArrow = true,
+                HideBox = true,
+                Name = "CurrProfitAbs"
+            };
+            seriesCommentLastBar.data.Add(commProfitAbs);
+
+            var commProfitPercent = new ChartComment
+            {
+                PivotIndex = pivotIndex,
+                PivotPrice = owner.StockPane.StockSeries.Data[owner.StockPane.StockSeries.Data.Count - 1].close,
+                ArrowAngle = 30,
+                ArrowLength = 23,
+                Text = "",
+                Color = owner.StockSeries.BarNeutralColor,
+                ColorText = owner.StockSeries.BarNeutralColor,
+                HideArrow = true,
+                HideBox = true,
+                Name = "CurrProfitPercent"
+            };
+            seriesCommentLastBar.data.Add(commProfitPercent);
 
             // стопы-тейки и прочая ерунда
             // раздельно по BUY и SELL
@@ -857,14 +888,16 @@ namespace Candlechart.Indicator
                 if (pos.Side > 0)
                     sumBuys += pos.Volume * pos.PriceEnter;
                 else
-                    sumSell += pos.Volume * pos.PriceEnter;
+                    sumSell += pos.Volume * pos.PriceEnter;                
             }
             posSum.Volume = Math.Abs(exposition);
             posSum.Side = Math.Sign(exposition);
             posSum.PriceEnter = (float)(exposition == 0 ? 0 : Math.Round((sumBuys - sumSell) / exposition, 
                 DalSpot.Instance.GetPrecision(posSum.Symbol)));
-            var sumProfit = Math.Round(DalSpot.Instance.GetPointsValue(posSum.Symbol, posSum.Side * 
-                (currPrice - posSum.PriceEnter)));
+            
+            var sumProfit = 
+                Math.Round(
+                    DalSpot.Instance.GetPointsValue(posSum.Symbol, posSum.Side * (currPrice - posSum.PriceEnter)));
             if (ShowComments)
             {
                 owner.Owner.ExtraTitle = 
@@ -884,9 +917,10 @@ namespace Candlechart.Indicator
                 var curr = seriesCommentLastBar.data.FirstOrDefault(c => c.Name == "CurrProfit");
                 if (curr != null)
                 {
-                    curr.Text = (openPositions.Count == 0 || posSum.Volume == 0) 
-                        ? string.Empty 
-                        : (sumProfit > 0 ? "+" + sumProfit : sumProfit.ToStringUniformMoneyFormat()) + "п";
+                    curr.Text = (openPositions.Count == 0 || posSum.Volume == 0)
+                        ? string.Empty
+                        : (sumProfit > 0 ? "+" + sumProfit : sumProfit.ToStringUniformMoneyFormat()) + " п";
+
                     curr.PivotPrice = currPrice;
                     curr.ColorText = sumProfit > 0 ? Color.Green : Color.Red;
                 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
@@ -11,6 +12,7 @@ using Candlechart.Core;
 using Candlechart.Indicator;
 using Entity;
 using TradeSharp.Client.BL;
+using TradeSharp.Client.Util;
 using TradeSharp.Contract.Contract;
 using TradeSharp.Contract.Entity;
 using TradeSharp.Contract.Util.Proxy;
@@ -371,12 +373,37 @@ namespace TradeSharp.Client.Forms
                 var flagRedrawNews = false;
                 if (quotes != null)
                     flagRedrawQuotes = chart.ProcessQuotes(quotes);
+
                 if (news != null)
                     flagRedrawNews = chart.ProcessNews(news);
-                if (flagRedrawNews || flagRedrawQuotes) // перерисовать
+
+                if (AccountStatus.Instance.AccountData != null
+                    && MarketOrdersStorage.Instance.MarketOrders != null)
                 {
-                    chart.RedrawChartSafe();
+                    var accountCurrency = AccountStatus.Instance.AccountData.Currency;
+                    var orders = MarketOrdersStorage.Instance.MarketOrders;
+
+                    var positionSummaryBySymbol =
+                        PositionSummary.GetPositionSummary(
+                            orders.Where(o => o.State == PositionState.Opened).ToList(),
+                            accountCurrency, (float)AccountStatus.Instance.AccountData.Balance);
+
+                    foreach (IChartIndicatorPositionSummary psIndi in chart.indicators.Where(x => x is IChartIndicatorPositionSummary))
+                    {
+                        var ind = psIndi as BaseChartIndicator;
+                        if (ind == null)
+                            continue;
+
+                        var ps = positionSummaryBySymbol.SingleOrDefault(x => x.Symbol == ind.owner.Symbol);
+                        if (ps == null)
+                            continue;
+
+                        psIndi.UpdatePositionSummary(ps.Profit, ps.ProfitInPercent);
+                    }
                 }
+
+                if (flagRedrawNews || flagRedrawQuotes) // перерисовать
+                    chart.RedrawChartSafe();
             }
             finally
             {
