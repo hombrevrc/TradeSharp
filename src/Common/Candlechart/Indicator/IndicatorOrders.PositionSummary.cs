@@ -24,7 +24,7 @@ namespace Candlechart.Indicator
             var currPercent = seriesCommentLastBar.data.FirstOrDefault(c => c.Name == "CurrProfitPercent");
             if (currPercent != null)
             {
-                currPercent.Text = profitInPercent.ToString("F2");
+                currPercent.Text = profitInPercent.ToString("F2") + " %";
                 currPercent.PivotPrice = currPrice;
                 currPercent.ColorText = profitInPercent > 0 ? Color.Green : Color.Red;
             }
