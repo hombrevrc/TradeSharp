@@ -280,6 +280,7 @@
     <Compile Include="Indicator\CrossChartDiverUITypeEditor.cs" />
     <Compile Include="Indicator\FiboForkIndicator.cs" />
     <Compile Include="Indicator\FileBrowseUITypeEditor.cs" />
+    <Compile Include="Indicator\IChartIndicatorPositionSummary.cs" />
     <Compile Include="Indicator\IChartQueryIndicator.cs" />
     <Compile Include="Indicator\IndicatorAccelerator.cs" />
     <Compile Include="Indicator\IndicatorAlert.cs" />
@@ -313,6 +314,7 @@
     <Compile Include="Indicator\IndicatorOptionDom.WebRequest.cs" />
     <Compile Include="Indicator\IndicatorOrders.DisplayedOrder.cs" />
     <Compile Include="Indicator\IndicatorOrders.Interaction.cs" />
+    <Compile Include="Indicator\IndicatorOrders.PositionSummary.cs" />
     <Compile Include="Indicator\IndicatorParabolic.cs" />
     <Compile Include="Indicator\IndicatorRandomWalk.cs" />
     <Compile Include="Indicator\IndicatorRenco.cs" />
