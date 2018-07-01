@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 using Entity;
 using TradeSharp.Client.Util.Storage;
@@ -215,7 +216,11 @@ namespace TradeSharp.RobotFarm.BL
             if (robots != null && robots.Count > 0)
             {
                 // контекст для роботов
-                context = new RobotContextLiveFarm(proxyTrade, account, () => UserLogin, accountData)
+                context = new RobotContextLiveFarm(proxyTrade, account, () => UserLogin, accountData,
+                    () =>
+                    {
+                        return robots.SelectMany(r => r.Graphics).Distinct().ToList();
+                    })
                 {
                     robotContextMode = RobotContext.ContextMode.Realtime
                 };

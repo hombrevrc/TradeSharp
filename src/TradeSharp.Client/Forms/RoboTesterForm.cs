@@ -21,7 +21,12 @@ namespace TradeSharp.Client.Forms
         private const int DefaultStartBalance = 1000000;
 
         private readonly RobotContextBacktest robotContext = 
-            new RobotContextBacktest(MainForm.Instance.UpdateTickersCacheForRobots);        
+            new RobotContextBacktest(MainForm.Instance.UpdateTickersCacheForRobots, () =>
+            {
+                var chartTickers = MainForm.Instance.GetChartList(false)
+                    .Select(c => new Cortege2<string, BarSettings>(c.Symbol, c.Timeframe));
+                return chartTickers.Distinct().ToList();
+            });        
 
         public delegate void RobotResultsBoundToChartsDel(
             Dictionary<BaseRobot, ChartWindowSettings> robotBindings,

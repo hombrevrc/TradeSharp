@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Entity;
 using TradeSharp.Contract.Entity;
 using TradeSharp.Robot.BacktestServerProxy;
+using TradeSharp.Util;
 
 namespace TradeSharp.Test.Robot
 {
@@ -17,7 +19,7 @@ namespace TradeSharp.Test.Robot
         public static RobotContextBacktest GetRobotContextBacktest(DateTime timeFrom, DateTime timeTo, decimal initialBalance = 100000, 
             string currency = "USD", string group = "Demo", float maxLeverage = 50, float brokerLeverage = 100)
         {
-            return  new RobotContextBacktest((tickers, end) => { })
+            return new RobotContextBacktest((tickers, end) => { }, () => new List<Cortege2<string, BarSettings>>(0))
             {
                 AccountInfo = new Account
                 {

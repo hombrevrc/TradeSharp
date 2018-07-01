@@ -22,6 +22,8 @@ namespace TradeSharp.Robot.BacktestServerProxy
 
         public override Account AccountInfo { get; set; }
 
+        private readonly Func<List<Cortege2<string, BarSettings>>> getUsedTickers;
+
         #region Основные настройки
         private DateTime timeFrom = DateTime.MinValue;
         [DisplayName("Дата от:")]
@@ -155,9 +157,10 @@ namespace TradeSharp.Robot.BacktestServerProxy
         private DateTime? firstDateOfTest;
         #endregion
 
-        public RobotContextBacktest(UpdateTickersCacheForRobotsExDel updateTickersCacheForRobots)
+        public RobotContextBacktest(UpdateTickersCacheForRobotsExDel updateTickersCacheForRobots, Func<List<Cortege2<string, BarSettings>>> getUsedTickers)
         {
-            this.updateTickersCacheForRobots = updateTickersCacheForRobots;            
+            this.updateTickersCacheForRobots = updateTickersCacheForRobots;
+            this.getUsedTickers = getUsedTickers;
         }
 
         public bool InitiateTest()
@@ -755,6 +758,11 @@ namespace TradeSharp.Robot.BacktestServerProxy
         public override Account GetAccountInfo(bool needEquity)
         {
             return AccountInfo;
+        }
+
+        public override List<Cortege2<string, BarSettings>> GetAllUsedTickers()
+        {
+            throw new NotImplementedException();
         }
 
         private void InitTradeLib()

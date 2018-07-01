@@ -120,7 +120,14 @@ namespace TradeSharp.Client.BL
         {
             if (state != RobotFarmState.Stopped) return false;
             if (accountInfo == null) return false;
-            robotContext = new TerminalLiveRobotContext(MainForm.serverProxyTrade, accountInfo, () => AccountStatus.Instance.Login);
+            robotContext = new TerminalLiveRobotContext(MainForm.serverProxyTrade, accountInfo, () => AccountStatus.Instance.Login,
+                () =>
+                {
+                    var chartTickers = MainForm.Instance.GetChartList(false)
+                        .Select(c => new Cortege2<string, BarSettings>(c.Symbol, c.Timeframe)).Distinct();
+                    var robotTickers = robots.SelectMany(r => r.Graphics).Distinct();
+                    return chartTickers.Union(robotTickers).Distinct().ToList();
+                });
             // загрузить роботов
             robots = LoadRobots();
             Logger.InfoFormat("Загружено {0} роботов", robots.Count);

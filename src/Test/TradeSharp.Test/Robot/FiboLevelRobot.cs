@@ -1,7 +1,10 @@
-﻿using NUnit.Framework;
+﻿using System.Collections.Generic;
+using Entity;
+using NUnit.Framework;
 using TradeSharp.Contract.Util.BL;
 using TradeSharp.Robot.BacktestServerProxy;
 using TradeSharp.Robot.Robot;
+using TradeSharp.Util;
 
 namespace TradeSharp.Test.Robot
 {
@@ -19,7 +22,7 @@ namespace TradeSharp.Test.Robot
             // подготовить тестовые котировки
 
             // подготовить тестовый контекст
-            context = new RobotContextBacktest((tickers, end) => { });
+            context = new RobotContextBacktest((tickers, end) => { }, () => new List<Cortege2<string, BarSettings>>(0));
         }
 
         //[Test]

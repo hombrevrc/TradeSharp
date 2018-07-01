@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using Entity;
 using TradeSharp.Client.Util.Storage;
 using TradeSharp.Contract.Entity;
 using TradeSharp.Contract.Util.Proxy;
 using TradeSharp.Robot.BacktestServerProxy;
+using TradeSharp.Util;
 
 namespace TradeSharp.RobotFarm.BL
 {
@@ -17,8 +19,8 @@ namespace TradeSharp.RobotFarm.BL
         private readonly ActualAccountData accountData;
 
         public RobotContextLiveFarm(TradeSharpServerTrade proxyTrade, Account accountInfo, Func<string> getUserLogin,
-            ActualAccountData accountData) : 
-            base(proxyTrade, accountInfo, getUserLogin)
+            ActualAccountData accountData, Func<List<Cortege2<string, BarSettings>>> getAllUsedTickers) : 
+            base(proxyTrade, accountInfo, getUserLogin, getAllUsedTickers)
         {
             this.accountData = accountData;
         }

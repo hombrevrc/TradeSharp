@@ -229,5 +229,7 @@ namespace TradeSharp.Robot.BacktestServerProxy
         {
             throw new NotImplementedException();
         }
+
+        public abstract List<Cortege2<string, BarSettings>> GetAllUsedTickers();
     }
 }

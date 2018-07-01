@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using Entity;
 using TradeSharp.Contract.Entity;
 using TradeSharp.Contract.Util.Proxy;
 using TradeSharp.Robot.BacktestServerProxy;
+using TradeSharp.Util;
 
 namespace TradeSharp.Client.BL
 {
@@ -13,8 +15,9 @@ namespace TradeSharp.Client.BL
     /// </summary>
     class TerminalLiveRobotContext : RobotContextLive
     {
-        public TerminalLiveRobotContext(TradeSharpServerTrade proxyTrade, Account accountInfo, Func<string> getUserLogin) 
-            : base(proxyTrade, accountInfo, getUserLogin)
+        public TerminalLiveRobotContext(TradeSharpServerTrade proxyTrade, Account accountInfo, Func<string> getUserLogin,
+            Func<List<Cortege2<string, BarSettings>>> getAllUsedTickers) 
+            : base(proxyTrade, accountInfo, getUserLogin, getAllUsedTickers)
         {
         }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Entity;
 using TradeSharp.Contract.Entity;
 using TradeSharp.Contract.Util.Proxy;
 using TradeSharp.Util;
@@ -18,15 +19,24 @@ namespace TradeSharp.Robot.BacktestServerProxy
         
         private Func<string> getUserLogin;
 
-        public RobotContextLive(TradeSharpServerTrade proxyTrade, Account accountInfo, Func<string> getUserLogin)
+        private Func<List<Cortege2<string, BarSettings>>> getAllUsedTickers;
+
+        public RobotContextLive(TradeSharpServerTrade proxyTrade, Account accountInfo, Func<string> getUserLogin,
+            Func<List<Cortege2<string, BarSettings>>> getAllUsedTickers)
         {
             this.proxyTrade = proxyTrade;
-            this.AccountInfo = accountInfo;
+            AccountInfo = accountInfo;
             this.getUserLogin = getUserLogin;
+            this.getAllUsedTickers = getAllUsedTickers;
             quotesStorage = Contract.Util.BL.QuoteStorage.Instance;
         }
 
         #region RobotContext overrides
+        public override List<Cortege2<string, BarSettings>> GetAllUsedTickers()
+        {
+            throw new NotImplementedException();
+        }
+
         public override RequestStatus SendNewOrderRequest(
             ProtectedOperationContext secCtx,
             int requestUniqueId,
