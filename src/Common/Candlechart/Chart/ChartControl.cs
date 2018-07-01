@@ -419,6 +419,22 @@ namespace Candlechart.Chart
             }
         }
 
+        /// <summary>
+        /// Прорисовка "корабликов" по открытым и закрытым позициям
+        /// </summary>
+        public void DrawOrderPriceMarks(System.Collections.Generic.IEnumerable<TradeSharp.Contract.Entity.MarketOrder> orders)
+        {
+            try
+            {
+                StockPane.YAxis.Orders = orders;
+                RepaintAndInvalidate();
+            }
+            catch (Exception ex)
+            {
+                Logger.ErrorFormat("ChartControl.DrawOrderPriceMarks error: {0}", ex);
+            }
+        }
+
         public void RepaintAndInvalidate()
         {
             DrawInBuffer();

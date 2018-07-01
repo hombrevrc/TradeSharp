@@ -99,7 +99,7 @@ namespace Candlechart
             if (chart.StockSeries.AutoScroll)
                 chart.ScrollToEnd();
             return true;            
-        }        
+        }
 
         public bool ProcessNews(News[] news)
         {

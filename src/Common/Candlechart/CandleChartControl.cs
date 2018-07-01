@@ -633,7 +633,7 @@ namespace Candlechart
 
             chart.Owner = this;
             chart.StockPane.Name = Localizer.GetString("TitleCourse");
-
+            
             // серии (граф. объекты)
             InitializeSeries();
             
@@ -664,6 +664,9 @@ namespace Candlechart
             chart.StockPane.AddPaneStrip("Candlechart.images.pane_strip.png", 1, 0);
             chart.OnScaleChanged += Window_OnScaleChanged;
             
+            // Для прорисовки корабликов
+            this.OnPositionsReceived += chart.DrawOrderPriceMarks;
+
             // меню
             SetupMenuImages();
         }

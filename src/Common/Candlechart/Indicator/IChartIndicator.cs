@@ -39,6 +39,7 @@ namespace Candlechart.Indicator
         /// (возможно, не весь)
         /// </summary>        
         void OnCandleUpdated(CandleData updatedCandle, List<CandleData> newCandles);
+
         /// <summary>
         /// Вернуть подсказку по уровню / объекту под курсором
         /// на входе - координаты в CandleChartControl

@@ -39,8 +39,8 @@ namespace TradeSharp.Client.Forms
 
             Localizer.LocalizeControl(this);
             SetupStatGrid();
-            SetupChart(chartProfit, string.Empty);
-            SetupChart(chartProfit1000, string.Empty);
+            SetupChart(chartProfit, Color.FromArgb(80, 5, 5));
+            SetupChart(chartProfit1000, Color.FromArgb(80, 5, 5));
 
             worker.DoWork += MakeCalculation;
             worker.RunWorkerCompleted += WorkerRunWorkerCompleted;
@@ -84,7 +84,7 @@ namespace TradeSharp.Client.Forms
         }
         #endregion
 
-        private static void SetupChart(FastMultiChart.FastMultiChart chart, string extraSeriesName)
+        private static void SetupChart(FastMultiChart.FastMultiChart chart, Color color)
         {
             chart.GetXScaleValue = FastMultiChartUtils.GetDateTimeScaleValue;
             chart.GetXValue = FastMultiChartUtils.GetDateTimeValue;
@@ -93,14 +93,10 @@ namespace TradeSharp.Client.Forms
             chart.GetMinYScaleDivision = FastMultiChartUtils.GetDoubleMinScaleDivision;
             chart.GetXStringValue = FastMultiChartUtils.GetDateTimeStringValue;
             chart.GetXStringScaleValue = FastMultiChartUtils.GetDateTimeStringScaleValue;
+
             var blank = new BalanceByDate(DateTime.Now, 0);
-            chart.Graphs[0].Series.Add(new Series(blank.Property(p => p.X), blank.Property(p => p.Y),
-                                                  new Pen(Color.FromArgb(80, 5, 5), 2f)));
-            if (!string.IsNullOrEmpty(extraSeriesName))
-            {
-                chart.Graphs[0].Series.Add(new Series(blank.Property(p => p.X), blank.Property(p => p.Y),
-                                                      new Pen(Color.FromArgb(5, 105, 5), 2f)));
-            }
+            chart.Graphs[0].Series.Add(
+                new Series(blank.Property(p => p.X), blank.Property(p => p.Y), new Pen(color, 2f)));
         }
 
         private void SetupStatGrid()
@@ -298,23 +294,59 @@ namespace TradeSharp.Client.Forms
         private void BuildEquityChartUnsafe(AccountStatistics stat)
         {
             chartProfit.Graphs[0].Series[0].Clear();
-            //chartProfit.Graphs[0].Series[1].Clear();
             chartProfit1000.Graphs[0].Series[0].Clear();
+            chartDrawDown.Series[0].Points.Clear();
+            chartDrawDown.Series[1].Points.Clear();
+            chartEquityDrawDown.Series[0].Points.Clear();
+            chartEquityDrawDown.Series[1].Points.Clear();
+
             if (stat.listEquity == null || stat.listEquity.Count == 0) return;
 
             if (stat.listEquity != null)
                 foreach (var pt in stat.listEquity)
-                {
                     chartProfit.Graphs[0].Series[0].Add(new BalanceByDate(pt.time, pt.equity));
-                }
-
             chartProfit.Initialize();
-            
+
+            var equityDifferential = stat.GetEquityDifferential();
+
+            //================ Просадка / прибыль ================
+            var runUpSeriesData =
+                equityDifferential.Select(x =>
+                    new TradeSharp.Util.Cortege2<DateTime, float>(x.a, x.b <= 0 || x.c == 0 ? 0 : x.b * 100 / x.c)).ToList();
+
+            var drawdownPrecentSeriesData =
+                equityDifferential.Select(x => 
+                    new TradeSharp.Util.Cortege2<DateTime, float>(x.a, x.b >= 0 || x.c == 0 ? 0 : x.b * 100 / x.c)).ToList();
+
+            for (int i = 0; i < drawdownPrecentSeriesData.Count; i++)
+                chartDrawDown.Series[0].Points.AddXY(drawdownPrecentSeriesData[i].a, drawdownPrecentSeriesData[i].b);
+
+            for (int i = 0; i < runUpSeriesData.Count; i++)
+                chartDrawDown.Series[1].Points.AddXY(runUpSeriesData[i].a, runUpSeriesData[i].b);
+
+
+
+            //================ Средства / просадка ================
+
+            chartEquityDrawDown.ChartAreas["ChartArea1"].AxisY.Minimum 
+                = stat.listEquity.Min(x => x.equity);
+
+            for (int i = 0; i < stat.listEquity.Count; i++)
+                chartEquityDrawDown.Series[0].Points.AddXY(stat.listEquity[i].time, stat.listEquity[i].equity);
+
+            var drawdownSeriesData =
+                equityDifferential.Select(x =>
+                    new TradeSharp.Util.Cortege2<DateTime, float>(x.a, x.b >= 0 ? 0 : x.b)).ToList();
+
+            for (int i = 0; i < runUpSeriesData.Count; i++)
+                chartEquityDrawDown.Series[1].Points.AddXY(drawdownSeriesData[i].a, drawdownSeriesData[i].b);
+
+            //==========================================================================================
+
             // доход на 1000
             foreach (var pt in stat.listProfit1000)
-            {
                 chartProfit1000.Graphs[0].Series[0].Add(new BalanceByDate(pt.time, pt.equity));
-            }
+
             chartProfit1000.Initialize();
         }
 
@@ -613,7 +645,7 @@ namespace TradeSharp.Client.Forms
         }
 
         /// <summary>
-        /// точка графика
+        /// точка графика средств
         /// </summary>
         class BalanceByDate
         {
@@ -624,6 +656,24 @@ namespace TradeSharp.Client.Forms
             public double Y { get; set; }
 
             public BalanceByDate(DateTime x, double y)
+            {
+                X = x;
+                Y = y;
+            }
+        }
+
+        /// <summary>
+        /// точка графика просадки
+        /// </summary>
+        class DrawDownByDate
+        {
+            [DisplayName("дата")]
+            public DateTime X { get; set; }
+
+            [DisplayName("просадка")]
+            public double Y { get; set; }
+
+            public DrawDownByDate(DateTime x, double y)
             {
                 X = x;
                 Y = y;
@@ -648,6 +698,11 @@ namespace TradeSharp.Client.Forms
         {
             if (resizeEnded != null)
                 resizeEnded(this);
-        }        
+        }
+
+        private void ChartDrowDawnScaleReset(object sender, EventArgs e)
+        {
+            ((System.Windows.Forms.DataVisualization.Charting.Chart)sender).ChartAreas[0].AxisX.ScaleView.ZoomReset();
+        }
     }    
 }

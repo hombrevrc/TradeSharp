@@ -76,6 +76,9 @@
     <Compile Include="BL\OrderWatchdog.cs" />
     <Compile Include="BL\ProviderQueueReader.cs" />
     <Compile Include="BL\RequestIdStorage.cs" />
+    <Compile Include="BL\SmsSending\ISmsSenderSettings.cs" />
+    <Compile Include="BL\SmsSending\SmsSender.cs" />
+    <Compile Include="BL\SmsSending\SmsSenderSettings.cs" />
     <Compile Include="BL\UserEventManager.cs" />
     <Compile Include="BL\UserEventStorage.cs" />
     <Compile Include="BL\UserSessionStorage.cs" />
@@ -186,6 +189,9 @@
     </None>
     <None Include="install.bat" />
     <None Include="uninstall.bat" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Library\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />

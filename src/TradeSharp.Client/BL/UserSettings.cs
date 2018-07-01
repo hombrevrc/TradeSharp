@@ -246,7 +246,9 @@ namespace TradeSharp.Client.BL
         }
 
         private string chartIconSet = ChartIcon.chartButtonIndexAutoScroll + ";" +
-                                      ChartIcon.chartButtonIndicators + ";" + ChartIcon.chartButtonNewOrder;
+                                      ChartIcon.chartButtonIndicators + ";" + 
+                                      ChartIcon.chartButtonNewOrder + ";" +
+                                      ChartIcon.chartButtonIndexShips;
         [PropertyXMLTag("ChartIconSet")]
         public string ChartIconSet
         {

@@ -137,7 +137,7 @@ namespace TradeSharp.Client.BL.Script
                     balanceChangesPercentText = $"{profitTodayPercent * 100:F3} % / {profitWeekPercent * 100:F3} %";
 
                     var stat = new AccountStatistics();
-                    var maxDrawDown = stat.CalculateDrawdown(accountStatistics);
+                    var maxDrawDown = stat.CalculateMaxDrawdown(accountStatistics);
                     maxDrawDownText = $"{maxDrawDown:F3} %";
 
                     var currentDrawDown = accountEquity < accountBalance 

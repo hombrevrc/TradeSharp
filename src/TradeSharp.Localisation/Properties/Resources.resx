@@ -1017,6 +1017,9 @@
   <data name="TitleProfit" xml:space="preserve">
     <value>Прибыль</value>
   </data>
+  <data name="TitleDrowDawn" xml:space="preserve">
+    <value>Просадка</value>
+  </data>
   <data name="TitleReal" xml:space="preserve">
     <value>Реальный</value>
   </data>
@@ -1685,6 +1688,9 @@
   </data>
   <data name="TitleAutoscrollChart" xml:space="preserve">
     <value>Автопрокрутка графика</value>
+  </data>
+  <data name="TitleShipsChart" xml:space="preserve">
+    <value>Кораблики</value>
   </data>
   <data name="TitleByTwoPoints" xml:space="preserve">
     <value>По двум точкам</value>

@@ -1014,6 +1014,9 @@
   <data name="TitleProfit" xml:space="preserve">
     <value>Profit</value>
   </data>
+  <data name="TitleDrowDawn" xml:space="preserve">
+    <value>DrowDawn</value>
+  </data>
   <data name="TitleReal" xml:space="preserve">
     <value>Real</value>
   </data>
@@ -1682,6 +1685,9 @@
   </data>
   <data name="TitleAutoscrollChart" xml:space="preserve">
     <value>Autoscroll chart</value>
+  </data>
+  <data name="TitleShipsChart" xml:space="preserve">
+    <value>Ships</value>
   </data>
   <data name="TitleChartSmall" xml:space="preserve">
     <value>chart</value>
