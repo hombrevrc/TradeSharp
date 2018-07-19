@@ -11,10 +11,16 @@ namespace FastMultiChartTest
         public Form1()
         {
             InitializeComponent();
+
+            DefaultMode();
+        }
+
+        private void DefaultMode()
+        {
             // spec part
             fastMultiChart1.GetXScaleValue = FastMultiChartUtils.GetDateTimeScaleValue;
             //fastMultiChart1.GetYScaleValue = GetYScaleValueSpec;
-            fastMultiChart1.GetYScaleValue = (value, chart) => (int)((double) value * 1000);
+            fastMultiChart1.GetYScaleValue = (value, chart) => (int)((double)value * 1000);
             fastMultiChart1.GetXValue = FastMultiChartUtils.GetDateTimeValue;
             //fastMultiChart1.GetYValue = GetYValueSpec;
             fastMultiChart1.GetYValue = (value, chart) => value / 1000.0;
@@ -61,8 +67,38 @@ namespace FastMultiChartTest
                 fastMultiChart1.Graphs[0].Series[1].Add(new GraphData { X = i * 10 + 9, Y = 5 * rnd.Next(200), T = new DateTime(2012, 8, 23) + new TimeSpan(i * 10, 0, 0, 0) });
             }
             // end of spec part
+
             fastMultiChart1.Initialize();
         }
+
+        private void MirrorMode()
+        {
+            // spec part
+            fastMultiChart1.RenderPolygons = RenderMode.Mirror;
+            fastMultiChart1.GetXScaleValue = FastMultiChartUtils.GetDateTimeScaleValue;
+            fastMultiChart1.GetXValue = FastMultiChartUtils.GetDateTimeValue;
+            fastMultiChart1.GetXDivisionValue = FastMultiChartUtils.GetDateTimeDivisionValue;
+            fastMultiChart1.GetMinXScaleDivision = FastMultiChartUtils.GetDateTimeMinScaleDivision;
+            fastMultiChart1.GetXStringValue = FastMultiChartUtils.GetDateTimeStringValue;
+            fastMultiChart1.GetXStringScaleValue = FastMultiChartUtils.GetDateTimeStringScaleValue;
+            //end of spec part
+
+
+            fastMultiChart1.Graphs[0].Series.Add(new Series("T", "D", new Pen(Color.Blue, 2)));
+            fastMultiChart1.Graphs[0].Series.Add(new Series("T", "D", new Pen(Color.Green, 2)));
+
+            var nowDate = DateTime.Now.Date;
+
+            for (int i = 0; i < 100; i++)
+            {
+                var date = nowDate.AddDays(i);
+                fastMultiChart1.Graphs[0].Series[0].Add(new GraphData { T = date, D = 2 * i });
+                fastMultiChart1.Graphs[0].Series[1].Add(new GraphData { T = date, D = -i });
+            }
+
+            fastMultiChart1.Initialize();
+        }
+
         // spec part
         private int GetYScaleValueSpec(object value, FastMultiChart.FastMultiChart chart)
         {
