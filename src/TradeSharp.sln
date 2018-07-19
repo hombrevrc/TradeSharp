@@ -109,8 +109,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeSharp.Client", "TradeS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeSharp.TradeSignal", "TradeSharp.TradeSignal\TradeSharp.TradeSignal.csproj", "{0615097D-7C02-4DBD-8F48-99FBC8464B4D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeSharp.Client.Subscription", "TradeSharp.Client.Subscription\TradeSharp.Client.Subscription.csproj", "{1D43B7A3-D499-4624-B5E3-70D6196C67E4}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeSharp.QuoteAdmin", "TradeSharp.QuoteAdmin\TradeSharp.QuoteAdmin.csproj", "{CFFC5769-E684-45B1-AA07-B1A8318644CD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeSharp.UpdateServer", "TradeSharp.UpdateServer\TradeSharp.UpdateServer.csproj", "{F60D58B7-7296-4734-8704-92CAACEE365D}"
@@ -180,6 +178,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeSharp.RobotFarm.Request", "TradeSharp.RobotFarm.Request\TradeSharp.RobotFarm.Request.csproj", "{6161315E-8941-4761-852A-281F2BB1F313}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeSharp.QuoteStreamLib", "TradeSharp.QuoteStreamLib\TradeSharp.QuoteStreamLib.csproj", "{B144D124-77E9-4FFD-BD90-E44A5908F113}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeSharp.Client.Subscription", "TradeSharp.Client.Subscription\TradeSharp.Client.Subscription.csproj", "{1D43B7A3-D499-4624-B5E3-70D6196C67E4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -491,16 +491,6 @@ Global
 		{0615097D-7C02-4DBD-8F48-99FBC8464B4D}.Release|Mixed Platforms.Build.0 = Release|x86
 		{0615097D-7C02-4DBD-8F48-99FBC8464B4D}.Release|x86.ActiveCfg = Release|x86
 		{0615097D-7C02-4DBD-8F48-99FBC8464B4D}.Release|x86.Build.0 = Release|x86
-		{1D43B7A3-D499-4624-B5E3-70D6196C67E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1D43B7A3-D499-4624-B5E3-70D6196C67E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1D43B7A3-D499-4624-B5E3-70D6196C67E4}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{1D43B7A3-D499-4624-B5E3-70D6196C67E4}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{1D43B7A3-D499-4624-B5E3-70D6196C67E4}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{1D43B7A3-D499-4624-B5E3-70D6196C67E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1D43B7A3-D499-4624-B5E3-70D6196C67E4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1D43B7A3-D499-4624-B5E3-70D6196C67E4}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{1D43B7A3-D499-4624-B5E3-70D6196C67E4}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{1D43B7A3-D499-4624-B5E3-70D6196C67E4}.Release|x86.ActiveCfg = Release|Any CPU
 		{CFFC5769-E684-45B1-AA07-B1A8318644CD}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{CFFC5769-E684-45B1-AA07-B1A8318644CD}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
 		{CFFC5769-E684-45B1-AA07-B1A8318644CD}.Debug|Mixed Platforms.Build.0 = Debug|x86
@@ -823,6 +813,18 @@ Global
 		{B144D124-77E9-4FFD-BD90-E44A5908F113}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{B144D124-77E9-4FFD-BD90-E44A5908F113}.Release|x86.ActiveCfg = Release|Any CPU
 		{B144D124-77E9-4FFD-BD90-E44A5908F113}.Release|x86.Build.0 = Release|Any CPU
+		{1D43B7A3-D499-4624-B5E3-70D6196C67E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D43B7A3-D499-4624-B5E3-70D6196C67E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D43B7A3-D499-4624-B5E3-70D6196C67E4}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{1D43B7A3-D499-4624-B5E3-70D6196C67E4}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{1D43B7A3-D499-4624-B5E3-70D6196C67E4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1D43B7A3-D499-4624-B5E3-70D6196C67E4}.Debug|x86.Build.0 = Debug|Any CPU
+		{1D43B7A3-D499-4624-B5E3-70D6196C67E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D43B7A3-D499-4624-B5E3-70D6196C67E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D43B7A3-D499-4624-B5E3-70D6196C67E4}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{1D43B7A3-D499-4624-B5E3-70D6196C67E4}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{1D43B7A3-D499-4624-B5E3-70D6196C67E4}.Release|x86.ActiveCfg = Release|Any CPU
+		{1D43B7A3-D499-4624-B5E3-70D6196C67E4}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

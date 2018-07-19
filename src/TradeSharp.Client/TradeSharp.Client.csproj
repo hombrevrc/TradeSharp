@@ -57,7 +57,7 @@
     <ApplicationIcon>TradeSharp.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>../Libraries/tradesharp.pfx</AssemblyOriginatorKeyFile>
@@ -93,9 +93,6 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="TradeSharp.Chat.Client">
-      <HintPath>..\TradeSharp.Chat\Client\bin\Debug\TradeSharp.Chat.Client.dll</HintPath>
-    </Reference>
     <Reference Include="TradeSharp.Chat.Contract">
       <HintPath>..\TradeSharp.Chat\Contract\bin\Debug\TradeSharp.Chat.Contract.dll</HintPath>
     </Reference>
@@ -1262,6 +1259,10 @@
       <Project>{98e58858-6473-49a2-bcfb-902221de66c8}</Project>
       <Name>TradeSharp.SiteBridge.Lib</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TradeSharp.Chat\Client\TradeSharp.Chat.Client.csproj">
+      <Project>{77c611c5-39f4-4ffc-bd9a-32d70409e0bf}</Project>
+      <Name>TradeSharp.Chat.Client</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TradeSharp.Client.Subscription\TradeSharp.Client.Subscription.csproj">
       <Project>{1d43b7a3-d499-4624-b5e3-70d6196c67e4}</Project>
       <Name>TradeSharp.Client.Subscription</Name>
@@ -1275,7 +1276,7 @@
       <Name>TradeSharp.Contract.Util</Name>
     </ProjectReference>
     <ProjectReference Include="..\TradeSharp.Contract\TradeSharp.Contract.csproj">
-      <Project>{168F1CAC-77C9-4847-B6C1-138E4373CCEA}</Project>
+      <Project>{168f1cac-77c9-4847-b6c1-138e4373ccea}</Project>
       <Name>TradeSharp.Contract</Name>
     </ProjectReference>
     <ProjectReference Include="..\TradeSharp.Localisation\TradeSharp.Localisation.csproj">

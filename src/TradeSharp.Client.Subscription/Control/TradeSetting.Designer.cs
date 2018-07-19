@@ -329,7 +329,7 @@
             this.Controls.Add(this.txtMaxLeverage);
             this.Controls.Add(this.txtAutoTrade);
             this.Name = "TradeSetting";
-            this.Size = new System.Drawing.Size(330, 328);
+            this.Size = new System.Drawing.Size(330, 330);
             this.Load += new System.EventHandler(this.TradeSetting_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
