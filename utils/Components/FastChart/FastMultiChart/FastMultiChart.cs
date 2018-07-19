@@ -125,8 +125,8 @@ namespace FastMultiChart
             }
         }
 
-        private bool renderPolygons = true; // move to series
-        public bool RenderPolygons
+        private RenderMode renderPolygons = RenderMode.Default; // move to series
+        public RenderMode RenderPolygons
         {
             get { return renderPolygons; }
             set
@@ -503,12 +503,23 @@ namespace FastMultiChart
                         points.Add(new PointF((x - MinX) * scaleX, -y * graph.ScaleY));
                     }
                     e.Graphics.DrawLines(series.Pen, points.ToArray());
-                    if (RenderPolygons)
+
+                    switch (RenderPolygons)
                     {
-                        points.Insert(0, new PointF((keys[series.BeginIndex] - MinX) * scaleX, -graph.MinY * graph.ScaleY));
-                        points.Add(new PointF((keys[series.EndIndex] - MinX) * scaleX, -graph.MinY * graph.ScaleY));
-                        points.Add(new PointF((keys[series.BeginIndex] - MinX) * scaleX, -graph.MinY * graph.ScaleY));
-                        e.Graphics.FillPolygon(new SolidBrush(Color.FromArgb(64, series.Pen.Color)), points.ToArray());
+                        case RenderMode.None:
+                            break;
+                        case RenderMode.Default:
+                            points.Insert(0, new PointF((keys[series.BeginIndex] - MinX) * scaleX, -graph.MinY * graph.ScaleY));
+                            points.Add(new PointF((keys[series.EndIndex] - MinX) * scaleX, -graph.MinY * graph.ScaleY));
+                            points.Add(new PointF((keys[series.BeginIndex] - MinX) * scaleX, -graph.MinY * graph.ScaleY));
+                            e.Graphics.FillPolygon(new SolidBrush(Color.FromArgb(64, series.Pen.Color)), points.ToArray());
+                            break;
+                        case RenderMode.Mirror:                            
+                            points.Insert(0, new PointF((keys[series.BeginIndex] - MinX) * scaleX, -graph.MinY * graph.ScaleY));
+                            points.Add(new PointF((keys[series.EndIndex] - MinX) * scaleX, 0));
+                            points.Add(new PointF((keys[series.BeginIndex] - MinX) * scaleX, 0));
+                            e.Graphics.FillPolygon(new SolidBrush(Color.FromArgb(64, series.Pen.Color)), points.ToArray());
+                            break;
                     }
                 }
 
@@ -635,14 +646,25 @@ namespace FastMultiChart
                         var y = series[x].a;
                         points.Add(new PointF((x - scrollBarMinX) * scrollBarScaleX, y * scrollBarScaleY));
                     }
-                    if (RenderPolygons)
+
+                    
+                    switch (RenderPolygons)
                     {
-                        points.Insert(0, new PointF((keys[0] - scrollBarMinX) * scrollBarScaleX, scrollBarMinY * scrollBarScaleY));
-                        points.Add(new PointF((keys[keys.Count - 1] - scrollBarMinX) * scrollBarScaleX, scrollBarMinY * scrollBarScaleY));
-                        e.Graphics.FillPolygon(new SolidBrush(Color.FromArgb(128, series.Pen.Color)), points.ToArray());
-                    }
-                    else
-                        e.Graphics.DrawLines(series.Pen, points.ToArray());
+                        case RenderMode.None:
+                            e.Graphics.DrawLines(series.Pen, points.ToArray());
+                            break;
+                        case RenderMode.Default:
+                            points.Insert(0, new PointF((keys[0] - scrollBarMinX) * scrollBarScaleX, scrollBarMinY * scrollBarScaleY));
+                            points.Add(new PointF((keys[keys.Count - 1] - scrollBarMinX) * scrollBarScaleX, scrollBarMinY * scrollBarScaleY));
+                            e.Graphics.FillPolygon(new SolidBrush(Color.FromArgb(128, series.Pen.Color)), points.ToArray());
+                            break;
+                        case RenderMode.Mirror:
+                            points.Insert(0, new PointF((keys[0] - scrollBarMinX) * scrollBarScaleX, scrollBarMinY * scrollBarScaleY));
+                            points.Add(new PointF((keys[series.EndIndex] - MinX + 2) * scaleX, 0));
+                            points.Add(new PointF((keys[series.BeginIndex] - MinX) * scaleX, 0));
+                            e.Graphics.FillPolygon(new SolidBrush(Color.FromArgb(128, series.Pen.Color)), points.ToArray());
+                            break;
+                    }                        
                 }
 
             // оси скролл-бара
@@ -1032,4 +1054,6 @@ namespace FastMultiChart
         public string Text;
         public Series Data;
     }
+
+    public enum RenderMode { None, Default, Mirror }
 }
