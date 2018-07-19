@@ -398,7 +398,7 @@ namespace TradeSharp.Client.Forms
                         if (ps == null)
                             continue;
 
-                        psIndi.UpdatePositionSummary(ps.Profit, ps.ProfitInPercent);
+                        psIndi.UpdatePositionSummary(ps.Profit, ps.ProfitInPercent, ps.orders);
                     }
                 }
 
