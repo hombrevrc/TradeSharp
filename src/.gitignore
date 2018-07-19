@@ -22,6 +22,7 @@ Thumbs.db
 *.sdf
 *.opensdf
 *.ipch
+.vs/
 [Bb]in
 [Dd]ebug*/
 *.lib
