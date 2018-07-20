@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Collections.Generic;
+using System.Linq;
 using SpbexGateway.Contract.Serialization;
 
 namespace TradeSharp.Util.Serialization
@@ -560,7 +561,16 @@ namespace TradeSharp.Util.Serialization
         /// <returns>A Type instance.</returns>
         public Type ReadOptimizedType(bool throwOnError)
         {
-            return Type.GetType(ReadOptimizedString(), throwOnError);
+            var typeName = SimplifyTypeName(ReadOptimizedString());
+            var tp = Type.GetType(typeName, throwOnError);
+            return tp;
+        }
+
+        private static string SimplifyTypeName(string typeName)
+        {
+            var parts = typeName.Split(new[] {' ', ','}, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length < 3) return typeName;
+            return parts[0] + ", " + parts[1];
         }
 
         /// <summary>
