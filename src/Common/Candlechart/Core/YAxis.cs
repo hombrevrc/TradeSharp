@@ -452,7 +452,7 @@ namespace Candlechart.Core
                 var x = (int)Conversion.WorldToScreen(new PointD(chartX, 0), worldRect, canvasRect).X;
                 g.DrawLine(new Pen(ForeColor), x, tfOrder.Y, axisRect.Left + 5, tfOrder.Y);
 
-                g.FillRectangle(new SolidBrush(order.Side == 1 ? Color.LightGreen : Color.Firebrick), rectOrder);
+                g.FillRectangle(new SolidBrush(order.Side == 1 ? Color.YellowGreen : Color.IndianRed), rectOrder);
                 g.DrawRectangle(new Pen(Color.Black), rectOrder);
                 g.DrawString(order.PriceEnter.ToString(), priceFont, new SolidBrush(Color.Black), rectOrder, format);
             }
@@ -490,7 +490,7 @@ namespace Candlechart.Core
                         axisRect.Width - (int)priceFont.SizeInPoints,
                         priceFont.Height);
 
-                g.FillRectangle(new SolidBrush(i == 0 ? Color.LightGreen : Color.Firebrick), rectOrder);
+                g.FillRectangle(new SolidBrush(i == 0 ? Color.YellowGreen : Color.IndianRed), rectOrder);
                 g.DrawRectangle(new Pen(Color.Black), rectOrder);
                 g.DrawString(averagePrice.ToString(), priceFont, new SolidBrush(Color.Black), rectOrder, format);
             }

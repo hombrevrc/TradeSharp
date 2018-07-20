@@ -40,7 +40,7 @@
             this.fastMultiChart1.MarginYBottom = 10;
             this.fastMultiChart1.MarginYTop = 10;
             this.fastMultiChart1.Name = "fastMultiChart1";
-            this.fastMultiChart1.RenderPolygons = true;
+            this.fastMultiChart1.RenderPolygons = FastMultiChart.RenderMode.Default;
             this.fastMultiChart1.ScaleDivisionXMaxPixel = -1;
             this.fastMultiChart1.ScaleDivisionXMinPixel = 70;
             this.fastMultiChart1.ScaleDivisionYMaxPixel = 60;

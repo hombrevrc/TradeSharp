@@ -666,7 +666,7 @@ namespace Candlechart.Indicator
             {
                 var currPrice = chart.StockPane.StockSeries.Data[chart.StockPane.StockSeries.Data.Count - 1].close;
                 var profit = Math.Round(DalSpot.Instance.GetPointsValue(pos.Symbol, pos.Side * (currPrice - pos.PriceEnter)));
-                var profitText = MakeCommentProfit(profit);
+                var profitText = MakeCommentProfit(profit, pos.ResultDepo);
 
                 // измерить высоту текста (необходимо для позиционирования текстовой метки)
                 SizeF szText;
@@ -720,9 +720,13 @@ namespace Candlechart.Indicator
             }
         }
 
-        private static string MakeCommentProfit(double profit)
+        private string MakeCommentProfit(double profitPip, double profitDepo)
         {
-            return (profit > 0 ? "(+" : "(") + profit + "п.)";
+            var pipProfitText = (profitPip > 0 ? "+" : "") + profitPip + "п.";
+            var profitDepoText = profitPip != 0 && profitDepo == 0
+                ? string.Empty
+                : (profitDepo > 0 ? "+" : "") + profitDepo.ToStringUniformMoneyFormat();
+            return $"({profitDepoText} {pipProfitText})";
         }
 
         private void AddClosedOrderMarks(ChartControl chart, MarketOrder pos)
@@ -879,7 +883,7 @@ namespace Candlechart.Indicator
                     var commentProfit = seriesComment.data.FirstOrDefault(c => c.Magic == pos.ID && c.TextCustom == "p");
                     if (commentProfit != null)
                     {
-                        commentProfit.Text = MakeCommentProfit(profit);
+                        commentProfit.Text = MakeCommentProfit(profit, pos.ResultDepo);
                         commentProfit.ColorText = profit > 0 ? Color.Green : Color.Red;
                     }
                 }
