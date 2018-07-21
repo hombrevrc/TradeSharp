@@ -95,15 +95,25 @@ namespace TradeSharp.Client.BL
 
             if (listROR.Count == 0) return;
 
-            // получить кривую доходности на виртуальную 1000
+            // получить кривые доходности и просудания на виртуальную 1000
             listProfit1000 = new List<EquityOnTime>();
+            listDrawDown1000 = new List<EquityOnTime>();
+
             var startBalance1000 = 1000f;
+
             listProfit1000.Add(new EquityOnTime(startBalance1000, startDate));
+            listDrawDown1000.Add(new EquityOnTime(0, startDate));
+
             foreach (var ret in listROR)
             {
-                startBalance1000 += startBalance1000 * ret.b;
+                var deltaBalance1000 = startBalance1000 * ret.b;
+                startBalance1000 += deltaBalance1000;
+
                 listProfit1000.Add(new EquityOnTime(startBalance1000, ret.a));
+                listDrawDown1000.Add(new EquityOnTime(deltaBalance1000 < 0 ? deltaBalance1000 : 0, ret.a));
             }
+
+
             // посчитать макс. проседание
             CalculateMaxDrawdown();
             // посчитать среднегеометрическую дневную, месячную и годовую доходность

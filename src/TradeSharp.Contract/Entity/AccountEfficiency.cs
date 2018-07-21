@@ -27,6 +27,8 @@ namespace TradeSharp.Contract.Entity
 
         public List<EquityOnTime> listProfit1000;
 
+        public List<EquityOnTime> listDrawDown1000;
+
         public List<MarketOrder> closedDeals = new List<MarketOrder>();
 
         public List<MarketOrder> openedDeals = new List<MarketOrder>();
@@ -68,7 +70,9 @@ namespace TradeSharp.Contract.Entity
             cpy.listLeverage = listLeverage == null ? null : listLeverage.ToList();
             if (copyTransactions)
                 cpy.listTransaction = listTransaction == null ? null : listTransaction.ToList();
+
             cpy.listProfit1000 = listProfit1000 == null ? null : listProfit1000.ToList();
+            cpy.listDrawDown1000 = listDrawDown1000 == null ? null : listDrawDown1000.ToList();
 
             if (copyOpenedPositions)
                 cpy.openedDeals = openedDeals == null ? null : openedDeals.Select(d => d.MakeCopy()).ToList();
