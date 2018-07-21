@@ -24,10 +24,11 @@ namespace TradeSharp.Client.Forms
         {
             public List<TimeBalans> lstBalance = new List<TimeBalans>();
             public List<TimeBalans> lstEquity = new List<TimeBalans>();
+            public List<TimeBalans> lstDrawDown = new List<TimeBalans>();
 
             public void ShiftLastDate()
             {
-                foreach (var list in new[] {lstBalance, lstEquity})
+                foreach (var list in new[] {lstBalance, lstEquity, lstDrawDown})
                 {
                     if (list.Count > 1)
                         list[list.Count - 1].Time = list[list.Count - 1].Time.Date.AddDays(1);
@@ -79,6 +80,9 @@ namespace TradeSharp.Client.Forms
                 chart.Graphs[0].Series[0].Add(pt);
             foreach (var pt in balanceByDate.lstEquity)
                 chart.Graphs[0].Series[1].Add(pt);
+            foreach (var dd in balanceByDate.lstDrawDown)
+                chart.Graphs[0].Series[2].Add(dd);
+
             chart.Initialize();
         }
 
@@ -172,17 +176,20 @@ namespace TradeSharp.Client.Forms
                     var equity = balance;
                     var curDate = date;
                     var curOrders = orders.Where(o => o.TimeEnter <= curDate).ToList();
+                    var curProfit = 0f;
+
                     if (curOrders.Count > 0)
                     {
                         cursor.MoveToTime(date);
-                        var curProfit = DalSpot.Instance.CalculateOpenedPositionsCurrentResult(curOrders,
+                        curProfit = DalSpot.Instance.CalculateOpenedPositionsCurrentResult(curOrders,
                             cursor.GetCurrentQuotes().ToDictionary(c => c.a,
                                 c => new QuoteData(c.b.close, c.b.close, curDate)), account.Currency);
                         equity += curProfit;
                     }
-
+                                        
                     balanceOnDate.lstBalance.Add(new TimeBalans(date, balance));
                     balanceOnDate.lstEquity.Add(new TimeBalans(date, equity));
+                    balanceOnDate.lstDrawDown.Add(new TimeBalans(date, curProfit < 0 ? curProfit : 0));
 
                     if (date == endDate) break;
                     date = date.AddDays(1);
@@ -266,6 +273,11 @@ namespace TradeSharp.Client.Forms
             {
                 XMemberTitle = "дата",
                 YMemberTitle = "средства"
+            });
+            chart.Graphs[0].Series.Add(new Series("Time", "Balans", new Pen(Color.Red, 2f))
+            {
+                XMemberTitle = "дата",
+                YMemberTitle = "Просадка"
             });
         }
     }

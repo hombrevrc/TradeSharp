@@ -65,7 +65,7 @@
             this.chart.MarginYBottom = 10;
             this.chart.MarginYTop = 10;
             this.chart.Name = "chart";
-            this.chart.RenderPolygons = FastMultiChart.RenderMode.Default;
+            this.chart.RenderPolygons = FastMultiChart.RenderMode.Mirror;
             this.chart.ScaleDivisionXMaxPixel = -1;
             this.chart.ScaleDivisionXMinPixel = 70;
             this.chart.ScaleDivisionYMaxPixel = 60;
