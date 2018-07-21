@@ -157,7 +157,7 @@
             this.chartProfit1000.MarginYBottom = 10;
             this.chartProfit1000.MarginYTop = 10;
             this.chartProfit1000.Name = "chartProfit1000";
-            this.chartProfit1000.RenderPolygons = true;
+            this.chartProfit1000.RenderPolygons = FastMultiChart.RenderMode.Default;
             this.chartProfit1000.ScaleDivisionXMaxPixel = -1;
             this.chartProfit1000.ScaleDivisionXMinPixel = 70;
             this.chartProfit1000.ScaleDivisionYMaxPixel = 60;
@@ -191,7 +191,7 @@
             this.chartProfit.MarginYBottom = 10;
             this.chartProfit.MarginYTop = 10;
             this.chartProfit.Name = "chartProfit";
-            this.chartProfit.RenderPolygons = true;
+            this.chartProfit.RenderPolygons = FastMultiChart.RenderMode.Default;
             this.chartProfit.ScaleDivisionXMaxPixel = -1;
             this.chartProfit.ScaleDivisionXMinPixel = 70;
             this.chartProfit.ScaleDivisionYMaxPixel = 60;

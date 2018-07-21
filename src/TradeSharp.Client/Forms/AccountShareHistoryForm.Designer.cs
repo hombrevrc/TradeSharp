@@ -67,7 +67,7 @@
             this.chartShareTrack.MarginYBottom = 10;
             this.chartShareTrack.MarginYTop = 10;
             this.chartShareTrack.Name = "chartShareTrack";
-            this.chartShareTrack.RenderPolygons = true;
+            this.chartShareTrack.RenderPolygons = FastMultiChart.RenderMode.Default;
             this.chartShareTrack.ScaleDivisionXMaxPixel = -1;
             this.chartShareTrack.ScaleDivisionXMinPixel = 70;
             this.chartShareTrack.ScaleDivisionYMaxPixel = 60;

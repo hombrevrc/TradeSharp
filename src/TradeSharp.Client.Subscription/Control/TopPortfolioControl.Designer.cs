@@ -593,7 +593,7 @@
             this.profitFastMultiChart.MarginYBottom = 10;
             this.profitFastMultiChart.MarginYTop = 10;
             this.profitFastMultiChart.Name = "profitFastMultiChart";
-            this.profitFastMultiChart.RenderPolygons = true;
+            this.profitFastMultiChart.RenderPolygons = FastMultiChart.RenderMode.Default;
             this.profitFastMultiChart.ScaleDivisionXMaxPixel = -1;
             this.profitFastMultiChart.ScaleDivisionXMinPixel = 70;
             this.profitFastMultiChart.ScaleDivisionYMaxPixel = 60;
@@ -628,7 +628,7 @@
             this.profit1000FastMultiChart.MarginYBottom = 10;
             this.profit1000FastMultiChart.MarginYTop = 10;
             this.profit1000FastMultiChart.Name = "profit1000FastMultiChart";
-            this.profit1000FastMultiChart.RenderPolygons = true;
+            this.profit1000FastMultiChart.RenderPolygons = FastMultiChart.RenderMode.Default;
             this.profit1000FastMultiChart.ScaleDivisionXMaxPixel = -1;
             this.profit1000FastMultiChart.ScaleDivisionXMinPixel = 70;
             this.profit1000FastMultiChart.ScaleDivisionYMaxPixel = 60;
