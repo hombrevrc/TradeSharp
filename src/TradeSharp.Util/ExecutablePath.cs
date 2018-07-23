@@ -55,5 +55,10 @@ namespace TradeSharp.Util
         {
             execPath = string.Empty;
         }
+
+        public static string CombinePath(params string[] parts)
+        {
+            return parts.Length == 0 ? ExecPath : Path.Combine(ExecPath, Path.Combine(parts));
+        }
     }
 }

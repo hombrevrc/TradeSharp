@@ -153,7 +153,7 @@ namespace TradeSharp.Client.Forms
                 out inverse, out pairsEqual);
             if (!string.IsNullOrEmpty(tickerCounterDepo) && tickerCounterDepo != ticker)
                 tickers.Add(tickerCounterDepo);
-            cursor.SetupCursor(TerminalEnvironment.QuoteCacheFolder, tickers, startDate);
+            cursor.SetupCursor(ExecutablePath.ExecPath + TerminalEnvironment.QuoteCacheFolder, tickers, startDate);
             try
             {            
                 for (var date = startDate; ; )
