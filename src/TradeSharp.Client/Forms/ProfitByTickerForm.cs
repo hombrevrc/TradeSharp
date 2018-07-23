@@ -76,6 +76,11 @@ namespace TradeSharp.Client.Forms
             var balanceByDate = (BalanceAndEquitySeriesData)ea.Result;
             if (balanceByDate.lstBalance.Count == 0) return;
 
+
+            chart.Graphs[0].Series[0].Clear();
+            chart.Graphs[0].Series[1].Clear();
+            chart.Graphs[0].Series[2].Clear();
+
             foreach (var pt in balanceByDate.lstBalance)
                 chart.Graphs[0].Series[0].Add(pt);
             foreach (var pt in balanceByDate.lstEquity)
