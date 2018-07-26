@@ -253,7 +253,10 @@ namespace TradeSharp.Client.Forms
                     selIndex = cbTicker.Items.Cast<string>().IndexOf(selectedTicker);
                     if (selIndex < 0) selIndex = 0;
                 }
-                cbTicker.SelectedIndex = selIndex;
+                if (cbTicker.SelectedIndex != selIndex)
+                    cbTicker.SelectedIndex = selIndex;
+                else
+                    RefreshChart(this, null);
             }
         }
     
