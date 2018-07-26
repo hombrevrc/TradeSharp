@@ -73,9 +73,9 @@ namespace TradeSharp.Client.Forms
             standByControl.IsShown = false;
             standByControl.Visible = false;
             if (ea.Result == null) return;
+            
             var balanceByDate = (BalanceAndEquitySeriesData)ea.Result;
             if (balanceByDate.lstBalance.Count == 0) return;
-
 
             chart.Graphs[0].Series[0].Clear();
             chart.Graphs[0].Series[1].Clear();
@@ -85,8 +85,11 @@ namespace TradeSharp.Client.Forms
                 chart.Graphs[0].Series[0].Add(pt);
             foreach (var pt in balanceByDate.lstEquity)
                 chart.Graphs[0].Series[1].Add(pt);
-            foreach (var dd in balanceByDate.lstDrawDown)
-                chart.Graphs[0].Series[2].Add(dd);
+            if ((string)cbMode.SelectedItem == "DrawDown")
+            {
+                foreach (var dd in balanceByDate.lstDrawDown)
+                    chart.Graphs[0].Series[2].Add(dd);
+            }
 
             chart.Initialize();
         }
@@ -215,7 +218,7 @@ namespace TradeSharp.Client.Forms
             this.selectedTicker = selectedTicker;
         }
 
-        private void cbTicker_SelectedIndexChanged(object sender, EventArgs e)
+        private void RefreshChart(object sender, EventArgs e)
         {
             if (!formIsLoaded) return;
             if (orderCalcWorker.IsBusy)
@@ -226,7 +229,7 @@ namespace TradeSharp.Client.Forms
                     if (!orderCalcWorker.IsBusy) break;
                     Thread.Sleep(1000);
                 }
-                
+
                 if (orderCalcWorker.IsBusy)
                 {
                     MessageBox.Show(Localizer.GetString("MessageOperationTimedOut"));

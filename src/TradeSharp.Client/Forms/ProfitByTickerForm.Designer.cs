@@ -30,6 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ProfitByTickerForm));
             this.panelTop = new System.Windows.Forms.Panel();
+            this.cbMode = new System.Windows.Forms.ComboBox();
             this.cbTicker = new System.Windows.Forms.ComboBox();
             this.chart = new FastMultiChart.FastMultiChart();
             this.standByControl = new TradeSharp.UI.Util.Control.StandByControl();
@@ -38,12 +39,27 @@
             // 
             // panelTop
             // 
+            this.panelTop.Controls.Add(this.cbMode);
             this.panelTop.Controls.Add(this.cbTicker);
             this.panelTop.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelTop.Location = new System.Drawing.Point(0, 0);
             this.panelTop.Name = "panelTop";
             this.panelTop.Size = new System.Drawing.Size(629, 29);
             this.panelTop.TabIndex = 0;
+            // 
+            // cbMode
+            // 
+            this.cbMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbMode.FormattingEnabled = true;
+            this.cbMode.Items.AddRange(new string[] {
+            "Default",
+            "DrawDown"});
+            this.cbMode.Location = new System.Drawing.Point(130, 3);
+            this.cbMode.Name = "cbMode";
+            this.cbMode.Size = new System.Drawing.Size(121, 21);
+            this.cbMode.TabIndex = 1;
+            this.cbMode.SelectedIndex = 0;
+            this.cbMode.SelectedIndexChanged += new System.EventHandler(this.RefreshChart);
             // 
             // cbTicker
             // 
@@ -53,7 +69,7 @@
             this.cbTicker.Name = "cbTicker";
             this.cbTicker.Size = new System.Drawing.Size(121, 21);
             this.cbTicker.TabIndex = 0;
-            this.cbTicker.SelectedIndexChanged += new System.EventHandler(this.cbTicker_SelectedIndexChanged);
+            this.cbTicker.SelectedIndexChanged += new System.EventHandler(this.RefreshChart);
             // 
             // chart
             // 
@@ -114,5 +130,6 @@
         private System.Windows.Forms.ComboBox cbTicker;
         private FastMultiChart.FastMultiChart chart;
         private UI.Util.Control.StandByControl standByControl;
+        private System.Windows.Forms.ComboBox cbMode;
     }
 }
