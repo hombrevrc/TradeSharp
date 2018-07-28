@@ -105,7 +105,6 @@
     <Compile Include="BL\ChartToolButtonSettings.cs" />
     <Compile Include="BL\ChartWindowSettings.cs" />
     <Compile Include="BL\BaseWindowSettings.cs" />
-    <Compile Include="BL\GraphPainter.cs" />
     <Compile Include="BL\GridSettings.cs" />
     <Compile Include="BL\HistoryOrderStorage.cs" />
     <Compile Include="BL\IMdiNonChartWindow.cs" />

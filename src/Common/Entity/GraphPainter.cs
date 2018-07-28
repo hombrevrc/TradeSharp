@@ -1,5 +1,4 @@
-﻿using Entity;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -7,7 +6,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 
-namespace TradeSharp.Client
+namespace Entity
 {
     public class GraphPainter
     {
@@ -18,12 +17,9 @@ namespace TradeSharp.Client
         const int PriceMarginPxl = 80;
         private readonly Font LabelFont = new Font(FontFamily.GenericSansSerif, 12f);
 
-        private readonly int Width = (CandlesForScreenshot + 3) * GridStepPxl + PriceMarginPxl;
-        private readonly int Height = GrigStepCount * GridStepPxl + 1;
-        
-
         public GraphPainter() { }
 
+        /// <param name="isBuy">Side > 0 ? "BUY" : "SELL"</param>
         public void SaveGraphToFile(string folderName, BarSettings timeframe, string symbol, bool isBuy)
         {
             var tempFileName = Path.Combine(folderName, $"{symbol}.png");
@@ -31,6 +27,22 @@ namespace TradeSharp.Client
             if (candles.Count == 0)
                 return;
 
+            using (var btm = GetGraph(candles, isBuy))
+                btm.Save(tempFileName, ImageFormat.Png);
+        }
+
+        /// <param name="isBuy">Side > 0 ? "BUY" : "SELL"</param>
+        public Bitmap GetGraphImage(BarSettings timeframe, string symbol, bool isBuy)
+        {
+            var candles = GetCandles(timeframe, symbol);
+            if (candles.Count == 0)
+                return null;
+
+            return GetGraph(candles, isBuy);
+        }
+
+        private Bitmap GetGraph(List<CandleData> candles, bool isBuy)
+        {
             var startDate = candles.First().timeOpen;
             var entTime = candles.Last().close;
             var maxPip = candles.Max(x => x.high);
@@ -38,61 +50,63 @@ namespace TradeSharp.Client
             var gridStepPip = (maxPip - minPip) / (GrigStepCount - 2);
             var pxlOnPip = GridStepPxl / gridStepPip;
 
-            using (Bitmap btm = new Bitmap(Width, Height))
+            int width = (CandlesForScreenshot + 3) * GridStepPxl + PriceMarginPxl;
+            int height = GrigStepCount * GridStepPxl + 1;
+
+            Bitmap btm = new Bitmap(width, height);
+
+            using (Graphics grf = Graphics.FromImage(btm))
             {
-                using (Graphics grf = Graphics.FromImage(btm))
+                DrawGrig(grf, new double[] { minPip, minPip + 4 * gridStepPip, maxPip }, width, height);
+
+                var currentPrice = candles.Last().close;
+                var currentPricePxlY = GridStepPxl + (maxPip - currentPrice) * pxlOnPip - 2;
+                var currentPricePxlX = candles.Count * GridStepPxl;
+                grf.DrawLine(Pens.Gray, currentPricePxlX, currentPricePxlY, width - PriceMarginPxl, currentPricePxlY);
+                var currentPriceText = currentPrice.ToString("F4");
+                grf.DrawString(currentPriceText, LabelFont, Brushes.Gray, width - PriceMarginPxl + 2, currentPricePxlY - 10);
+
+                using (Pen candelBorderPen = new Pen(Color.Black, 1))
                 {
-                    DrawGrig(grf, new double[] { minPip, minPip + 4 * gridStepPip, maxPip } );
-
-
-                    var currentPrice = candles.Last().close;
-                    var currentPricePxlY = GridStepPxl + (maxPip - currentPrice) * pxlOnPip - 2;
-                    var currentPricePxlX = candles.Count * GridStepPxl;
-                    grf.DrawLine(Pens.Gray, currentPricePxlX, currentPricePxlY, Width - PriceMarginPxl, currentPricePxlY);
-                    var currentPriceText = currentPrice.ToString("F4");
-                    grf.DrawString(currentPriceText, LabelFont, Brushes.Gray, Width - PriceMarginPxl + 2, currentPricePxlY - 10);
-
-                    using (Pen candelBorderPen = new Pen(Color.Black, 1))
+                    int x = 0;
+                    for (int candleNumder = 0; candleNumder < candles.Count; candleNumder++)
                     {
-                        int x = 0;
-                        for (int candleNumder = 0; candleNumder < candles.Count; candleNumder++)
+                        var candle = candles[candleNumder];
+                        x = (candleNumder + 1) * GridStepPxl;
+
+                        DrawCandel(
+                            grf,
+                            candle.high, candle.low, candle.close, candle.open,
+                            x,
+                            candelBorderPen,
+                            maxPip,
+                            pxlOnPip);
+
+                        //Прорисовываем подписи к шкале Х (время)
+                        if (candleNumder % 4 == 0)
                         {
-                            var candle = candles[candleNumder];
-                            x = (candleNumder + 1) * GridStepPxl;
-
-                            DrawCandel(
-                                grf, 
-                                candle.high, candle.low, candle.close, candle.open,
-                                x,
-                                candelBorderPen, 
-                                maxPip, 
-                                pxlOnPip);
-
-                            //Прорисовываем подписи к шкале Х (время)
-                            if (candleNumder % 4 == 0)
-                            {
-                                var dateTimeText = candle.timeOpen.ToString("dd.MM HH:mm");
-                                grf.DrawString(dateTimeText, LabelFont, Brushes.Gray, x, Height - 20);
-                            }
+                            var dateTimeText = candle.timeOpen.ToString("dd.MM HH:mm");
+                            grf.DrawString(dateTimeText, LabelFont, Brushes.Gray, x, height - 20);
                         }
-                        DrawArrow(grf, isBuy, candles.Last().high, candles.Last().low, x, maxPip, pxlOnPip);
                     }
+                    DrawArrow(grf, isBuy, candles.Last().high, candles.Last().low, x, maxPip, pxlOnPip);
                 }
-                btm.Save(tempFileName, ImageFormat.Png);
             }
+
+            return btm;
         }
 
-        private void DrawGrig(Graphics grf, Double[] pipLables)
+        private void DrawGrig(Graphics grf, Double[] pipLables, int width, int height)
         {
             //Нарисовать сетку
             using (Pen gridPen = new Pen(Color.LightGray, 1))
             {
-                var rightScaleX = Width - PriceMarginPxl;
+                var rightScaleX = width - PriceMarginPxl;
 
                 for (int i = 0; i < GrigStepCount; i++)
                 {
                     var y = i * GridStepPxl;
-                    
+
                     grf.DrawLine(gridPen, 0, y, rightScaleX, y);
 
                     if (i == 1)
@@ -108,16 +122,16 @@ namespace TradeSharp.Client
                 }
 
 
-                grf.DrawLine(gridPen, rightScaleX, 0, rightScaleX, Height);
+                grf.DrawLine(gridPen, rightScaleX, 0, rightScaleX, height);
             }
 
             //Нарисовать рамку
             using (Pen gridPen = new Pen(Color.Black, 1))
             {
-                grf.DrawLine(gridPen, 0, 0, Width - 1, 0);
-                grf.DrawLine(gridPen, Width - 1, 0, Width - 1, Height - 1);
-                grf.DrawLine(gridPen, Width - 1, Height - 1, 0, Height - 1);
-                grf.DrawLine(gridPen, 0, 0, 0, Height);
+                grf.DrawLine(gridPen, 0, 0, width - 1, 0);
+                grf.DrawLine(gridPen, width - 1, 0, width - 1, height - 1);
+                grf.DrawLine(gridPen, width - 1, height - 1, 0, height - 1);
+                grf.DrawLine(gridPen, 0, 0, 0, height);
             }
         }
 
@@ -127,9 +141,9 @@ namespace TradeSharp.Client
             float candleLow,
             float candleClose,
             float candleOpen,
-            int x, 
-            Pen border, 
-            float maxPip, 
+            int x,
+            Pen border,
+            float maxPip,
             float pxlOnPip)
         {
             var y1 = GridStepPxl + (maxPip - candleHigh) * pxlOnPip;
@@ -156,7 +170,7 @@ namespace TradeSharp.Client
         {
             var yCentr = GridStepPxl + (maxPip - (candleHigh + candleLow) / 2) * pxlOnPip;
             Pen pen = null;
-            
+
             if (isBuy)
             {
                 pen = new Pen(Color.MediumBlue, 8);
@@ -184,7 +198,7 @@ namespace TradeSharp.Client
             {
                 var candle = packer.UpdateCandle(minuteCandle);
                 if (candle != null)
-                    candles.Add(candle);                    
+                    candles.Add(candle);
             }
 
             var tail = minuteCandles.Where(x => x.timeOpen > candles.Last().timeClose).ToArray();
@@ -201,7 +215,7 @@ namespace TradeSharp.Client
                 var currentCandel = new CandleData(open, high, low, close, timeOpen, timeClose);
                 candles.Add(currentCandel);
             }
-            
+
             return candles;
         }
     }

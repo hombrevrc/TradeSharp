@@ -41,6 +41,7 @@ namespace Candlechart.Indicator
         /// угол, на который повернуты стрелки комментариев по выбранному ордеру, смещается
         /// </summary>
         private int selectedDealCommentAngle = 45;
+        private GraphPainter graphPainter = new GraphPainter();
 
         private static readonly Regex regCommentPricePart = new Regex(@"[\d\.\,]+");
 
@@ -480,16 +481,16 @@ namespace Candlechart.Indicator
             // снять рамки с меток
             var orderComments = seriesComment.data.Where(p => p.Magic == selectedOrder.ID);
             foreach (var comment in orderComments)
-            {
                 comment.HideBox = true;
-            }
-
+            
             // удалить линии SL-TP, линии, связывающие вход и выход
             seriesSelectedLines.data.Clear();
 
             // и лишние текстовые метки
-            seriesCommentSelected.data.Clear();
+            foreach (var commentPicture in seriesCommentSelected.data.OfType<ChartCommentPicture>())
+                commentPicture.Picture.Dispose();
 
+            seriesCommentSelected.data.Clear();
             selectedOrder = null;
         }
 
@@ -686,18 +687,7 @@ namespace Candlechart.Indicator
             var angle = selectedDealCommentAngle;
             const int arrowLen = 90;
 
-
-            Bitmap btm = new Bitmap(100, 100);
-
-            using (Graphics gr = Graphics.FromImage(btm))
-            {
-                using (Pen gridPen = new Pen(Color.Red, 3))
-                {
-                    gr.DrawRectangle(gridPen, 0, 0, 100, 100);
-                    gr.DrawLine(gridPen, 0, 0, 100, 100);
-                }
-            }
-
+            var btm = graphPainter.GetGraphImage(owner.Timeframe, order.Symbol, order.Side > 0);
 
             foreach (var text in listComments)
             {
@@ -705,19 +695,19 @@ namespace Candlechart.Indicator
                 var price = pivot.Y;
                 var comment = new ChartCommentPicture
                 {
-                                      Text = text,
-                                      ArrowLength = arrowLen,
-                                      ArrowAngle = angle,
-                                      HideBox = false,
-                                      HideArrow = false,
-                                      DrawFrame = true,
-                                      FillTransparency = 200,
-                                      ColorFill = colorFill,
-                                      Color = owner.visualSettings.SeriesForeColor,
-                                      ColorText = owner.visualSettings.SeriesForeColor,
-                                      PivotIndex = x,
-                                      PivotPrice = price,
-                                      Picture = btm
+                    Text = text,
+                    ArrowLength = arrowLen,
+                    ArrowAngle = angle,
+                    HideBox = false,
+                    HideArrow = false,
+                    DrawFrame = true,
+                    FillTransparency = 200,
+                    ColorFill = colorFill,
+                    Color = owner.visualSettings.SeriesForeColor,
+                    ColorText = owner.visualSettings.SeriesForeColor,
+                    PivotIndex = x,
+                    PivotPrice = price,
+                    Picture = btm
                 };
                 // развернуть комментарий так, чтобы он не накрывал ничего лишнего и не вылезал за пределы экрана
                 AdjustDealCommentArrowAngle(comment, order);

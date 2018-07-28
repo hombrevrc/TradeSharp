@@ -71,6 +71,7 @@
     <Compile Include="FuturesVolume.cs" />
     <Compile Include="GaussGenerator.cs" />
     <Compile Include="GraphicsExtensions.cs" />
+    <Compile Include="GraphPainter.cs" />
     <Compile Include="ImageInfoType.cs" />
     <Compile Include="IndexVectorNewsRecord.cs" />
     <Compile Include="LocalizedResourceManager.cs" />
