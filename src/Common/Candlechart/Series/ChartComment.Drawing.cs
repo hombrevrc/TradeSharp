@@ -65,6 +65,10 @@ namespace Candlechart.Series
                 DrawTextOrSymbol(commentText, brushStorage, fonts, ColorText, g, left, top, width, height);
                 TextArea = new Rectangle((int)left + canvasRect.Left, (int)top, (int)width, (int)height);
 
+                // Если есть ричунок - добавить
+                if (this is ChartCommentPicture)
+                    ((ChartCommentPicture)this).Draw(g, left, top + height, width, height);                                  
+
                 // нарисовать стрелку
                 if (!HideArrow)
                 {

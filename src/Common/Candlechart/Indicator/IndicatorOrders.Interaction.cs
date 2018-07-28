@@ -684,14 +684,27 @@ namespace Candlechart.Indicator
 
             // таки добавить коменты
             var angle = selectedDealCommentAngle;
-            const int arrowLen = 90;            
+            const int arrowLen = 90;
+
+
+            Bitmap btm = new Bitmap(100, 100);
+
+            using (Graphics gr = Graphics.FromImage(btm))
+            {
+                using (Pen gridPen = new Pen(Color.Red, 3))
+                {
+                    gr.DrawRectangle(gridPen, 0, 0, 100, 100);
+                    gr.DrawLine(gridPen, 0, 0, 100, 100);
+                }
+            }
+
 
             foreach (var text in listComments)
             {
                 var x = pivot.X;
                 var price = pivot.Y;
-                var comment = new ChartComment
-                                  {
+                var comment = new ChartCommentPicture
+                {
                                       Text = text,
                                       ArrowLength = arrowLen,
                                       ArrowAngle = angle,
@@ -703,8 +716,9 @@ namespace Candlechart.Indicator
                                       Color = owner.visualSettings.SeriesForeColor,
                                       ColorText = owner.visualSettings.SeriesForeColor,
                                       PivotIndex = x,
-                                      PivotPrice = price
-                                  };
+                                      PivotPrice = price,
+                                      Picture = btm
+                };
                 // развернуть комментарий так, чтобы он не накрывал ничего лишнего и не вылезал за пределы экрана
                 AdjustDealCommentArrowAngle(comment, order);
                 if (order.IsClosed) comment.Name = "info";

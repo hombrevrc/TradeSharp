@@ -379,6 +379,7 @@
     <Compile Include="Series\ChannelSeries.cs" />
     <Compile Include="Series\ChartComment.Drawing.cs" />
     <Compile Include="Series\ChartComment.GraphicSymbols.cs" />
+    <Compile Include="Series\ChartCommentPicture.cs" />
     <Compile Include="Series\DealMarker.cs" />
     <Compile Include="Series\HistogramSeries.cs" />
     <Compile Include="Core\IChartInteractiveObject.cs" />
