@@ -10,38 +10,38 @@ namespace Entity
 {
     public class GraphPainter
     {
-        //Количество пикселей на одно деление шкалы сетки
+        //Количество пикселей на одно деление шкалы сетки  
         const int GridStepPxl = 40;
         const int GrigStepCount = 10;
-        const int CandlesForScreenshot = 15;
         const int PriceMarginPxl = 80;
         private readonly Font LabelFont = new Font(FontFamily.GenericSansSerif, 12f);
 
         public GraphPainter() { }
+        
 
         /// <param name="isBuy">Side > 0 ? "BUY" : "SELL"</param>
-        public void SaveGraphToFile(string folderName, BarSettings timeframe, string symbol, bool isBuy)
+        public void SaveGraphToFile(string folderName, BarSettings timeframe, string symbol, bool isBuy, int candlesCount)
         {
             var tempFileName = Path.Combine(folderName, $"{symbol}.png");
-            var candles = GetCandles(timeframe, symbol);
+            var candles = GetCandles(timeframe, symbol, candlesCount);
             if (candles.Count == 0)
                 return;
 
-            using (var btm = GetGraph(candles, isBuy))
+            using (var btm = GetGraphDefault(candles, isBuy, candlesCount))
                 btm.Save(tempFileName, ImageFormat.Png);
         }
 
         /// <param name="isBuy">Side > 0 ? "BUY" : "SELL"</param>
-        public Bitmap GetGraphImage(BarSettings timeframe, string symbol, bool isBuy)
+        public Bitmap GetGraphSchematic(BarSettings timeframe, string symbol, int candlesCount)
         {
-            var candles = GetCandles(timeframe, symbol);
+            var candles = GetCandles(timeframe, symbol, candlesCount);
             if (candles.Count == 0)
                 return null;
 
-            return GetGraph(candles, isBuy);
+            return DrawSchematic(candles, candlesCount);
         }
 
-        private Bitmap GetGraph(List<CandleData> candles, bool isBuy)
+        private Bitmap GetGraphDefault(List<CandleData> candles, bool isBuy, int candlesCount)
         {
             var startDate = candles.First().timeOpen;
             var entTime = candles.Last().close;
@@ -50,7 +50,7 @@ namespace Entity
             var gridStepPip = (maxPip - minPip) / (GrigStepCount - 2);
             var pxlOnPip = GridStepPxl / gridStepPip;
 
-            int width = (CandlesForScreenshot + 3) * GridStepPxl + PriceMarginPxl;
+            int width = (candlesCount + 3) * GridStepPxl + PriceMarginPxl;
             int height = GrigStepCount * GridStepPxl + 1;
 
             Bitmap btm = new Bitmap(width, height);
@@ -89,7 +89,46 @@ namespace Entity
                             grf.DrawString(dateTimeText, LabelFont, Brushes.Gray, x, height - 20);
                         }
                     }
+
                     DrawArrow(grf, isBuy, candles.Last().high, candles.Last().low, x, maxPip, pxlOnPip);
+                }
+            }
+
+            return btm;
+        }
+
+        private Bitmap DrawSchematic(List<CandleData> candles, int candlesCount)
+        {
+            var xMargin = 10;
+            var yMargin = 10;
+            var step = 10;
+
+            var width = candlesCount * step + xMargin * 2;
+            var height = width + yMargin * 2;
+
+            var priceMaxHigh = candles.Max(x => x.high);
+            var deltaPrice = priceMaxHigh - candles.Min(x => x.low);
+            var pixInPipY = (height - yMargin * 2) / deltaPrice; //Количество пикселей на единицу цены
+
+            Bitmap btm = new Bitmap(width, height);
+
+            using (Graphics grf = Graphics.FromImage(btm))
+            {
+                grf.FillRectangle(Brushes.Black, 0, 0, width, height); //фон
+                
+                for (int candleNumder = 0; candleNumder < candles.Count; candleNumder++)
+                {
+                    var candle = candles[candleNumder];
+                    var x = candleNumder * step + xMargin;
+
+                    var isRising = candle.close > candle.open;
+                    var y = yMargin + (priceMaxHigh - (isRising ? candle.close : candle.open)) * pixInPipY;
+
+
+                    var candelHeight = Math.Abs(candle.open - candle.close) * pixInPipY;
+
+                    var candelRectangel = new Rectangle(x, (int)y, 8, (int)candelHeight);
+                    grf.FillRectangle(isRising ? Brushes.Green : Brushes.Red, candelRectangel);
                 }
             }
 
@@ -134,7 +173,7 @@ namespace Entity
                 grf.DrawLine(gridPen, 0, 0, 0, height);
             }
         }
-
+        
         private void DrawCandel(
             Graphics grf,
             float candleHigh,
@@ -154,10 +193,9 @@ namespace Entity
             var isRising = candleClose > candleOpen;
             var y3 = GridStepPxl + (maxPip - (isRising ? candleClose : candleOpen)) * pxlOnPip;
             var candelRectangel = new Rectangle(x - 5, (int)y3, 10, (int)(Math.Abs(candleOpen - candleClose) * pxlOnPip));
-
             grf.FillRectangle(isRising ? Brushes.YellowGreen : Brushes.IndianRed, candelRectangel);
             grf.DrawRectangle(border, candelRectangel);
-        }
+        }     
 
         private void DrawArrow(
             Graphics grf,
@@ -186,10 +224,10 @@ namespace Entity
             grf.DrawString(isBuy ? "Buy" : "Sell", new Font(FontFamily.GenericSansSerif, 10f), new SolidBrush(pen.Color), x + 5, yCentr + 15);
         }
 
-        private List<CandleData> GetCandles(BarSettings timeframe, string symbol)
+        private List<CandleData> GetCandles(BarSettings timeframe, string symbol, int candlesCount)
         {
             DateTime nowTime = DateTime.Now;
-            var startTime = timeframe.GetDistanceTime(CandlesForScreenshot, -1, nowTime);
+            var startTime = timeframe.GetDistanceTime(candlesCount, -1, nowTime);
             var minuteCandles = AtomCandleStorage.Instance.GetAllMinuteCandles(symbol, startTime, nowTime) ?? new List<CandleData>();
 
             var packer = new CandlePacker(timeframe);

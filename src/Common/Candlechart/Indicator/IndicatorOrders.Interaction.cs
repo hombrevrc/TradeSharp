@@ -687,7 +687,7 @@ namespace Candlechart.Indicator
             var angle = selectedDealCommentAngle;
             const int arrowLen = 90;
 
-            var btm = graphPainter.GetGraphImage(owner.Timeframe, order.Symbol, order.Side > 0);
+            var btm = graphPainter.GetGraphSchematic(owner.Timeframe, order.Symbol, 20);
 
             foreach (var text in listComments)
             {
