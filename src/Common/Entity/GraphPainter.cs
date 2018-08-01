@@ -23,7 +23,7 @@ namespace Entity
         public void SaveGraphToFile(string folderName, BarSettings timeframe, string symbol, bool isBuy, int candlesCount)
         {
             var tempFileName = Path.Combine(folderName, $"{symbol}.png");
-            var candles = GetCandles(timeframe, symbol, candlesCount);
+            var candles = GetCandles(timeframe, symbol, DateTime.Now, candlesCount);
             if (candles.Count == 0)
                 return;
 
@@ -32,9 +32,9 @@ namespace Entity
         }
 
         /// <param name="isBuy">Side > 0 ? "BUY" : "SELL"</param>
-        public Bitmap GetGraphSchematic(BarSettings timeframe, string symbol, int candlesCount)
+        public Bitmap GetGraphSchematic(BarSettings timeframe, string symbol, DateTime dealDate, int candlesCount)
         {
-            var candles = GetCandles(timeframe, symbol, candlesCount);
+            var candles = GetCandles(timeframe, symbol, dealDate, candlesCount);
             if (candles.Count == 0)
                 return null;
 
@@ -122,9 +122,11 @@ namespace Entity
                     var isRising = candle.close > candle.open;
                     var y = yMargin + (priceMaxHigh - (isRising ? candle.close : candle.open)) * pixInPipY;
 
+                    var yLineHigh = yMargin + (priceMaxHigh - candle.high) * pixInPipY;
+                    var yLineLow = yMargin + (priceMaxHigh - candle.low) * pixInPipY;
+                    grf.DrawLine(Pens.Black, new Point(x + 4, (int)yLineHigh), new Point(x + 4, (int)yLineLow));
 
                     var candelHeight = Math.Abs(candle.open - candle.close) * pixInPipY;
-
                     var candelRectangel = new Rectangle(x, (int)y, 8, (int)candelHeight);
                     grf.FillRectangle(isRising ? Brushes.Green : Brushes.Red, candelRectangel);
                 }
@@ -222,11 +224,10 @@ namespace Entity
             grf.DrawString(isBuy ? "Buy" : "Sell", new Font(FontFamily.GenericSansSerif, 10f), new SolidBrush(pen.Color), x + 5, yCentr + 15);
         }
 
-        private List<CandleData> GetCandles(BarSettings timeframe, string symbol, int candlesCount)
+        private List<CandleData> GetCandles(BarSettings timeframe, string symbol, DateTime date, int candlesCount)
         {
-            DateTime nowTime = DateTime.Now;
-            var startTime = timeframe.GetDistanceTime(candlesCount, -1, nowTime);
-            var minuteCandles = AtomCandleStorage.Instance.GetAllMinuteCandles(symbol, startTime, nowTime) ?? new List<CandleData>();
+            var startTime = timeframe.GetDistanceTime(candlesCount, -1, date);
+            var minuteCandles = AtomCandleStorage.Instance.GetAllMinuteCandles(symbol, startTime, date) ?? new List<CandleData>();
 
             var packer = new CandlePacker(timeframe);
             var candles = new List<CandleData>();
