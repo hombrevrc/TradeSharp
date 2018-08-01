@@ -114,8 +114,6 @@ namespace Entity
 
             using (Graphics grf = Graphics.FromImage(btm))
             {
-                grf.FillRectangle(Brushes.Black, 0, 0, width, height); //фон
-                
                 for (int candleNumder = 0; candleNumder < candles.Count; candleNumder++)
                 {
                     var candle = candles[candleNumder];
