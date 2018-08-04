@@ -1,31 +1,37 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TradeSharp.Util;
+using Entity;
 
 namespace Candlechart.Series
 {
-    public class ChartCommentPicture : ChartComment
+    public class ChartCommentPicture : ChartComment, IDisposable
     {
-        [LocalizedDisplayName("TitlePivotPrice")]
-        [LocalizedCategory("TitleMain")]
-        [Browsable(false)]
-        public Bitmap Picture { get; set; }
+        public BarSettings Timeframe { get; set; }
+        public string Symbol { get; set; }
+        public DateTime Time { get; set; }
 
-        public void Draw(Graphics grf, float left, float top, float width, float height)
+        private Bitmap picture;
+        private GraphPainter graphPainter = new GraphPainter();
+
+        public void Draw(Graphics grf, float left, float top, int width, int height)
         {
-            if (Picture != null)
-            {
-                grf.FillRectangle(Brushes.WhiteSmoke, left, top, width, height); //фон
-                using (var p = new Pen(Color.Black, 1))
-                    grf.DrawRectangle(p, left, top, width, height); //рамка
+            if (Timeframe == null || Symbol == null || Time == null)
+                return;
 
-                grf.DrawImage(Picture, left, top, width, height);
-            }
+            if (picture == null)
+                picture = graphPainter.GetGraphSchematic(Timeframe, Symbol, Time);
+
+            grf.FillRectangle(Brushes.WhiteSmoke, left, top, width, height); //фон
+            using (var p = new Pen(Color.Black, 1))
+                grf.DrawRectangle(p, left, top, width, height); //рамка
+
+            grf.DrawImage(picture, left, top, width, height);
+        }
+
+        public void Dispose()
+        {
+            if (picture != null)
+                picture.Dispose();
         }
     }
 }

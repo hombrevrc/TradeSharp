@@ -32,8 +32,9 @@ namespace Entity
         }
 
         /// <param name="isBuy">Side > 0 ? "BUY" : "SELL"</param>
-        public Bitmap GetGraphSchematic(BarSettings timeframe, string symbol, DateTime dealDate, int candlesCount)
+        public Bitmap GetGraphSchematic(BarSettings timeframe, string symbol, DateTime dealDate)
         {
+            var candlesCount = 15;
             var candles = GetCandles(timeframe, symbol, dealDate, candlesCount);
             if (candles.Count == 0)
                 return null;
@@ -114,7 +115,7 @@ namespace Entity
 
             using (Graphics grf = Graphics.FromImage(btm))
             {
-                for (int candleNumder = 0; candleNumder < candles.Count; candleNumder++)
+                for (int candleNumder = 0; candleNumder < candles.Count - 1; candleNumder++)
                 {
                     var candle = candles[candleNumder];
                     var x = candleNumder * step + xMargin;
@@ -127,6 +128,8 @@ namespace Entity
                     grf.DrawLine(Pens.Black, new Point(x + 4, (int)yLineHigh), new Point(x + 4, (int)yLineLow));
 
                     var candelHeight = Math.Abs(candle.open - candle.close) * pixInPipY;
+                    if (candelHeight < 1)
+                        candelHeight = 1;
                     var candelRectangel = new Rectangle(x, (int)y, 8, (int)candelHeight);
                     grf.FillRectangle(isRising ? Brushes.Green : Brushes.Red, candelRectangel);
                 }

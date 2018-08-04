@@ -67,7 +67,7 @@ namespace Candlechart.Series
 
                 // Если есть рисунок - добавить
                 if (this is ChartCommentPicture)
-                    ((ChartCommentPicture)this).Draw(g, left, top + height, width, height);                                  
+                    ((ChartCommentPicture)this).Draw(g, left, top + height, (int)width, (int)height * 2);                                  
 
                 // нарисовать стрелку
                 if (!HideArrow)

@@ -41,7 +41,6 @@ namespace Candlechart.Indicator
         /// угол, на который повернуты стрелки комментариев по выбранному ордеру, смещается
         /// </summary>
         private int selectedDealCommentAngle = 45;
-        private GraphPainter graphPainter = new GraphPainter();
 
         private static readonly Regex regCommentPricePart = new Regex(@"[\d\.\,]+");
 
@@ -488,7 +487,7 @@ namespace Candlechart.Indicator
 
             // и лишние текстовые метки
             foreach (var commentPicture in seriesCommentSelected.data.OfType<ChartCommentPicture>())
-                commentPicture.Picture.Dispose();
+                commentPicture.Dispose();
 
             seriesCommentSelected.data.Clear();
             selectedOrder = null;
@@ -686,9 +685,7 @@ namespace Candlechart.Indicator
             // таки добавить коменты
             var angle = selectedDealCommentAngle;
             const int arrowLen = 90;
-
-            var btm = graphPainter.GetGraphSchematic(owner.Timeframe, order.Symbol, order.TimeExit ?? order.TimeEnter, 20);
-
+            
             foreach (var text in listComments)
             {
                 var x = pivot.X;
@@ -707,8 +704,11 @@ namespace Candlechart.Indicator
                     ColorText = owner.visualSettings.SeriesForeColor,
                     PivotIndex = x,
                     PivotPrice = price,
-                    Picture = btm
+                    Timeframe = owner.Timeframe,
+                    Symbol = order.Symbol,
+                    Time = selectedByExitMark ? order.TimeExit ?? order.TimeEnter : order.TimeEnter
                 };
+
                 // развернуть комментарий так, чтобы он не накрывал ничего лишнего и не вылезал за пределы экрана
                 AdjustDealCommentArrowAngle(comment, order);
                 if (order.IsClosed) comment.Name = "info";
