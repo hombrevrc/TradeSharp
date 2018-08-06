@@ -167,6 +167,20 @@ namespace TradeSharp.Client.Forms
                 });
             orders = orders.Where(o => o.TimeExit.HasValue).OrderBy(o => o.TimeExit).ToList();
 
+            //==============================================
+            // получить изменения баланса
+            if (worker.CancellationPending) return;
+            List<BalanceChange> balanceChanges;
+            var status = TradeSharpAccount.Instance.proxy.GetBalanceChanges(account.ID, null, out balanceChanges);
+            if (status != RequestStatus.OK || balanceChanges == null)
+            {
+                MessageBox.Show(string.Format(Localizer.GetString("MessageUnableToGetTransfersHistory") + ": {0}",
+                                              EnumFriendlyName<RequestStatus>.GetString(status)));
+                return;
+            }
+            var dueBalances = balanceChanges.Where(bc => bc.ValueDate > startDate).ToList();
+            //==============================================
+
             var balance = 0f;
             // установить "курсор" котировок на начало наблюдаемого отрезка
             var cursor = new BacktestTickerCursor();
@@ -186,6 +200,14 @@ namespace TradeSharp.Client.Forms
                     {
                         date = date.AddDays(1);
                         continue;
+                    }
+
+                    for (var i = 0; i < dueBalances.Count; i++)
+                    {
+                        if (dueBalances[i].ValueDate > date) break;
+                        balance += (float)dueBalances[i].SignedAmountDepo;
+                        dueBalances.RemoveAt(i);
+                        i--;
                     }
 
                     for (var i = 0; i < orders.Count; i++)
@@ -220,7 +242,7 @@ namespace TradeSharp.Client.Forms
                         if (errors.Count != 0)
                             return;
 
-                        var leverage = (float)exp / equity;
+                        var leverage = (float)Math.Abs(exp) / equity;
                         balanceOnDate.lstLeverage.Add(new TimeBalans(date, leverage));
                     }
                                         
