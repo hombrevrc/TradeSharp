@@ -25,10 +25,11 @@ namespace TradeSharp.Client.Forms
             public List<TimeBalans> lstBalance = new List<TimeBalans>();
             public List<TimeBalans> lstEquity = new List<TimeBalans>();
             public List<TimeBalans> lstDrawDown = new List<TimeBalans>();
+            public List<TimeBalans> lstLeverage = new List<TimeBalans>();
 
             public void ShiftLastDate()
             {
-                foreach (var list in new[] {lstBalance, lstEquity, lstDrawDown})
+                foreach (var list in new[] {lstBalance, lstEquity, lstDrawDown, lstLeverage})
                 {
                     if (list.Count > 1)
                         list[list.Count - 1].Time = list[list.Count - 1].Time.Date.AddDays(1);
@@ -80,15 +81,30 @@ namespace TradeSharp.Client.Forms
             chart.Graphs[0].Series[0].Clear();
             chart.Graphs[0].Series[1].Clear();
             chart.Graphs[0].Series[2].Clear();
+            chart.Graphs[0].Series[3].Clear();
 
-            foreach (var pt in balanceByDate.lstBalance)
-                chart.Graphs[0].Series[0].Add(pt);
-            foreach (var pt in balanceByDate.lstEquity)
-                chart.Graphs[0].Series[1].Add(pt);
-            if ((string)cbMode.SelectedItem == "DrawDown")
+            switch ((string)cbMode.SelectedItem)
             {
-                foreach (var dd in balanceByDate.lstDrawDown)
-                    chart.Graphs[0].Series[2].Add(dd);
+                case "DrawDown":
+                    foreach (var pt in balanceByDate.lstBalance)
+                        chart.Graphs[0].Series[0].Add(pt);
+                    foreach (var pt in balanceByDate.lstEquity)
+                        chart.Graphs[0].Series[1].Add(pt);
+                    foreach (var dd in balanceByDate.lstDrawDown)
+                        chart.Graphs[0].Series[2].Add(dd);
+                    break;
+                case "Default":
+                    foreach (var pt in balanceByDate.lstBalance)
+                        chart.Graphs[0].Series[0].Add(pt);
+                    foreach (var pt in balanceByDate.lstEquity)
+                        chart.Graphs[0].Series[1].Add(pt);
+                    break;
+                case "Leverage":
+                    foreach (var dd in balanceByDate.lstLeverage)
+                        chart.Graphs[0].Series[3].Add(dd);
+                    break;
+                default:
+                    break;
             }
 
             chart.Initialize();
@@ -189,10 +205,23 @@ namespace TradeSharp.Client.Forms
                     if (curOrders.Count > 0)
                     {
                         cursor.MoveToTime(date);
+
+                        var quotes = cursor.GetCurrentQuotes().ToDictionary(c => c.a,
+                                c => new QuoteData(c.b.close, c.b.close, curDate));
+
                         curProfit = DalSpot.Instance.CalculateOpenedPositionsCurrentResult(curOrders,
-                            cursor.GetCurrentQuotes().ToDictionary(c => c.a,
-                                c => new QuoteData(c.b.close, c.b.close, curDate)), account.Currency);
+                            quotes, account.Currency);
                         equity += curProfit;
+
+                        var errors = new List<string>();
+                        var exp = DalSpot.Instance.CalculateExposure(curOrders,
+                            quotes, account.Currency, errors);
+
+                        if (errors.Count != 0)
+                            return;
+
+                        var leverage = (float)exp / equity;
+                        balanceOnDate.lstLeverage.Add(new TimeBalans(date, leverage));
                     }
                                         
                     balanceOnDate.lstBalance.Add(new TimeBalans(date, balance));
@@ -289,6 +318,11 @@ namespace TradeSharp.Client.Forms
             {
                 XMemberTitle = "дата",
                 YMemberTitle = "Просадка"
+            });
+            chart.Graphs[0].Series.Add(new Series("Time", "Balans", new Pen(Color.Red, 2f))
+            {
+                XMemberTitle = "дата",
+                YMemberTitle = "Плечо"
             });
         }
     }

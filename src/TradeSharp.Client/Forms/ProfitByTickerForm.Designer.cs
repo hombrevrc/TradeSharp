@@ -53,7 +53,8 @@
             this.cbMode.FormattingEnabled = true;
             this.cbMode.Items.AddRange(new string[] {
             "Default",
-            "DrawDown"});
+            "DrawDown",
+            "Leverage"});
             this.cbMode.Location = new System.Drawing.Point(130, 3);
             this.cbMode.Name = "cbMode";
             this.cbMode.Size = new System.Drawing.Size(121, 21);
