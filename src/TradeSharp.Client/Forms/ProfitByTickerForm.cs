@@ -248,8 +248,6 @@ namespace TradeSharp.Client.Forms
                             var leverage = (float)Math.Abs(exp) / equity;
                             balanceOnDate.lstLeverage.Add(new TimeBalans(date, leverage));
                         }
-
-                        
                     }
                                         
                     balanceOnDate.lstBalance.Add(new TimeBalans(date, balance));
