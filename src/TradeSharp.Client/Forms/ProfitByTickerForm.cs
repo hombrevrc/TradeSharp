@@ -178,7 +178,10 @@ namespace TradeSharp.Client.Forms
                                               EnumFriendlyName<RequestStatus>.GetString(status)));
                 return;
             }
-            var dueBalances = balanceChanges.Where(bc => bc.ValueDate > startDate).ToList();
+            var dueBalances = balanceChanges.Where(bc => 
+                bc.ChangeType == BalanceChangeType.Deposit || bc.ChangeType == BalanceChangeType.Withdrawal)
+                .OrderBy(x => x.ValueDate)
+                .ToList();
             //==============================================
 
             var balance = 0f;
@@ -235,15 +238,18 @@ namespace TradeSharp.Client.Forms
                             quotes, account.Currency);
                         equity += curProfit;
 
+
                         var errors = new List<string>();
                         var exp = DalSpot.Instance.CalculateExposure(curOrders,
                             quotes, account.Currency, errors);
 
-                        if (errors.Count != 0)
-                            return;
+                        if (errors.Count == 0)
+                        {
+                            var leverage = (float)Math.Abs(exp) / equity;
+                            balanceOnDate.lstLeverage.Add(new TimeBalans(date, leverage));
+                        }
 
-                        var leverage = (float)Math.Abs(exp) / equity;
-                        balanceOnDate.lstLeverage.Add(new TimeBalans(date, leverage));
+                        
                     }
                                         
                     balanceOnDate.lstBalance.Add(new TimeBalans(date, balance));
