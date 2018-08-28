@@ -78,10 +78,14 @@
     <Reference Include="log4net">
       <HintPath>..\Libraries\log4net.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Management" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Security" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web.Extensions" />
@@ -93,6 +97,9 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="Telegram.Bot, Version=14.9.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Telegram.Bot.14.9.0\lib\net45\Telegram.Bot.dll</HintPath>
+    </Reference>
     <Reference Include="TradeSharp.Chat.Contract">
       <HintPath>..\TradeSharp.Chat\Contract\bin\Debug\TradeSharp.Chat.Contract.dll</HintPath>
     </Reference>
@@ -223,6 +230,8 @@
     <Compile Include="BL\Sound\SoundPlayer.cs" />
     <Compile Include="BL\Sound\SoundSettings.cs" />
     <Compile Include="BL\TabSettings.cs" />
+    <Compile Include="BL\TelegaBot\TelegaBotSettings.cs" />
+    <Compile Include="BL\TelegaBot\TelegaSignalBot.cs" />
     <Compile Include="BL\TerminalEnvironment.cs" />
     <Compile Include="BL\TerminalLiveRobotContext.cs" />
     <Compile Include="BL\TickerCorrelationCalculator.cs" />
@@ -1235,6 +1244,7 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="app.manifest" />
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -1338,6 +1348,7 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>SubWCRev.exe $(SolutionDir) $(ProjectDir)SubversionInfoTemplate.txt $(ProjectDir)Resources\SubversionInfo.txt  2&gt;nul 1&gt;nul

@@ -20,15 +20,29 @@ namespace Entity
         
 
         /// <param name="isBuy">Side > 0 ? "BUY" : "SELL"</param>
-        public void SaveGraphToFile(string folderName, BarSettings timeframe, string symbol, bool isBuy, int candlesCount)
+        public string SaveGraphToFile(string folderName, BarSettings timeframe, string symbol, bool isBuy, int candlesCount)
         {
             var tempFileName = Path.Combine(folderName, $"{symbol}.png");
             var candles = GetCandles(timeframe, symbol, DateTime.Now, candlesCount);
             if (candles.Count == 0)
-                return;
+                return string.Empty;
 
             using (var btm = GetGraphDefault(candles, isBuy, candlesCount))
                 btm.Save(tempFileName, ImageFormat.Png);
+
+            return tempFileName;
+        }
+
+        public MemoryStream GetGraphStream(BarSettings timeframe, string symbol, bool isBuy, int candlesCount)
+        {
+            var candles = GetCandles(timeframe, symbol, DateTime.Now, candlesCount);
+            if (candles.Count == 0)
+                return null;
+
+            var bitmap = GetGraphDefault(candles, isBuy, candlesCount);
+            MemoryStream memoryStream = new MemoryStream();
+            bitmap.Save(memoryStream, ImageFormat.Bmp);
+            return memoryStream;
         }
 
         /// <param name="isBuy">Side > 0 ? "BUY" : "SELL"</param>

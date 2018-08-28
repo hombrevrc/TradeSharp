@@ -68,7 +68,10 @@ namespace TradeSharp.Client
         private volatile bool terminalIsLoaded;
         public static TradeSharpServerTrade serverProxyTrade;
         private readonly TcpQuoteReceiver quoteReceiver;
-        
+
+        private GraphPainter graphPainter = new GraphPainter();
+        private TelegaSignalBot telegaSignalBot = new TelegaSignalBot();
+
         private readonly RobotFarm robotFarm;        
 
         public RobotFarm RobotFarm
@@ -84,6 +87,7 @@ namespace TradeSharp.Client
         private readonly int minMinutesToUpdateQuotes = AppConfig.GetIntParam("MinMinutesToUpdateQuotes", 5);
         private readonly string autosaveFolder;
         private readonly Thread threadSchedule;
+        private readonly Thread threadTelegaBot;
         /// <summary>
         /// частота опроса потока-планировщика заданий
         /// </summary>
@@ -277,7 +281,11 @@ namespace TradeSharp.Client
 
             // запуск процесса-планировщика
             threadSchedule = new Thread(ScheduleThreadRoutine);
-            threadSchedule.Start();            
+            threadSchedule.Start();
+
+            threadTelegaBot = new Thread(TelegaBotThreadRoutine);
+            threadTelegaBot.IsBackground = true;
+            threadTelegaBot.Start();
 
             AppMessageFilter.ApplyDiffString(UserSettings.Instance.HotKeyList);
         }
@@ -366,6 +374,22 @@ namespace TradeSharp.Client
             }
             catch (ThreadAbortException)
             {
+            }
+        }
+
+        private void TelegaBotThreadRoutine()
+        {
+            while (true)
+            {
+                try
+                {
+                    telegaSignalBot.CheckUpdates().Wait();
+                    Thread.Sleep(5000);
+                }
+                catch (Exception)
+                {
+                    //TODO
+                }
             }
         }
 
@@ -1843,7 +1867,7 @@ namespace TradeSharp.Client
                 ShowMsgWindowSafe(new AccountEvent(
                     Localizer.GetString("TitleError"),
                     msg, AccountEventCode.ServerMessage));
-                Logger.InfoFormat(msg);                
+                Logger.InfoFormat(msg);
             }
             else
             {
@@ -1882,6 +1906,18 @@ namespace TradeSharp.Client
                 // проиграть звук - торговый ордер
                 EventSoundPlayer.Instance.PlayEvent(VocalizedEvent.TradeResponse);
                 CheckScriptTriggerOrder(ScriptTriggerDealEventType.НовыйОрдер, order);
+
+                // Опубликовать в Телеграм 
+                if (telegaSignalBot.IsOnline)
+                {
+                    var ch = Charts.FirstOrDefault(x => x.chart.Symbol == order.Symbol)?.chart;
+                    if (ch != null)
+                    {
+                        var path = ExecutablePath.ExecPath + "\\files";
+                        var pathToImgFile = graphPainter.SaveGraphToFile(path, ch.Timeframe, order.Symbol, order.Side > 0, 30);
+                        telegaSignalBot.PublishTradeSignal(pathToImgFile, body.ToString()).Wait();
+                    }
+                }
             }
         }
 

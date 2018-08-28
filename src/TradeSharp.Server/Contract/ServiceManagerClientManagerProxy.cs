@@ -181,11 +181,9 @@ namespace TradeSharp.Server.Contract
                     case TradeSharpClientResponseType.NewOrder:
                         callback.NewOrderResponse((MarketOrder)resp.ticket, resp.status, resp.detailMessage);
                         break;
-
                     case TradeSharpClientResponseType.NewPendingOrder:
                         callback.NewPendingOrderResponse((PendingOrder)resp.ticket, resp.status, resp.detailMessage);
                         break;
-
                     case TradeSharpClientResponseType.CloseOrder:
                         callback.NewCloseOrderResponse((MarketOrder)resp.ticket, resp.status, resp.detailMessage);
                         break;
